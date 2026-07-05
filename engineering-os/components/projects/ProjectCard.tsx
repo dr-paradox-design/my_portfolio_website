@@ -1,32 +1,51 @@
-import type { Project } from "@/lib/data/projects-full";
+import Link from "next/link";
+import type { Project } from "@/types/project";
+import { Tag } from "@/components/ui/Tag";
+import { ArrowRight } from "lucide-react";
 
-type ProjectCardProps = {
+interface ProjectCardProps {
   project: Project;
-};
+}
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <article className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-5 transition-transform duration-200 hover:-translate-y-1 hover:border-zinc-700">
-      <div className="mb-4 flex items-start justify-between gap-4">
-        <div>
-          <p className="font-mono text-xs uppercase tracking-widest text-emerald-400">
-            {project.domainTags[0] ?? "Project"}
-          </p>
-          <h3 className="mt-2 text-xl font-semibold text-zinc-100">{project.title}</h3>
-        </div>
-        <span className="rounded-full border border-zinc-700 px-2.5 py-1 text-[11px] text-zinc-400">
-          {project.featured ? "Featured" : "Case study"}
-        </span>
-      </div>
-      <p className="text-sm leading-6 text-zinc-400">{project.summary}</p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {project.technologies.slice(0, 4).map((tech) => (
-          <span key={tech} className="rounded-full bg-zinc-800 px-3 py-1 text-xs text-zinc-300">
-            {tech}
-          </span>
+    <Link
+      href={`/projects/${project.slug}`}
+      className="group block rounded-xl border border-zinc-800 bg-zinc-900 p-6 hover:border-zinc-700 hover:bg-zinc-800/60 transition-all duration-200"
+    >
+      {/* Domain tags */}
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {project.domainTags.map((tag) => (
+          <Tag key={tag} label={tag} variant="domain" />
         ))}
       </div>
-      <p className="mt-4 text-xs text-zinc-500">{project.heroImage.alt}</p>
-    </article>
+
+      {/* Title */}
+      <h3 className="text-base font-semibold text-zinc-100 tracking-tight leading-snug mb-2 group-hover:text-emerald-400 transition-colors">
+        {project.title}
+      </h3>
+
+      {/* Summary */}
+      <p className="text-sm text-zinc-400 leading-relaxed mb-4">
+        {project.summary}
+      </p>
+
+      {/* Tech stack */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {project.technologies.slice(0, 4).map((tech) => (
+          <Tag key={tech} label={tech} variant="tech" />
+        ))}
+        {project.technologies.length > 4 && (
+          <span className="font-mono text-xs text-zinc-600">
+            +{project.technologies.length - 4} more
+          </span>
+        )}
+      </div>
+
+      {/* CTA */}
+      <div className="flex items-center gap-1 text-sm font-medium text-emerald-400 group-hover:gap-2 transition-all">
+        View case study <ArrowRight size={14} />
+      </div>
+    </Link>
   );
 }
