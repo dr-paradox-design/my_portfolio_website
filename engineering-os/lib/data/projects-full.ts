@@ -153,3 +153,5 @@ export interface Project {
   /** Whether this project should appear in the "4 featured" home page cards */
   featured: boolean;
 }
+
+export { projects } from "./projects";

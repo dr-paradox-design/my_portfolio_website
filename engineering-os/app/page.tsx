@@ -1,65 +1,122 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, Download } from "lucide-react";
+import { profile } from "@/lib/data/profile";
+import { projects } from "@/lib/data/projects-full";
+import { ProjectCard } from "@/components/projects/ProjectCard";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: `${profile.name} — ${profile.title}`,
+  description: profile.tagline,
+};
+
+export default function HomePage() {
+  const featured = projects.filter((p) => p.featured).slice(0, 4);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <>
+      {/* ── Hero ─────────────────────────────────────────────── */}
+      <section className="relative min-h-screen flex items-center pt-14">
+        {/* Subtle grid background */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "linear-gradient(#34d399 1px, transparent 1px), linear-gradient(90deg, #34d399 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+          aria-hidden="true"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-24">
+          {/* Eyebrow */}
+          <p className="font-mono text-xs text-emerald-400 uppercase tracking-widest mb-6">
+            {profile.institution} · {profile.program} · {profile.graduationYear}
           </p>
+
+          {/* Name */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight text-zinc-100 mb-3">
+            {profile.name}
+          </h1>
+
+          {/* Titles */}
+          <p className="text-lg sm:text-xl font-medium text-emerald-400 mb-1">
+            {profile.title}
+          </p>
+          <p className="text-base sm:text-lg text-zinc-500 mb-8">
+            {profile.secondaryTitle}
+          </p>
+
+          {/* Tagline */}
+          <p className="max-w-xl text-zinc-400 leading-relaxed text-base sm:text-lg mb-10">
+            {profile.tagline}
+          </p>
+
+          {/* CTAs */}
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/projects"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-emerald-400 transition-colors"
+            >
+              View Projects <ArrowRight size={15} />
+            </Link>
+            <a
+              href={profile.resumePath}
+              download
+              className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-5 py-2.5 text-sm font-semibold text-zinc-300 hover:border-zinc-500 hover:text-zinc-100 transition-colors"
+            >
+              Download Resume <Download size={15} />
+            </a>
+          </div>
+
+          {/* Quick stats */}
+          <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {profile.stats.map((stat) => (
+              <div key={stat.label} className="rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-4">
+                <p className="font-mono text-lg font-semibold text-emerald-400">
+                  {stat.value}
+                </p>
+                <p className="text-xs text-zinc-500 mt-0.5">{stat.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      </section>
+
+      {/* ── Featured Projects ─────────────────────────────────── */}
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 py-24">
+        <div className="flex items-end justify-between mb-10">
+          <div>
+            <p className="font-mono text-xs text-emerald-400 uppercase tracking-widest mb-2">
+              Selected work
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-100">
+              Projects
+            </h2>
+          </div>
+          <Link
+            href="/projects"
+            className="hidden sm:inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-emerald-400 transition-colors"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            View all <ArrowRight size={14} />
+          </Link>
         </div>
-      </main>
-    </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {featured.map((project) => (
+            <ProjectCard key={project.slug} project={project} />
+          ))}
+        </div>
+
+        <div className="mt-6 sm:hidden">
+          <Link
+            href="/projects"
+            className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-emerald-400 transition-colors"
+          >
+            View all projects <ArrowRight size={14} />
+          </Link>
+        </div>
+      </section>
+    </>
   );
 }
