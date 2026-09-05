@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { projects } from "@/lib/data/projects-full";
+import { projects } from "@/lib/data/projects";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 

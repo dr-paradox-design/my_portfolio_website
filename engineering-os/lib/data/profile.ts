@@ -34,5 +34,11 @@ export const profile = {
     email: "123ee0320raj@gmail.com"
   },
 
-  resumePath: "/resume.pdf", // Drop your PDF at public/resume.pdf
+  /**
+   * Path to the resume PDF, relative to /public.
+   * Leave as `null` while there is no PDF — the download buttons and the
+   * embedded preview are hidden automatically. Drop the file at
+   * `public/resume.pdf` and set this to "/resume.pdf" to turn them on.
+   */
+  resumePath: null as string | null,
 } as const;

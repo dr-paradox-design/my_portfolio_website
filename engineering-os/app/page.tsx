@@ -1,14 +1,8 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Download } from "lucide-react";
+import { ArrowRight, Download, FileText } from "lucide-react";
 import { profile } from "@/lib/data/profile";
-import { projects } from "@/lib/data/projects-full";
+import { projects } from "@/lib/data/projects";
 import { ProjectCard } from "@/components/projects/ProjectCard";
-
-export const metadata: Metadata = {
-  title: `${profile.name} — ${profile.title}`,
-  description: profile.tagline,
-};
 
 export default function HomePage() {
   const featured = projects.filter((p) => p.featured).slice(0, 4);
@@ -60,13 +54,22 @@ export default function HomePage() {
             >
               View Projects <ArrowRight size={15} />
             </Link>
-            <a
-              href={profile.resumePath}
-              download
-              className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-5 py-2.5 text-sm font-semibold text-zinc-300 hover:border-zinc-500 hover:text-zinc-100 transition-colors"
-            >
-              Download Resume <Download size={15} />
-            </a>
+            {profile.resumePath ? (
+              <a
+                href={profile.resumePath}
+                download
+                className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-5 py-2.5 text-sm font-semibold text-zinc-300 hover:border-zinc-500 hover:text-zinc-100 transition-colors"
+              >
+                Download Resume <Download size={15} />
+              </a>
+            ) : (
+              <Link
+                href="/resume"
+                className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-5 py-2.5 text-sm font-semibold text-zinc-300 hover:border-zinc-500 hover:text-zinc-100 transition-colors"
+              >
+                View Resume <FileText size={15} />
+              </Link>
+            )}
           </div>
 
           {/* Quick stats */}

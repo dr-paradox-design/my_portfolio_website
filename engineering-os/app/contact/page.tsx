@@ -8,10 +8,13 @@ export const metadata: Metadata = {
   description: `Get in touch with ${profile.name}`,
 };
 
+/** Show the bare host + path so the displayed handle always matches the real link. */
+const displayUrl = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+
 const contactLinks = [
   { label: "Email", value: profile.social.email, href: `mailto:${profile.social.email}`, icon: Mail, description: "Best for project inquiries and collaboration" },
-  { label: "LinkedIn", value: "linkedin.com/in/swastikaditya", href: profile.social.linkedin, icon: Globe, description: "Professional updates and connection" },
-  { label: "GitHub", value: "github.com/swastikaditya", href: profile.social.github, icon: Code2, description: "Code, projects, and contributions" },
+  { label: "LinkedIn", value: displayUrl(profile.social.linkedin), href: profile.social.linkedin, icon: Globe, description: "Professional updates and connection" },
+  { label: "GitHub", value: displayUrl(profile.social.github), href: profile.social.github, icon: Code2, description: "Code, projects, and contributions" },
 ];
 
 export default function ContactPage() {

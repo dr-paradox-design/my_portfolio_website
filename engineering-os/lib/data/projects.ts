@@ -1,4 +1,4 @@
-import type { Project } from "./projects-full";
+import type { Project } from "@/types/project";
 
 const placeholderHeroImage = {
   src: "/images/placeholders/project-hero.jpg",
