@@ -21,7 +21,7 @@ export function Navbar() {
         {/* Logo / name */}
         <Link
           href="/"
-          className="font-mono text-sm font-semibold tracking-tight text-emerald-400 hover:text-emerald-300 transition-colors"
+          className="shrink-0 font-mono text-xs sm:text-sm font-semibold tracking-tight text-emerald-400 hover:text-emerald-300 transition-colors"
         >
           {profile.name.split(" ")[0].toLowerCase()}<span className="text-zinc-500">.</span>
           <span className="text-zinc-400">dev</span>
@@ -29,14 +29,14 @@ export function Navbar() {
 
         {/* Nav links */}
         <nav aria-label="Main navigation">
-          <ul className="flex items-center gap-1">
+          <ul className="flex items-center gap-0.5 sm:gap-1">
             {navLinks.map(({ href, label }) => {
               const active = pathname === href || pathname.startsWith(href + "/");
               return (
                 <li key={href}>
                   <Link
                     href={href}
-                    className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                    className={`block rounded-md px-2 py-1.5 text-xs sm:px-3 sm:text-sm font-medium transition-colors ${
                       active
                         ? "text-emerald-400 bg-emerald-400/10"
                         : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
