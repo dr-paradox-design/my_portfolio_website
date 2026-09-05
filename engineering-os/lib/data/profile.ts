@@ -15,7 +15,7 @@ export const profile = {
   graduationYear: 2027,
 
   tagline:
-    "Building intelligent autonomous systems through embedded electronics, control theory, robotics, and edge computing.",
+    "Building intelligent autonomous systems from the silicon up — chip design, embedded electronics, control theory, and robotics.",
 
   bio: "Final-year Electrical Engineering student at NIT Rourkela, team captain of Team Tiburon (AUV robotics), and firmware lead. I work at the intersection of embedded systems and control theory — writing firmware that runs on hardware I've designed and understanding why the math says what it does. Currently targeting roles in chip design and semiconductor fabrication, alongside embedded systems.",
 
