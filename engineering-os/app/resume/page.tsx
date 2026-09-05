@@ -14,7 +14,7 @@ const highlights = [
   { label: "Leadership", value: "Team Captain and Firmware Lead, Team Tiburon (AUV Robotics)" },
   { label: "Competition", value: "Global podium, SAUVC China 2026" },
   { label: "Core skills", value: "Embedded firmware (C/C++), control systems, EKF sensor fusion, ROS2" },
-  { label: "Target roles", value: "Semiconductor fabrication, embedded systems engineering" },
+  { label: "Target roles", value: "Chip design, semiconductor fabrication, embedded systems engineering" },
 ];
 
 export default function Page() {

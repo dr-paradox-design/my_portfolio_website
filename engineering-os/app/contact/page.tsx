@@ -45,7 +45,7 @@ export default function ContactPage() {
         <p className="font-mono text-xs text-emerald-400 mb-2">currently open to</p>
         <ul className="space-y-1">
           {[
-            "Full-time roles in semiconductor fabrication (graduating 2027)",
+            "Full-time roles in chip design or semiconductor fabrication (graduating 2027)",
             "Internships in embedded systems and robotics",
             "Research collaborations in control theory and autonomous systems",
             "Technical conversations — always",

@@ -9,7 +9,7 @@
 export const profile = {
   name: "Swastik Aditya Ranjan",
   title: "Electrical Engineer",
-  secondaryTitle: "Robotics & Embedded Systems Engineer",
+  secondaryTitle: "Silicon & Robotics Engineer",
   institution: "NIT Rourkela",
   program: "B.Tech Electrical Engineering",
   graduationYear: 2027,
@@ -17,7 +17,7 @@ export const profile = {
   tagline:
     "Building intelligent autonomous systems through embedded electronics, control theory, robotics, and edge computing.",
 
-  bio: "Final-year Electrical Engineering student at NIT Rourkela, team captain of Team Tiburon (AUV robotics), and firmware lead. I work at the intersection of embedded systems and control theory — writing firmware that runs on hardware I've designed and understanding why the math says what it does. Currently targeting roles in semiconductor fabrication and embedded systems.",
+  bio: "Final-year Electrical Engineering student at NIT Rourkela, team captain of Team Tiburon (AUV robotics), and firmware lead. I work at the intersection of embedded systems and control theory — writing firmware that runs on hardware I've designed and understanding why the math says what it does. Currently targeting roles in chip design and semiconductor fabrication, alongside embedded systems.",
 
   /** Quick stats shown on the home page */
   stats: [
