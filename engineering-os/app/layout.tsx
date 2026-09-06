@@ -33,7 +33,8 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-zinc-950 text-zinc-200">
+      {/* `grain` paints a fixed noise overlay via ::after — see globals.css */}
+      <body className="grain flex min-h-full flex-col bg-zinc-950 text-zinc-200">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

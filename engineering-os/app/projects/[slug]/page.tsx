@@ -38,10 +38,14 @@ function Section({
 }) {
   return (
     <section className="border-t border-zinc-800/60 pt-10">
-      <p className="font-mono text-xs uppercase tracking-widest text-emerald-400 mb-2">
+      <p className="mb-2 flex items-center gap-2.5 font-mono text-xs uppercase tracking-widest text-emerald-400">
+        <span
+          className="h-px w-6 bg-gradient-to-r from-emerald-400 to-emerald-400/0"
+          aria-hidden="true"
+        />
         {eyebrow}
       </p>
-      <h2 className="mb-5 text-xl sm:text-2xl font-semibold tracking-tight text-zinc-100">
+      <h2 className="text-gradient mb-5 text-xl font-semibold tracking-tight sm:text-2xl">
         {title}
       </h2>
       {children}
@@ -77,7 +81,7 @@ export default async function CaseStudyPage({
         ))}
       </div>
 
-      <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-100 mb-4">
+      <h1 className="text-gradient mb-4 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
         {project.title}
       </h1>
 
@@ -124,7 +128,7 @@ export default async function CaseStudyPage({
             {project.technicalDecisions.map((decision) => (
               <div
                 key={decision.title}
-                className="rounded-xl border border-zinc-800 bg-zinc-900 p-5"
+                className="panel p-5"
               >
                 <h3 className="text-sm font-semibold text-zinc-100 mb-4">
                   {decision.title}
@@ -150,7 +154,7 @@ export default async function CaseStudyPage({
 
         {/* ── Validation ─────────────────────────────────────── */}
         <Section eyebrow="Evidence" title="Validation & results">
-          <div className="divide-y divide-zinc-800 rounded-xl border border-zinc-800 bg-zinc-900">
+          <div className="panel divide-y divide-zinc-800">
             {project.validationResults.map((result) => (
               <div key={result.test} className="px-5 py-4 sm:flex sm:gap-5">
                 <p className="w-56 shrink-0 font-mono text-xs text-emerald-400 mb-1 sm:mb-0 sm:pt-0.5">
@@ -168,7 +172,7 @@ export default async function CaseStudyPage({
             {project.failuresAndLessons.map((lesson) => (
               <div
                 key={lesson.title}
-                className="rounded-xl border border-zinc-800 bg-zinc-900 p-5"
+                className="panel p-5"
               >
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <h3 className="text-sm font-semibold text-zinc-100">{lesson.title}</h3>

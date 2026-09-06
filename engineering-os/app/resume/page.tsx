@@ -33,7 +33,7 @@ export default function Page() {
         )}
       </div>
 
-      <div className="mb-10 divide-y divide-zinc-800 rounded-xl border border-zinc-800 bg-zinc-900">
+      <div className="panel mb-10 divide-y divide-zinc-800">
         {highlights.map(({ label, value }) => (
           <div key={label} className="flex gap-4 px-5 py-4">
             <span className="w-28 shrink-0 pt-0.5 font-mono text-xs text-emerald-400">{label}</span>

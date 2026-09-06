@@ -1,4 +1,5 @@
 import type { Skill, SkillCategory } from "@/lib/data/skills";
+import { SpotlightEffect } from "@/components/ui/SpotlightEffect";
 
 /**
  * Renders one skill node and, recursively, its children.
@@ -46,9 +47,10 @@ export function SkillTree({ categories }: { categories: SkillCategory[] }) {
       {categories.map((category) => (
         <section
           key={category.category}
-          className="rounded-xl border border-zinc-800 bg-zinc-900 p-6"
+          className="panel spotlight group relative isolate p-6 transition-colors duration-300 hover:border-zinc-700"
         >
-          <div className="mb-5">
+          <SpotlightEffect />
+          <div className="relative z-10 mb-5">
             <h2 className="flex items-center gap-2 text-base font-semibold tracking-tight text-zinc-100">
               <span aria-hidden="true">{category.icon}</span>
               {category.category}
@@ -56,7 +58,7 @@ export function SkillTree({ categories }: { categories: SkillCategory[] }) {
             <p className="mt-1 text-sm text-zinc-500">{category.description}</p>
           </div>
 
-          <ul className="space-y-3 border-l border-zinc-800">
+          <ul className="relative z-10 space-y-3 border-l border-zinc-800">
             {category.skills.map((skill) => (
               <SkillNode key={skill.name} skill={skill} />
             ))}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Code2, Globe, Mail } from "lucide-react";
 import { profile } from "@/lib/data/profile";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { SpotlightEffect } from "@/components/ui/SpotlightEffect";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -29,11 +30,12 @@ export default function ContactPage() {
           <a key={label} href={href}
             target={href.startsWith("mailto") ? undefined : "_blank"}
             rel="noopener noreferrer"
-            className="group flex items-center gap-4 rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 hover:border-zinc-700 hover:bg-zinc-800/60 transition-all">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-800 group-hover:bg-emerald-400/10 transition-colors">
+            className="panel spotlight group relative isolate flex items-center gap-4 px-5 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-zinc-700">
+            <SpotlightEffect />
+            <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-800 transition-colors group-hover:bg-emerald-400/10">
               <Icon size={18} className="text-zinc-400 group-hover:text-emerald-400 transition-colors" />
             </div>
-            <div className="min-w-0">
+            <div className="relative z-10 min-w-0">
               <p className="text-sm font-medium text-zinc-100">{label}</p>
               <p className="font-mono text-xs text-emerald-400 truncate">{value}</p>
               <p className="text-xs text-zinc-500 mt-0.5">{description}</p>
@@ -41,7 +43,7 @@ export default function ContactPage() {
           </a>
         ))}
       </div>
-      <div className="mt-10 rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-5">
+      <div className="panel mt-10 px-5 py-5">
         <p className="font-mono text-xs text-emerald-400 mb-2">currently open to</p>
         <ul className="space-y-1">
           {[
