@@ -1,13 +1,21 @@
 import Link from "next/link";
 import { ArrowRight, Download, FileText } from "lucide-react";
 import { profile } from "@/lib/data/profile";
-import { projects } from "@/lib/data/projects";
-import { portfolioStats } from "@/lib/data/portfolio";
-import { ProjectCard } from "@/components/projects/ProjectCard";
+import { portfolioStats, workItems } from "@/lib/data/portfolio";
+import { CompactWorkCard } from "@/components/projects/CompactWorkCard";
 import { SpotlightEffect } from "@/components/ui/SpotlightEffect";
 
+/**
+ * The home page leads with the strongest work rather than only the four
+ * items that happen to have a written case study. Flagship and major tier
+ * covers all four technical domains; everything else lives on /projects.
+ */
+const TIER_RANK = { flagship: 0, major: 1, supporting: 2, foundational: 3 } as const;
+
 export default function HomePage() {
-  const featured = projects.filter((p) => p.featured).slice(0, 4);
+  const featured = workItems
+    .filter((item) => item.tier === "flagship" || item.tier === "major")
+    .sort((a, b) => TIER_RANK[a.tier] - TIER_RANK[b.tier]);
 
   return (
     <>
@@ -125,41 +133,32 @@ export default function HomePage() {
 
       {/* ── Featured Projects ─────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
-        <div className="mb-10 flex items-end justify-between gap-4">
-          <div>
-            <p className="mb-2 font-mono text-xs uppercase tracking-widest text-emerald-400">
-              Selected work
-            </p>
-            <h2 className="text-2xl font-semibold tracking-tight text-zinc-100 sm:text-3xl">
-              Projects
-            </h2>
-          </div>
-          <Link
-            href="/projects"
-            className="group hidden shrink-0 items-center gap-1.5 text-sm text-zinc-400 transition-colors hover:text-emerald-400 sm:inline-flex"
-          >
-            View all
-            <ArrowRight
-              size={14}
-              className="transition-transform duration-300 group-hover:translate-x-1"
-            />
-          </Link>
+        <div className="mb-10">
+          <p className="mb-2 font-mono text-xs uppercase tracking-widest text-emerald-400">
+            Selected work
+          </p>
+          {/* Not "Projects" — that just repeats the nav item one line above. */}
+          <h2 className="text-2xl font-semibold tracking-tight text-zinc-100 sm:text-3xl">
+            Key projects
+          </h2>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {featured.map((project, i) => (
-            <ProjectCard key={project.slug} project={project} index={i} />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {featured.map((item) => (
+            <CompactWorkCard key={item.title} item={item} />
           ))}
         </div>
 
-        <div className="mt-6 sm:hidden">
-          <Link
-            href="/projects"
-            className="inline-flex items-center gap-1.5 text-sm text-zinc-400 transition-colors hover:text-emerald-400"
-          >
-            View all projects <ArrowRight size={14} />
-          </Link>
-        </div>
+        <Link
+          href="/projects"
+          className="group mt-6 inline-flex items-center gap-1.5 font-mono text-sm text-zinc-500 transition-colors hover:text-emerald-400"
+        >
+          and more&hellip;
+          <ArrowRight
+            size={14}
+            className="transition-transform duration-300 group-hover:translate-x-1"
+          />
+        </Link>
       </section>
 
       {/* ── Closing CTA ───────────────────────────────────────────
