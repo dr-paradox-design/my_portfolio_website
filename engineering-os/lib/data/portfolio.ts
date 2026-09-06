@@ -143,9 +143,12 @@ export const workItems: WorkItem[] = [
     domain: "Autonomous Systems & Robotics",
     status: "complete",
     tier: "major",
+    /* Deliberately does not claim it flew — "implemented its movement" is what
+       was reported, and a flight claim is the kind of thing an interviewer
+       will ask to see. Upgrade this line if it did fly. */
     summary:
-      "Second-year quadcopter taken from CAD to a flying airframe solo: the complete frame modelled in SolidWorks, 3D printed, then assembled with its electronics and brought up until it moved under its own power.",
-    technologies: ["SolidWorks", "3D printing", "Mechanical design", "Quadcopter"],
+      "Second-year quadcopter taken from CAD to hardware solo: the complete airframe modelled in SolidWorks, 3D printed, then assembled with its electronics and brought up until it moved under its own power.",
+    technologies: ["SolidWorks", "3D printing", "Mechanical design"],
   },
   {
     title: "Aquatic Robotics for Sustainability",
