@@ -3,11 +3,13 @@ import { Code2, Globe, Mail } from "lucide-react";
 import { profile } from "@/lib/data/profile";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SpotlightEffect } from "@/components/ui/SpotlightEffect";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Contact",
   description: `Get in touch with ${profile.name}`,
-};
+  path: "/contact",
+});
 
 /** Show the bare host + path so the displayed handle always matches the real link. */
 const displayUrl = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/$/, "");

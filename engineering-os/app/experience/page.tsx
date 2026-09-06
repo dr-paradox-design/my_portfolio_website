@@ -9,12 +9,14 @@ import {
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Tag } from "@/components/ui/Tag";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Experience",
   description:
     "Internships, competition results, technical workshops, and professional memberships.",
-};
+  path: "/experience",
+});
 
 /** Section wrapper with a mono eyebrow and icon, matching the case-study pages. */
 function Block({

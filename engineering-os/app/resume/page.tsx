@@ -3,11 +3,13 @@ import Link from "next/link";
 import { Download, FileText } from "lucide-react";
 import { profile } from "@/lib/data/profile";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Resume",
   description: `Resume of ${profile.name}`,
-};
+  path: "/resume",
+});
 
 const highlights = [
   { label: "Education", value: "B.Tech Electrical Engineering - NIT Rourkela (2027)" },

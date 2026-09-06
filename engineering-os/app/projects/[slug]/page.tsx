@@ -7,6 +7,7 @@ import { Tag } from "@/components/ui/Tag";
 import { STATUS_LABELS } from "@/components/ui/StatusBadge";
 import { ProjectImage } from "@/components/ui/PlaceholderImage";
 import { ProjectGallery } from "@/components/projects/ProjectGallery";
+import { pageMetadata } from "@/lib/site";
 
 /**
  * A project's page.
@@ -42,10 +43,17 @@ export async function generateMetadata({
   const page = getProjectPage(slug);
   if (!page) return {};
 
-  return {
+  /* `pageMetadata` is what makes a shared project link preview as *this*
+     project. Returning a bare title/description here would leave og:title
+     inherited from the root layout — see lib/site.ts. */
+  return pageMetadata({
     title: page.detail?.title ?? page.item.title,
     description: page.detail?.summary ?? page.item.summary,
-  };
+    path: `/projects/${slug}`,
+    // This segment has its own `opengraph-image.tsx`, which Next only
+    // applies when the segment's metadata declares no `images` of its own.
+    image: null,
+  });
 }
 
 /** Consistent section wrapper: mono eyebrow + heading + content. */

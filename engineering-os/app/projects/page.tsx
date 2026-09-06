@@ -3,12 +3,14 @@ import { ChevronRight } from "lucide-react";
 import { workItems, workDomains, technicalThreads } from "@/lib/data/portfolio";
 import { WorkItemCard } from "@/components/projects/WorkItemCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Projects",
   description:
     "Engineering work across autonomous systems, digital design, analog and mixed-signal hardware, and embedded firmware.",
-};
+  path: "/projects",
+});
 
 /** Tier ordering — flagship work leads each domain. */
 const tierRank = { flagship: 0, major: 1, supporting: 2, foundational: 3 } as const;
