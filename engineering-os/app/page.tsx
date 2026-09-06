@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Download, FileText } from "lucide-react";
 import { profile } from "@/lib/data/profile";
 import { projects } from "@/lib/data/projects";
+import { portfolioStats } from "@/lib/data/portfolio";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 
 export default function HomePage() {
@@ -111,7 +112,7 @@ export default function HomePage() {
 
           {/* Quick stats */}
           <dl className="animate-fade-up delay-6 mt-16 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-            {profile.stats.map((stat) => (
+            {portfolioStats.map((stat) => (
               <div
                 key={stat.label}
                 className="panel flex flex-col-reverse px-4 py-4 transition-colors duration-300 hover:border-emerald-400/30"

@@ -19,13 +19,11 @@ export const profile = {
 
   bio: "Final-year Electrical Engineering student at NIT Rourkela, team captain of Team Tiburon (AUV robotics), and firmware lead. I work at the intersection of embedded systems and control theory — writing firmware that runs on hardware I've designed and understanding why the math says what it does. Currently targeting roles in chip design and semiconductor fabrication, alongside embedded systems.",
 
-  /** Quick stats shown on the home page */
-  stats: [
-    { label: "Competition entries", value: "2+" },
-    { label: "Projects shipped", value: "4" },
-    { label: "Global podium", value: "SAUVC 2026" },
-    { label: "Graduating", value: "2027" },
-  ],
+  /**
+   * Home-page stats now live in `lib/data/portfolio.ts` as `portfolioStats`,
+   * where the counts are derived from the actual project and competition
+   * lists. They were hardcoded here and had drifted badly out of date.
+   */
 
   /** Social/contact links */
   social: {
