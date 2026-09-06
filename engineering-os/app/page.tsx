@@ -4,6 +4,7 @@ import { profile } from "@/lib/data/profile";
 import { projects } from "@/lib/data/projects";
 import { portfolioStats } from "@/lib/data/portfolio";
 import { ProjectCard } from "@/components/projects/ProjectCard";
+import { SpotlightEffect } from "@/components/ui/SpotlightEffect";
 
 export default function HomePage() {
   const featured = projects.filter((p) => p.featured).slice(0, 4);
@@ -64,16 +65,12 @@ export default function HomePage() {
             {profile.name}
           </h1>
 
-          {/* Titles */}
-          <div className="animate-fade-up delay-3 mb-8 flex flex-wrap items-center gap-x-3 gap-y-1">
-            <p className="text-lg font-medium text-emerald-400 sm:text-xl">
-              {profile.title}
-            </p>
-            <span className="hidden h-4 w-px bg-zinc-700 sm:block" aria-hidden="true" />
-            <p className="text-base text-zinc-500 sm:text-lg">
-              {profile.secondaryTitle}
-            </p>
-          </div>
+          {/* Title — `profile.title` ("Electrical Engineer") is deliberately not
+              shown here; the eyebrow one line above already says "B.Tech
+              Electrical Engineering". It still drives the page metadata. */}
+          <p className="animate-fade-up delay-3 mb-8 text-lg font-medium text-emerald-400 sm:text-xl">
+            {profile.secondaryTitle}
+          </p>
 
           {/* Tagline */}
           <p className="animate-fade-up delay-4 mb-10 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg">
@@ -110,16 +107,14 @@ export default function HomePage() {
             )}
           </div>
 
-          {/* Quick stats */}
-          <dl className="animate-fade-up delay-6 mt-16 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+          {/* Quick stats — a hairline fact strip rather than boxes, so the hero
+              stays a hero instead of turning into a dashboard. */}
+          <dl className="animate-fade-up delay-6 mt-14 flex max-w-xl flex-wrap gap-x-10 gap-y-5 border-t border-zinc-800/70 pt-7 sm:gap-x-14">
             {portfolioStats.map((stat) => (
-              <div
-                key={stat.label}
-                className="panel flex flex-col-reverse px-4 py-4 transition-colors duration-300 hover:border-emerald-400/30"
-              >
-                {/* Reversed so the value reads first while the DOM keeps dt→dd order */}
+              /* Reversed so the value reads first while the DOM keeps dt→dd order */
+              <div key={stat.label} className="flex flex-col-reverse">
                 <dt className="mt-1 text-xs text-zinc-500">{stat.label}</dt>
-                <dd className="font-mono text-lg font-semibold tabular-nums text-emerald-400">
+                <dd className="font-mono text-xl font-semibold tabular-nums text-emerald-400">
                   {stat.value}
                 </dd>
               </div>
@@ -164,6 +159,42 @@ export default function HomePage() {
           >
             View all projects <ArrowRight size={14} />
           </Link>
+        </div>
+      </section>
+
+      {/* ── Closing CTA ───────────────────────────────────────────
+          The page used to end on the last project card, leaving no route
+          to the contact page from the home page at all. */}
+      <section className="mx-auto max-w-6xl px-4 pb-28 sm:px-6">
+        <div className="panel spotlight relative isolate flex flex-col items-start justify-between gap-6 overflow-hidden p-7 sm:flex-row sm:items-center sm:p-9">
+          <SpotlightEffect />
+          <div className="relative z-10">
+            <h2 className="text-xl font-semibold tracking-tight text-zinc-100 sm:text-2xl">
+              Get in touch
+            </h2>
+            <p className="mt-1.5 max-w-md text-sm leading-relaxed text-zinc-500">
+              Semiconductor roles, research opportunities, embedded systems, and
+              robotics.
+            </p>
+          </div>
+          <div className="relative z-10 flex shrink-0 flex-wrap gap-3">
+            <Link
+              href="/contact"
+              className="group inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-zinc-950 shadow-[0_0_24px_-6px_rgba(52,211,153,0.5)] transition-all duration-300 hover:bg-emerald-400 hover:shadow-[0_0_32px_-4px_rgba(52,211,153,0.65)]"
+            >
+              Contact
+              <ArrowRight
+                size={15}
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </Link>
+            <Link
+              href="/experience"
+              className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900/40 px-5 py-2.5 text-sm font-semibold text-zinc-300 transition-all duration-300 hover:border-emerald-400/40 hover:bg-zinc-800/60 hover:text-zinc-100"
+            >
+              Experience
+            </Link>
+          </div>
         </div>
       </section>
     </>

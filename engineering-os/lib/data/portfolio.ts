@@ -376,6 +376,10 @@ export const memberships: Membership[] = [
  * Headline stats, derived from the data above so they cannot drift out of
  * sync the way hardcoded counts did. Upcoming work is excluded from the
  * project count deliberately — it has not been built yet.
+ *
+ * Graduation year is deliberately NOT a stat: the hero already states it in
+ * both the availability pill and the eyebrow, and three copies of "2027" in
+ * one viewport read as padding.
  */
 export const portfolioStats = [
   {
@@ -384,5 +388,4 @@ export const portfolioStats = [
   },
   { label: "Competitions", value: String(competitions.length) },
   { label: "Global podium", value: "SAUVC 2026" },
-  { label: "Graduating", value: "2027" },
 ];
