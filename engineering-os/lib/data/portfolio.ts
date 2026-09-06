@@ -154,9 +154,8 @@ export const workItems: WorkItem[] = [
     status: "ongoing",
     tier: "major",
     summary:
-      "Design work on an analog compute-in-memory architecture. Entered in the Lam Research Challenge 2026 — in progress, no results yet.",
+      "Design work on an analog compute-in-memory architecture. In progress — no results yet.",
     technologies: ["Analog compute-in-memory", "Mixed-signal architecture"],
-    context: "Lam Research Challenge 2026",
   },
   {
     title: "Embedded Test Equipment Suite",
@@ -179,6 +178,22 @@ export const workItems: WorkItem[] = [
   },
 
   // ── Embedded Systems & Firmware ─────────────────────────────────
+  {
+    title: "Flight Controller PCB",
+    domain: "Embedded Systems & Firmware",
+    status: "complete",
+    tier: "major",
+    summary:
+      "Four-layer flight controller board designed in KiCad around an STM32H743, carrying an ESP32 module, dual IMUs, and integrated power management.",
+    technologies: [
+      "KiCad",
+      "STM32H743",
+      "ESP32",
+      "4-layer PCB",
+      "Dual IMU",
+      "Power management",
+    ],
+  },
   {
     title: "ESP32 Non-Volatile Memory",
     domain: "Embedded Systems & Firmware",
@@ -284,7 +299,6 @@ export const competitions: Achievement[] = [
     name: "Lam Research Challenge 2026",
     result: "Currently competing",
     status: "ongoing",
-    related: "Analog Compute-in-Memory",
   },
   {
     name: "e-Yantra Robotics Competition",

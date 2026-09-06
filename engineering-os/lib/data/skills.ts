@@ -71,7 +71,10 @@ export const skills: SkillCategory[] = [
       {
         name: "PCB & Signal Integrity",
         children: [
+          { name: "KiCad", note: "Schematic capture and multi-layer layout" },
           { name: "6-layer PCB design", note: "Analog/digital domain isolation" },
+          { name: "4-layer PCB design", note: "STM32H743 flight controller" },
+          { name: "Power management integration" },
           { name: "Grounding & return-path design" },
           { name: "Analog front-end design" },
           { name: "Signal conditioning circuits" },
@@ -87,10 +90,7 @@ export const skills: SkillCategory[] = [
       {
         name: "Emerging Architectures",
         children: [
-          {
-            name: "Analog compute-in-memory",
-            note: "In progress — Lam Research Challenge 2026",
-          },
+          { name: "Analog compute-in-memory", note: "In progress" },
         ],
       },
     ],

@@ -23,7 +23,7 @@ export default function ContactPage() {
     <div className="mx-auto max-w-2xl px-4 sm:px-6 pt-28 pb-24">
       <div className="mb-12">
         <SectionHeading eyebrow="Get in touch" title="Contact"
-          description="Open to conversations about embedded systems, robotics, semiconductor roles, and research opportunities." />
+          description="Open to conversations about semiconductor roles, research opportunities, embedded systems, and robotics." />
       </div>
       <div className="space-y-3">
         {contactLinks.map(({ label, value, href, icon: Icon, description }) => (
@@ -42,22 +42,6 @@ export default function ContactPage() {
             </div>
           </a>
         ))}
-      </div>
-      <div className="panel mt-10 px-5 py-5">
-        <p className="font-mono text-xs text-emerald-400 mb-2">currently open to</p>
-        <ul className="space-y-1">
-          {[
-            "Full-time roles in chip design or semiconductor fabrication (graduating 2027)",
-            "Internships in embedded systems and robotics",
-            "Research collaborations in control theory and autonomous systems",
-            "Technical conversations — always",
-          ].map((item) => (
-            <li key={item} className="flex items-start gap-2 text-sm text-zinc-400">
-              <span className="text-emerald-400 mt-0.5 shrink-0">→</span>
-              {item}
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   );
