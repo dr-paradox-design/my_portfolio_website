@@ -56,7 +56,7 @@ export default function Image() {
             position: "absolute",
             inset: 0,
             display: "flex",
-            opacity: 0.05,
+            opacity: 0.5,
             ...BLUEPRINT_GRID,
             backgroundSize: "40px 40px",
           }}
