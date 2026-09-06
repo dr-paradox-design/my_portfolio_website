@@ -4,15 +4,44 @@
  * The complete engineering inventory, organised by technical domain
  * rather than chronology.
  *
- * Two levels of detail exist deliberately:
- *   - `projects.ts` holds full case studies (decisions, validation, failures)
- *     for the four projects with enough documented substance to support one.
- *   - `workItems` below covers everything else at summary depth. An item with
- *     a `caseStudy` slug links through to its deep write-up.
+ * **This file owns project identity and routing.** `workItems` is the single
+ * list; an item gets a page at `/projects/<slug>` the moment it is given a
+ * `slug`, and the page renders whatever that item actually has — photos,
+ * video, and (optionally) the deep write-up in `projects.ts` keyed by the
+ * same slug.
  *
- * Nothing here should be padded out to look like a case study. When a project
- * gains real documented content, promote it into `projects.ts` instead.
+ * `projects.ts` is a *sidecar*, not a parallel inventory. It holds only the
+ * long-form content: decisions, validation, failures. Most items will never
+ * have an entry there and that is fine.
+ *
+ * The rule that keeps this honest: give an item a `slug` when there is
+ * something to show behind it, not before. `lib/data/projectPage.ts` fails
+ * the build if a routed slug resolves to an empty page.
  */
+
+import type { StaticImageData } from "next/image";
+
+/* Photos are imported, not referenced by path string.
+ *
+ * Three things this buys, all of which matter here:
+ *   1. `next/image` learns each file's intrinsic width and height, which is
+ *      what lets the project gallery show a photo at its true size instead
+ *      of upscaling it into a fixed frame. These are WhatsApp-compressed
+ *      phone shots — several are barely 200px on the long edge — so knowing
+ *      the real resolution is not a nicety.
+ *   2. `placeholder="blur"` works with no extra work.
+ *   3. A typo in a filename is a build error, not a 404 nobody notices. */
+import nidarArena from "@/public/projects/nidar-arena.png";
+import nidarDrones from "@/public/projects/nidar-drones.webp";
+import nidarFinalTest from "@/public/projects/nidar-final-test.png";
+import nidarNightTest from "@/public/projects/nidar-night-test.png";
+import eyantraFirstTask1 from "@/public/projects/eyantra-first-task-1.png";
+import eyantraFirstTask2 from "@/public/projects/eyantra-first-task-2.png";
+import eyantraSimPidTuning from "@/public/projects/eyantra-sim-pid-tuning.webp";
+import eyantraDrone from "@/public/projects/eyantra-drone.png";
+import eyantraTestSetup from "@/public/projects/eyantra-test-setup.png";
+import eyantraTeammates from "@/public/projects/eyantra-teammates.png";
+import eyantraCompetitionDay from "@/public/projects/eyantra-competition-day.webp";
 
 export type WorkStatus = "complete" | "ongoing" | "upcoming";
 
@@ -33,10 +62,15 @@ export type WorkDomain =
  * added one project at a time without any card ever looking broken.
  *
  * Convention: drop the file in `public/projects/` and point `src` at it.
- * The first entry is the hero; the rest become a contact strip beneath it.
+ *
+ * **Order is the gallery order** — tell the story of the build from first
+ * task to competition day. The card hero is a separate concern: flag one
+ * image with `cover` and the cards will lead with that instead of the first
+ * one. Without a flag the cards fall back to `images[0]`.
  */
 export interface WorkImage {
-  src: string;
+  /** A static import from `public/projects/`, never a path string. */
+  src: StaticImageData;
   /** Required — describe what is actually in the frame, not the project. */
   alt: string;
   /** Shown under the hero image. Keep it to a few words. */
@@ -44,8 +78,42 @@ export interface WorkImage {
   /**
    * CSS object-position. Card bands are 16:9, so portrait phone photos get
    * cropped hard — set this to "50% 30%" or similar to keep the subject.
+   * Cards only — the project page shows photos at their natural ratio and
+   * never crops, so `focus` has no effect there.
    */
   focus?: string;
+  /**
+   * Lead this project's cards with this photo, regardless of where it sits
+   * in the narrative sequence. At most one per project; the first flagged
+   * one wins.
+   */
+  cover?: boolean;
+}
+
+/**
+ * A YouTube video of the thing working.
+ *
+ * Deliberately stores the bare video ID rather than a URL: the embed URL,
+ * the watch URL, and the privacy-preserving `youtube-nocookie` host are all
+ * derived from it, so there is exactly one place a malformed link could
+ * enter and it is validated by shape.
+ *
+ * `poster` is required and must be a local image. Pulling the thumbnail
+ * from `i.ytimg.com` would mean a remote image host in `next.config.ts`, a
+ * build-time dependency on Google, and a broken frame whenever
+ * `maxresdefault.jpg` doesn't exist for a given upload.
+ */
+export interface WorkVideo {
+  /** YouTube video ID only — e.g. "dQw4w9WgXcQ", never a full URL. */
+  youtubeId: string;
+  /** Used as the iframe title and the play button's accessible name. */
+  title: string;
+  /** A local still frame. See above — never a remote thumbnail. */
+  poster: WorkImage;
+  /** Shown under the player. */
+  caption?: string;
+  /** Label on the outbound link. Defaults to "Watch on YouTube". */
+  linkLabel?: string;
 }
 
 export interface WorkItem {
@@ -57,10 +125,16 @@ export interface WorkItem {
   technologies: string[];
   /** Where the work happened, e.g. a competition or lab. */
   context?: string;
-  /** Slug in projects.ts when a full case study exists. */
-  caseStudy?: string;
-  /** Photos of the build. Absent until real photos exist. */
+  /**
+   * Opens a page at `/projects/<slug>`. Set this only when the item has
+   * photos, video, or a `ProjectDetail` behind it — the build fails
+   * otherwise, on purpose.
+   */
+  slug?: string;
+  /** Photos of the build, in narrative order. Absent until real photos exist. */
   images?: WorkImage[];
+  /** Video of it working. Absent until a real upload exists. */
+  video?: WorkVideo;
 }
 
 /** Domain order used for grouping in the UI. */
@@ -90,7 +164,7 @@ export const workItems: WorkItem[] = [
       "Teledyne DVL",
     ],
     context: "Team Tiburon — Team Captain & Firmware Lead",
-    caseStudy: "tiburon-auv",
+    slug: "tiburon-auv",
   },
   {
     title: "Autonomous Disaster-Management Drones",
@@ -103,25 +177,25 @@ export const workItems: WorkItem[] = [
     context: "NIDAR 2025",
     images: [
       {
-        src: "/projects/nidar-drones.webp",
+        src: nidarDrones,
         alt: "The two drones of the disaster-management system side by side, one large carbon-frame quadcopter and one smaller airframe",
         caption: "The two-drone system",
       },
       {
-        src: "/projects/nidar-final-test.png",
+        src: nidarFinalTest,
         alt: "Ground station laptop showing the mission view during the final test day",
         caption: "Final test day",
         /* Portrait phone photo — bias the 16:9 crop up onto the laptop screen. */
         focus: "50% 35%",
       },
       {
-        src: "/projects/nidar-night-test.png",
+        src: nidarNightTest,
         alt: "Night field testing, laptop on the ground beside the drone",
         caption: "Field testing at 3am",
         focus: "50% 40%",
       },
       {
-        src: "/projects/nidar-arena.png",
+        src: nidarArena,
         alt: "Team working on the drones in the competition arena",
         caption: "In the arena",
       },
@@ -136,7 +210,51 @@ export const workItems: WorkItem[] = [
       "Indoor warehouse automation and navigation stack, developed simulation-first in Gazebo and deployed headless to a Raspberry Pi.",
     technologies: ["ROS2", "Gazebo", "Python", "Raspberry Pi", "systemd"],
     context: "e-Yantra",
-    caseStudy: "warehouse-drone",
+    slug: "warehouse-drone",
+    /* Ordered as the project happened — first task, then simulation and
+       tuning, then the airframe, the test arena, the team, and competition
+       day. He sent them in reverse; the sequence is the story, so it is
+       stored the way it was lived, not the way it arrived. */
+    images: [
+      {
+        src: eyantraFirstTask1,
+        alt: "Monitor showing Python waypoint code beside a simulator window with the drone's four-rotor outline over a coloured target",
+        caption: "The first task",
+      },
+      {
+        src: eyantraFirstTask2,
+        alt: "Laptop screen with a terminal and editor open on the first task's code",
+        caption: "The first task, continued",
+      },
+      {
+        src: eyantraSimPidTuning,
+        alt: "Laptop running the Swift Pico PID tuning panel with throttle, pitch, and roll gain fields, surrounded by ROS2 terminals logging waypoints",
+        caption: "Simulation and PID tuning — stage one",
+      },
+      {
+        src: eyantraDrone,
+        alt: "Collage of the small quadcopter: held in a hand, its circular target marker fitted, and the assembled airframe on the bench",
+        caption: "The drone",
+        /* Card hero. The gallery opens on a code screenshot, which is the
+           truthful first step but a poor thumbnail. */
+        cover: true,
+      },
+      {
+        src: eyantraTestSetup,
+        alt: "Indoor test arena of stacked blocks laid out on the floor, with a teammate at a laptop against the far wall",
+        caption: "Our test setup",
+      },
+      {
+        src: eyantraTeammates,
+        alt: "The two-person team standing together against a dark backdrop",
+        caption: "The two of us",
+      },
+      {
+        src: eyantraCompetitionDay,
+        alt: "The two of us in a lift on competition day, lanyards on, carrying the drone box",
+        caption: "Competition day",
+      },
+    ],
   },
   {
     title: "3D-Printed Quadcopter",
@@ -199,7 +317,7 @@ export const workItems: WorkItem[] = [
     summary:
       "Mixed-signal acquisition board: a 6-layer PCB carrying the analog front end, a Verilog FSM sequencing the SAR conversion, and DMA-driven STM32 capture firmware, benchmarked with spectral analysis.",
     technologies: ["STM32", "Verilog", "6-layer PCB", "DMA", "SPI", "FFT"],
-    caseStudy: "embedded-sar-adc",
+    slug: "embedded-sar-adc",
   },
   {
     title: "Acoustic Processing Stack",
@@ -227,7 +345,7 @@ export const workItems: WorkItem[] = [
     summary:
       "ESP32-based lab instrumentation — oscilloscope-style capture and transformer-isolated AC voltage sensing through a ZMPT101B, with host-side analysis.",
     technologies: ["ESP32", "ZMPT101B", "Python", "MATLAB", "Signal conditioning"],
-    caseStudy: "test-equipment-suite",
+    slug: "test-equipment-suite",
   },
   {
     title: "Headphone Electronics Reverse Engineering",
@@ -276,6 +394,30 @@ export const workItems: WorkItem[] = [
     technologies: ["ESP32", "Sensors"],
   },
 ];
+
+/**
+ * The work items that have their own page, narrowed so `slug` is a plain
+ * `string` rather than `string | undefined`.
+ *
+ * The type predicate is doing real work: `generateStaticParams` and the card
+ * `href` both need the slug, and without this they would each need a
+ * non-null assertion — which would silently keep compiling if the filter
+ * above were ever changed to let a slugless item through.
+ */
+export const routedWorkItems = workItems.filter(
+  (item): item is WorkItem & { slug: string } => Boolean(item.slug),
+);
+
+/**
+ * Picks the photo the cards should lead with — the `cover`-flagged one if
+ * there is one, otherwise the first. See `WorkImage.cover`: the gallery is
+ * in narrative order, which often starts with something unphotogenic like a
+ * screenshot of the first task.
+ */
+export function coverImage(images: WorkImage[] | undefined): WorkImage | undefined {
+  if (!images || images.length === 0) return undefined;
+  return images.find((img) => img.cover) ?? images[0];
+}
 
 /**
  * Technical threads that run across multiple projects. These are the

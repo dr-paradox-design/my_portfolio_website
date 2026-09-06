@@ -1,13 +1,16 @@
 /**
- * Shared type definitions for Engineering-OS project case studies.
+ * Shared type definitions for the deep write-up that can sit behind a
+ * project page.
  *
  * Design intent:
- * - This shape is used by all 4 case studies in v1 (Professional Mode).
- * - v2 (Engineer Mode) will read from this exact same data — do not change
- *   this shape casually once content is filled in for multiple projects.
- * - Every field that holds prose is a plain string so it can be authored
- *   in normal TypeScript files without an MDX/content pipeline (per the
- *   brief: no MDX collections in v1).
+ * - Every prose field is a plain string so it can be authored in normal
+ *   TypeScript files without an MDX/content pipeline (per the brief: no
+ *   MDX collections in v1).
+ * - This file describes *optional depth only*. A project's identity —
+ *   title, summary, domain, status, technologies, photos, routing slug —
+ *   lives in `lib/data/portfolio.ts`, which is the single source of truth.
+ *   A `ProjectDetail` is a sidecar keyed by slug, and most projects will
+ *   not have one for a long time.
  */
 
 /**
@@ -99,57 +102,69 @@ export interface TechnicalReport {
 }
 
 /**
- * Full shape of one project case study.
+ * Optional deep content for one project, keyed by the `slug` on its
+ * `WorkItem`.
+ *
+ * **Everything except `slug` is optional, and that is the point.** The
+ * previous version of this type required `technicalDecisions`,
+ * `validationResults`, and `failuresAndLessons` to be present and
+ * non-empty. That was well-intentioned — it forced every case study to
+ * admit a failure — but it made the compiler demand prose that may not
+ * exist yet, which is direct pressure to invent some. A page that shows
+ * three photographs and nothing else is honest; a page with a fabricated
+ * "lesson learned" is not.
+ *
+ * The honesty guarantee is not gone, only moved: `lib/data/projectPage.ts`
+ * asserts at build time that a detail documenting decisions or validation
+ * *also* documents failures. See the comment there.
+ *
+ * A missing field renders as nothing. Never as "coming soon".
  */
-export interface Project {
-  /** URL-safe identifier, e.g. "tiburon-auv" — used for routing */
+export interface ProjectDetail {
+  /** Must match a `WorkItem.slug` in `lib/data/portfolio.ts`. */
   slug: string;
 
-  /** Card + hero title, e.g. "Industrial Inspection AUV Platform" */
-  title: string;
-
-  /** One-line summary used on cards and in hero */
-  summary: string;
+  /**
+   * Only set these when the case study genuinely says it better than the
+   * work item does. Duplicating the work item verbatim means two places
+   * to edit and one of them will go stale.
+   */
+  title?: string;
+  summary?: string;
 
   /** Domain tags shown as small pills, e.g. ["Robotics", "Control Theory"] */
-  domainTags: string[];
+  domainTags?: string[];
 
-  /** Key technologies/hardware, shown on cards, e.g. ["ROS2", "RP2350", "EKF"] */
-  technologies: string[];
-
-  /** Hero image/diagram for the case study page and project card */
-  heroImage: MediaAsset;
+  /** Key technologies/hardware. Falls back to the work item's list. */
+  technologies?: string[];
 
   /** 2-3 sentence executive summary: what it is, why it matters */
-  executiveSummary: string;
+  executiveSummary?: string;
 
   /** What needed solving — real constraints, real requirements */
-  problemAndRequirements: string;
+  problemAndRequirements?: string;
 
   /** Hardware + software + control architecture description */
-  systemArchitecture: string;
+  systemArchitecture?: string;
 
   /** Diagram(s) supporting the architecture section */
-  architectureDiagrams: MediaAsset[];
+  architectureDiagrams?: MediaAsset[];
 
-  /** 2-4 real decisions and the reasoning — required, never empty */
-  technicalDecisions: TechnicalDecision[];
+  /** Real decisions that had a genuine alternative. Never generic. */
+  technicalDecisions?: TechnicalDecision[];
 
   /** What was tested, what was measured */
-  validationResults: ValidationResult[];
+  validationResults?: ValidationResult[];
 
-  /** At least one genuine failure/lesson — required, never empty, never generic */
-  failuresAndLessons: FailureLesson[];
+  /** Genuine failures and lessons. Never generic, never invented. */
+  failuresAndLessons?: FailureLesson[];
 
   /** Realistic future improvements */
-  whatsNext: string;
+  whatsNext?: string;
 
   /** GitHub / docs / media links */
-  links: ProjectLink[];
+  links?: ProjectLink[];
 
   /** Optional deeper LaTeX/PDF technical report */
   technicalReport?: TechnicalReport;
-
-  /** Whether this project should appear in the "4 featured" home page cards */
-  featured: boolean;
 }

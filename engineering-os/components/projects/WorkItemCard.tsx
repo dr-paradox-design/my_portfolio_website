@@ -1,17 +1,22 @@
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
 import type { WorkItem } from "@/lib/data/portfolio";
+import { hasCaseStudy } from "@/lib/data/projectPage";
 import { Tag } from "@/components/ui/Tag";
 import { SpotlightEffect } from "@/components/ui/SpotlightEffect";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { WorkPhotos } from "@/components/projects/WorkPhotos";
 
 /**
- * Summary-depth card for the full work inventory. Items with a `caseStudy`
- * slug link through to their deep write-up; the rest are presented at the
- * depth the available information actually supports.
+ * Summary-depth card for the full work inventory. Items with a `slug` link
+ * through to their own page; the rest are presented at the depth the
+ * available information actually supports.
  */
 export function WorkItemCard({ item }: { item: WorkItem }) {
+  /* "Read case study" is a promise a photos-only page does not keep, so the
+     label is derived from what is actually behind the link. */
+  const ctaLabel = hasCaseStudy(item.slug) ? "Read case study" : "Open project";
+
   const body = (
     <>
       <SpotlightEffect />
@@ -24,7 +29,7 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
         <div className="mb-2.5 flex items-start justify-between gap-3">
           <h3
             className={`text-base font-semibold leading-snug tracking-tight text-zinc-100 ${
-              item.caseStudy ? "transition-colors group-hover:text-emerald-400" : ""
+              item.slug ? "transition-colors group-hover:text-emerald-400" : ""
             }`}
           >
             {item.title}
@@ -49,22 +54,32 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
 
         <p className="mb-4 text-sm leading-relaxed text-zinc-400">{item.summary}</p>
 
-        <div className="mt-auto">
-          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-            {item.technologies.map((tech) => (
-              <Tag key={tech} label={tech} variant="tech" />
-            ))}
-          </div>
+        {/* One row, not two: the call to action anchors left and the
+            technology tags sit flush right.
 
-          {item.caseStudy && (
-            <div className="mt-4 flex items-center gap-1.5 text-sm font-medium text-emerald-400">
-              Read case study
+            `justify-end` plus `mr-auto` on the CTA rather than
+            `justify-between` — with no CTA present the tags still land
+            right, without an empty spacer element in the DOM.
+
+            `items-end` aligns the CTA with the *last* line of tags.
+            Tiburon carries seven, so wrapping is the normal case, and
+            `items-center` would float the link into the middle of a
+            three-line tag block and read as accidental. */}
+        <div className="mt-auto flex flex-wrap items-end justify-end gap-x-4 gap-y-3 pt-1">
+          {item.slug && (
+            <span className="mr-auto flex shrink-0 items-center gap-1.5 text-sm font-medium text-emerald-400">
+              {ctaLabel}
               <ArrowRight
                 size={14}
                 className="transition-transform duration-300 group-hover:translate-x-1"
               />
-            </div>
+            </span>
           )}
+          <div className="flex flex-wrap items-center justify-end gap-x-2.5 gap-y-1.5">
+            {item.technologies.map((tech) => (
+              <Tag key={tech} label={tech} variant="tech" />
+            ))}
+          </div>
         </div>
       </div>
     </>
@@ -74,10 +89,10 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
     "panel spotlight group relative isolate flex flex-col overflow-hidden p-5 transition-all duration-300";
 
   // Only the items backed by a real case study are clickable.
-  if (item.caseStudy) {
+  if (item.slug) {
     return (
       <Link
-        href={`/projects/${item.caseStudy}`}
+        href={`/projects/${item.slug}`}
         className={`${shell} brackets hover:-translate-y-1 hover:border-zinc-700 hover:shadow-[0_16px_40px_-16px_rgba(0,0,0,0.9)]`}
       >
         {/* Crop marks */}

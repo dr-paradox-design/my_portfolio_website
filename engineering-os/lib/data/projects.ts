@@ -1,33 +1,32 @@
-import type { Project } from "@/types/project";
+import type { ProjectDetail } from "@/types/project";
 
-const placeholderHeroImage = {
-  src: "/images/placeholders/project-hero.jpg",
-  alt: "Placeholder project hero image",
-  isPlaceholder: true,
-};
-
-const placeholderDiagram = {
-  src: "/images/placeholders/project-diagram.jpg",
-  alt: "Placeholder architecture diagram",
-  isPlaceholder: true,
-};
-
-export const projects: Project[] = [
+/**
+ * Long-form content for the projects that have been written up, keyed by
+ * the `slug` on their `WorkItem` in `lib/data/portfolio.ts`.
+ *
+ * This is a *sidecar*, not an inventory — identity, routing, photos, and
+ * technologies all live on the work item. Only set `title`, `summary`, or
+ * `technologies` here when the case study genuinely says it better than the
+ * work item does; duplicating them means two places to edit and one of them
+ * will go stale.
+ *
+ * There is no placeholder hero image and no placeholder diagram. There used
+ * to be, and all four pages opened with an identical dashed grey box, which
+ * told a reader nothing except that the site was unfinished. A section with
+ * no content now renders as no section at all.
+ */
+export const projectDetails: ProjectDetail[] = [
   {
     slug: "tiburon-auv",
-    title: "Tiburon AUV Platform",
     summary:
       "Firmware, sensor fusion, and 6-DOF control stack for an autonomous underwater vehicle — global podium at SAUVC 2026.",
     domainTags: ["Robotics", "Control Theory", "Embedded Systems"],
-    technologies: ["RP2350", "ROS2", "EKF", "C++", "MATLAB", "VectorNav VN-200", "Teledyne DVL"],
-    heroImage: placeholderHeroImage,
     executiveSummary:
       "Tiburon is NIT Rourkela's autonomous underwater vehicle. As team captain and firmware lead I owned the low-level stack: RP2350 firmware, the sensor interfaces, the state estimator, and the 6-DOF control and thrust-allocation chain that turns a desired motion into eight thruster commands. The vehicle took a global podium place at SAUVC 2026.",
     problemAndRequirements:
       "An AUV has no GPS and no reliable external reference once it submerges. The vehicle had to estimate its own pose from onboard sensing alone, hold depth and heading against drag and buoyancy trim, and accept high-level motion commands — all while running on a microcontroller, underwater, with no opportunity to debug mid-run.",
     systemArchitecture:
       "A RP2350 running C++ on the Arduino-Pico core handles the real-time loop. Attitude comes from a VectorNav VN-200 AHRS; a Teledyne DVL supplies bottom-lock velocity over RS-232 through a MAX3232 level shifter; a pressure sensor gives depth through a lowpass filter. A 9-state Extended Kalman Filter fuses DVL velocity and pressure depth into a position estimate. Cascaded PID loops close the 6-DOF control problem, with Fossen feedforward compensating the hydrodynamic model, and a pseudo-inverse thrust-allocation stage maps the resulting force/torque wrench onto eight thrusters. ROS2 handles mission-level orchestration and logging above the firmware.",
-    architectureDiagrams: [placeholderDiagram],
     technicalDecisions: [
       {
         title: "Force/torque PID output instead of direct per-thruster PWM",
@@ -113,23 +112,16 @@ export const projects: Project[] = [
       pdfPath: "/reports/tiburon-auv.pdf",
       description: "Long-form technical report for the AUV stack.",
     },
-    featured: true,
   },
   {
     slug: "embedded-sar-adc",
-    title: "Embedded SAR ADC Platform",
-    summary:
-      "Mixed-signal acquisition board: 6-layer PCB, Verilog SAR control FSM, and DMA-driven STM32 capture firmware.",
     domainTags: ["Hardware", "FPGA", "Data Acquisition"],
-    technologies: ["STM32", "Verilog", "6-layer PCB", "DMA", "SPI", "FFT"],
-    heroImage: placeholderHeroImage,
     executiveSummary:
       "A board-level mixed-signal project built around a successive-approximation ADC: a 6-layer PCB carrying the analog front end, a Verilog finite state machine sequencing the conversion, and STM32 firmware moving samples out over DMA. Spectral analysis of captured data was used to benchmark front-end revisions.",
     problemAndRequirements:
       "SAR conversion is timing-critical — each bit trial has to settle before the comparator is sampled, and the sequence must be deterministic. The platform needed to drive that sequence reliably, stream results without dropping samples, and keep the analog path clean enough that the measurements reflected the front end rather than digital noise coupling into it.",
     systemArchitecture:
       "The 6-layer stackup separates the analog front end and its signal conditioning from the digital section, with the layer budget spent on isolation rather than density. A Verilog FSM on the FPGA drives the SAR conversion sequence cycle by cycle. STM32 firmware handles the SPI capture path and uses DMA to move samples into memory without CPU involvement. Captured records are analysed offline with FFT and spectral tooling to characterise each board revision.",
-    architectureDiagrams: [placeholderDiagram],
     technicalDecisions: [
       {
         title: "SAR sequencing as a Verilog FSM rather than in MCU firmware",
@@ -190,23 +182,16 @@ export const projects: Project[] = [
       pdfPath: "/reports/embedded-sar-adc.pdf",
       description: "Build notes and validation for the ADC platform.",
     },
-    featured: true,
   },
   {
     slug: "warehouse-drone",
-    title: "Autonomous Warehouse Drone",
-    summary:
-      "ROS2 navigation stack for an indoor warehouse drone, developed simulation-first in Gazebo for e-Yantra.",
     domainTags: ["Robotics", "ROS2", "Simulation"],
-    technologies: ["ROS2", "Gazebo", "Python", "Raspberry Pi", "systemd"],
-    heroImage: placeholderHeroImage,
     executiveSummary:
       "An indoor autonomy stack for a warehouse-style drone, built for the e-Yantra competition. Navigation and mission logic were developed against a Gazebo model first, then deployed to a headless Raspberry Pi, with ROS2 node boundaries chosen so individual pieces could be tested and replaced independently.",
     problemAndRequirements:
       "Indoor flight rules out GPS and leaves little room for error — a failed waypoint means a collision, not a slow drift. The stack needed repeatable waypoint navigation in a constrained environment, mission logic that could be exercised without risking hardware, and a deployment story that survived running unattended on an embedded board.",
     systemArchitecture:
       "ROS2 nodes split sensing, planning, and control across separate processes communicating over topics, with launch files and parameter servers holding the configuration so behaviour could be retuned without touching code. A Gazebo model of the warehouse environment provides repeatable test scenarios. On hardware, the stack runs headless on a Raspberry Pi with Python nodes supervised as systemd services.",
-    architectureDiagrams: [placeholderDiagram],
     technicalDecisions: [
       {
         title: "Simulation-first development in Gazebo",
@@ -262,23 +247,16 @@ export const projects: Project[] = [
       pdfPath: "/reports/warehouse-drone.pdf",
       description: "ROS2 architecture and simulation notes.",
     },
-    featured: true,
   },
   {
     slug: "test-equipment-suite",
-    title: "Embedded Test Equipment Suite",
-    summary:
-      "ESP32-based lab instrumentation — oscilloscope capture, isolated AC voltage sensing, and scriptable analysis.",
     domainTags: ["Embedded Systems", "Instrumentation", "Tooling"],
-    technologies: ["ESP32", "Python", "MATLAB", "ZMPT101B", "Signal Conditioning"],
-    heroImage: placeholderHeroImage,
     executiveSummary:
       "A set of lab instruments built on the ESP32 — oscilloscope-style capture and AC voltage measurement through a ZMPT101B sensor — paired with host-side Python and MATLAB analysis. The goal was to cut the setup time between suspecting a problem and having a trace that shows it.",
     problemAndRequirements:
       "Debugging embedded hardware in a student lab means waiting for shared bench instruments or working without them. The suite needed to verify sensor behaviour, capture traces on demand, and stay fast enough that reaching for it was quicker than reaching for the alternative.",
     systemArchitecture:
       "An ESP32 handles acquisition, with signal conditioning ahead of its ADC to bring inputs into range. AC line voltage is measured through a ZMPT101B transformer-based sensor. Captured data is streamed to a host, where small Python scripts and MATLAB handle analysis and plotting rather than the firmware trying to do it in place.",
-    architectureDiagrams: [placeholderDiagram],
     technicalDecisions: [
       {
         title: "Transformer-based voltage sensing instead of a resistive divider",
@@ -334,6 +312,5 @@ export const projects: Project[] = [
       pdfPath: "/reports/test-equipment-suite.pdf",
       description: "Internal notes on the diagnostic toolkit.",
     },
-    featured: true,
   },
 ];

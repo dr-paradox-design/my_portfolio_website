@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 import type { MediaAsset } from "@/types/project";
+import { BLUEPRINT_GRID } from "@/components/projects/blueprint";
 
 interface PlaceholderImageProps {
   asset: MediaAsset;
@@ -21,11 +22,7 @@ export function ProjectImage({
         {/* Blueprint grid so an empty slot still reads as deliberate */}
         <div
           className="absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#34d399 1px, transparent 1px), linear-gradient(90deg, #34d399 1px, transparent 1px)",
-            backgroundSize: "24px 24px",
-          }}
+          style={BLUEPRINT_GRID}
           aria-hidden="true"
         />
 

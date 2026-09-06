@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Star } from "lucide-react";
-import type { WorkItem } from "@/lib/data/portfolio";
+import { coverImage, type WorkItem } from "@/lib/data/portfolio";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 
 /**
@@ -25,7 +25,7 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
   const shown = item.technologies.slice(0, MAX_TECHS);
   const overflow = item.technologies.length - shown.length;
 
-  const hero = item.images?.[0];
+  const hero = coverImage(item.images);
 
   const body = (
     <>
@@ -55,7 +55,7 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
       <div className="mb-1.5 flex items-start justify-between gap-2">
         <h3
           className={`text-sm font-semibold leading-snug tracking-tight text-zinc-100 ${
-            item.caseStudy ? "transition-colors group-hover:text-emerald-400" : ""
+            item.slug ? "transition-colors group-hover:text-emerald-400" : ""
           }`}
         >
           {item.title}
@@ -73,7 +73,7 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
               <Star size={11} fill="currentColor" />
             </span>
           )}
-          {item.caseStudy && (
+          {item.slug && (
             <ArrowUpRight
               size={14}
               className="text-zinc-600 transition-colors group-hover:text-emerald-400"
@@ -109,10 +109,10 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
   const shell =
     "panel isolate flex h-full flex-col overflow-hidden px-4 py-3.5 transition-all duration-300";
 
-  if (item.caseStudy) {
+  if (item.slug) {
     return (
       <Link
-        href={`/projects/${item.caseStudy}`}
+        href={`/projects/${item.slug}`}
         className={`${shell} group hover:-translate-y-0.5 hover:border-zinc-700`}
       >
         {body}

@@ -1,5 +1,6 @@
 import Image from "next/image";
-import type { WorkImage } from "@/lib/data/portfolio";
+import { coverImage, type WorkImage } from "@/lib/data/portfolio";
+import { BLUEPRINT_GRID, PANEL_SURFACE } from "@/components/projects/blueprint";
 
 /**
  * Photo band that sits at the top of a work card.
@@ -23,20 +24,15 @@ import type { WorkImage } from "@/lib/data/portfolio";
 /** Extra photos beyond the hero. Four thumbs is already a busy card. */
 const MAX_STRIP = 3;
 
-/** Panel top colour from `.panel` in globals.css — the scrim fades into it. */
-const PANEL = "#121215";
-
-const BLUEPRINT = {
-  backgroundImage:
-    "linear-gradient(#34d399 1px, transparent 1px), linear-gradient(90deg, #34d399 1px, transparent 1px)",
-  backgroundSize: "22px 22px",
-} as const;
-
 export function WorkPhotos({ images }: { images: WorkImage[] }) {
-  if (images.length === 0) return null;
+  const hero = coverImage(images);
+  if (!hero) return null;
 
-  const [hero, ...rest] = images;
-  const strip = rest.slice(0, MAX_STRIP);
+  /* The hero is whichever photo is flagged `cover`, not necessarily the
+     first — `images` is in narrative order, which often opens on something
+     truthful but unphotogenic. The strip is then everything else, still in
+     sequence, with the hero removed so it does not appear twice. */
+  const strip = images.filter((img) => img !== hero).slice(0, MAX_STRIP);
 
   return (
     <div className="relative -mx-5 -mt-5 mb-4 overflow-hidden">
@@ -51,7 +47,7 @@ export function WorkPhotos({ images }: { images: WorkImage[] }) {
         />
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.05]"
-          style={BLUEPRINT}
+          style={BLUEPRINT_GRID}
           aria-hidden="true"
         />
 
@@ -73,8 +69,11 @@ export function WorkPhotos({ images }: { images: WorkImage[] }) {
       {strip.length > 0 && (
         <div className="flex gap-px">
           {strip.map((img) => (
+            /* Keyed on `alt`, not `src`: `src` is a StaticImageData object,
+               so `key={img.src}` would stringify to "[object Object]" for
+               every thumb and React would silently collapse them. */
             <div
-              key={img.src}
+              key={img.alt}
               className="relative aspect-[3/2] flex-1 overflow-hidden bg-zinc-900"
             >
               <Image
@@ -94,7 +93,7 @@ export function WorkPhotos({ images }: { images: WorkImage[] }) {
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 h-16"
         style={{
-          backgroundImage: `linear-gradient(to top, ${PANEL} 0%, ${PANEL}cc 45%, transparent 100%)`,
+          backgroundImage: `linear-gradient(to top, ${PANEL_SURFACE} 0%, ${PANEL_SURFACE}cc 45%, transparent 100%)`,
         }}
         aria-hidden="true"
       />
