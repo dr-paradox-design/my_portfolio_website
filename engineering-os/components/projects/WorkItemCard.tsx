@@ -4,6 +4,7 @@ import type { WorkItem } from "@/lib/data/portfolio";
 import { Tag } from "@/components/ui/Tag";
 import { SpotlightEffect } from "@/components/ui/SpotlightEffect";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { WorkPhotos } from "@/components/projects/WorkPhotos";
 
 /**
  * Summary-depth card for the full work inventory. Items with a `caseStudy`
@@ -16,6 +17,10 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
       <SpotlightEffect />
 
       <div className="relative z-10 flex h-full flex-col">
+        {item.images && item.images.length > 0 && (
+          <WorkPhotos images={item.images} />
+        )}
+
         <div className="mb-2.5 flex items-start justify-between gap-3">
           <h3
             className={`text-base font-semibold leading-snug tracking-tight text-zinc-100 ${

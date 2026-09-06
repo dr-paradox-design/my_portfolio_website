@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Star } from "lucide-react";
 import type { WorkItem } from "@/lib/data/portfolio";
@@ -24,8 +25,33 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
   const shown = item.technologies.slice(0, MAX_TECHS);
   const overflow = item.technologies.length - shown.length;
 
+  const hero = item.images?.[0];
+
   const body = (
     <>
+      {/* The home grid is deliberately dense, so a photo cannot take a band of
+          its own here without undoing that. Instead it sits behind the text as
+          a faint wash — enough to give the card a subject at a glance, not
+          enough to compete with it — and lifts on hover. Card height is
+          unchanged either way. */}
+      {hero && (
+        <>
+          <Image
+            src={hero.src}
+            alt="" /* decorative here; the real alt is on the /projects card */
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            style={{ objectPosition: hero.focus }}
+            className="-z-10 object-cover opacity-[0.13] saturate-[0.55] transition-opacity duration-500 group-hover:opacity-[0.24]"
+          />
+          {/* Keeps the text side dark enough to stay readable over any photo. */}
+          <div
+            className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-[#121215] via-[#121215]/85 to-[#121215]/35"
+            aria-hidden="true"
+          />
+        </>
+      )}
+
       <div className="mb-1.5 flex items-start justify-between gap-2">
         <h3
           className={`text-sm font-semibold leading-snug tracking-tight text-zinc-100 ${
@@ -78,7 +104,10 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
     </>
   );
 
-  const shell = "panel flex h-full flex-col px-4 py-3.5 transition-all duration-300";
+  /* `isolate` matters: without a stacking context the -z-10 photo would paint
+     behind the panel's own background and disappear entirely. */
+  const shell =
+    "panel isolate flex h-full flex-col overflow-hidden px-4 py-3.5 transition-all duration-300";
 
   if (item.caseStudy) {
     return (

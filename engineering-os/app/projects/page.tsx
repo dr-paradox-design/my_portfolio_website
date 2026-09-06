@@ -44,7 +44,11 @@ export default function ProjectsPage() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {/* `items-start`: cards with photos are much taller than cards
+                  without them, and stretching the shorter one to match opens a
+                  dead void in the middle of it. Letting each card end where its
+                  content ends reads as deliberate instead. */}
+              <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
                 {items.map((item) => (
                   <WorkItemCard key={item.title} item={item} />
                 ))}

@@ -25,6 +25,29 @@ export type WorkDomain =
   | "Analog, Mixed-Signal & Instrumentation"
   | "Embedded Systems & Firmware";
 
+/**
+ * A photograph of the built thing.
+ *
+ * Optional on purpose. A card with no photos renders exactly as it did
+ * before — no empty frame, no "photo coming soon" box — so photos can be
+ * added one project at a time without any card ever looking broken.
+ *
+ * Convention: drop the file in `public/projects/` and point `src` at it.
+ * The first entry is the hero; the rest become a contact strip beneath it.
+ */
+export interface WorkImage {
+  src: string;
+  /** Required — describe what is actually in the frame, not the project. */
+  alt: string;
+  /** Shown under the hero image. Keep it to a few words. */
+  caption?: string;
+  /**
+   * CSS object-position. Card bands are 16:9, so portrait phone photos get
+   * cropped hard — set this to "50% 30%" or similar to keep the subject.
+   */
+  focus?: string;
+}
+
 export interface WorkItem {
   title: string;
   domain: WorkDomain;
@@ -36,6 +59,8 @@ export interface WorkItem {
   context?: string;
   /** Slug in projects.ts when a full case study exists. */
   caseStudy?: string;
+  /** Photos of the build. Absent until real photos exist. */
+  images?: WorkImage[];
 }
 
 /** Domain order used for grouping in the UI. */
@@ -76,6 +101,31 @@ export const workItems: WorkItem[] = [
       "Problem statement built around two autonomous drones operating together for disaster management. Placed Rank 6.",
     technologies: ["Autonomous drones", "Disaster response"],
     context: "NIDAR 2025",
+    images: [
+      {
+        src: "/projects/nidar-drones.webp",
+        alt: "The two drones of the disaster-management system side by side, one large carbon-frame quadcopter and one smaller airframe",
+        caption: "The two-drone system",
+      },
+      {
+        src: "/projects/nidar-final-test.png",
+        alt: "Ground station laptop showing the mission view during the final test day",
+        caption: "Final test day",
+        /* Portrait phone photo — bias the 16:9 crop up onto the laptop screen. */
+        focus: "50% 35%",
+      },
+      {
+        src: "/projects/nidar-night-test.png",
+        alt: "Night field testing, laptop on the ground beside the drone",
+        caption: "Field testing at 3am",
+        focus: "50% 40%",
+      },
+      {
+        src: "/projects/nidar-arena.png",
+        alt: "Team working on the drones in the competition arena",
+        caption: "In the arena",
+      },
+    ],
   },
   {
     title: "Autonomous Warehouse Drone",
@@ -87,6 +137,15 @@ export const workItems: WorkItem[] = [
     technologies: ["ROS2", "Gazebo", "Python", "Raspberry Pi", "systemd"],
     context: "e-Yantra",
     caseStudy: "warehouse-drone",
+  },
+  {
+    title: "3D-Printed Quadcopter",
+    domain: "Autonomous Systems & Robotics",
+    status: "complete",
+    tier: "major",
+    summary:
+      "Second-year quadcopter taken from CAD to a flying airframe solo: the complete frame modelled in SolidWorks, 3D printed, then assembled with its electronics and brought up until it moved under its own power.",
+    technologies: ["SolidWorks", "3D printing", "Mechanical design", "Quadcopter"],
   },
   {
     title: "Aquatic Robotics for Sustainability",
