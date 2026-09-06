@@ -175,6 +175,9 @@ export const workItems: WorkItem[] = [
       "Problem statement built around two autonomous drones operating together for disaster management. Placed Rank 6.",
     technologies: ["Autonomous drones", "Disaster response"],
     context: "NIDAR 2025",
+    /* Photographs only for now — no write-up yet, so the page is a spec
+       strip and a build log. That is a complete thing, not a stub. */
+    slug: "disaster-management-drones",
     images: [
       {
         src: nidarDrones,

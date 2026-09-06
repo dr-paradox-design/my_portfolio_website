@@ -35,7 +35,14 @@ export default function ProjectsPage() {
           return (
             <section key={domain}>
               <div className="mb-6 flex items-center gap-4">
-                <h2 className="shrink-0 font-mono text-xs uppercase tracking-widest text-emerald-400">
+                {/* Not `shrink-0`. "Analog, Mixed-Signal & Instrumentation"
+                    is wider than a 375px viewport once the gaps and the
+                    count are subtracted, and an unshrinkable heading pushed
+                    the count 23px past its own container — which gave the
+                    whole page a horizontal scrollbar on a phone. Letting it
+                    wrap costs a second line on the two longest domain names
+                    and nothing anywhere else. */}
+                <h2 className="min-w-0 font-mono text-xs uppercase tracking-widest text-emerald-400">
                   {domain}
                 </h2>
                 <span className="h-px flex-1 bg-gradient-to-r from-zinc-800 to-transparent" />

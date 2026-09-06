@@ -47,11 +47,18 @@ export function ProjectGallery({ images }: { images: WorkImage[] }) {
                  never renders a pixel that isn't in the source. */
               style={{ maxWidth: img.src.width }}
             >
+              {/* No `sizes` prop, deliberately. With one, Next generates a
+                  full responsive srcset off `deviceSizes`, whose smallest
+                  entry is 640 — so the browser requests w=640 for a 202px
+                  photo, an upscale request for an image that must never be
+                  upscaled. Without it Next emits a fixed-size 1x/2x srcset
+                  from the file's own intrinsic width, which is exactly what
+                  a never-upscaled image wants. See the next/image docs:
+                  "Without sizes ... suitable for fixed-size images." */}
               <Image
                 src={img.src}
                 alt={img.alt}
                 placeholder="blur"
-                sizes="(min-width: 640px) 576px, 100vw"
                 className="h-auto w-full"
               />
               {/* Same grid as the hero and the card photos — it is what

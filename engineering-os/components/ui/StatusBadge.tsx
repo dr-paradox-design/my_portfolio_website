@@ -1,17 +1,29 @@
 import type { WorkStatus } from "@/lib/data/portfolio";
 
-const styles: Record<WorkStatus, { label: string; className: string }> = {
+/**
+ * The word for each status, for places that state it outright.
+ *
+ * Separate from the badge below on purpose. On a card, a badge is an
+ * interruption, so "complete" is shown by *not* badging it. Under an
+ * explicit "Status" label — the project page spec strip — that same
+ * silence would be a labelled empty cell, so the word is needed there.
+ * Same fact, two registers.
+ */
+export const STATUS_LABELS: Record<WorkStatus, string> = {
+  complete: "Complete",
+  ongoing: "Ongoing",
+  upcoming: "Upcoming",
+};
+
+const styles: Record<WorkStatus, { badge: boolean; className: string }> = {
   // Completed work needs no badge shouting at the reader — it is the default.
-  complete: {
-    label: "",
-    className: "",
-  },
+  complete: { badge: false, className: "" },
   ongoing: {
-    label: "Ongoing",
+    badge: true,
     className: "border-emerald-400/30 bg-emerald-400/10 text-emerald-400",
   },
   upcoming: {
-    label: "Upcoming",
+    badge: true,
     className: "border-zinc-700 bg-zinc-800/50 text-zinc-400",
   },
 };
@@ -23,7 +35,7 @@ const styles: Record<WorkStatus, { label: string; className: string }> = {
  */
 export function StatusBadge({ status }: { status: WorkStatus }) {
   const style = styles[status];
-  if (!style.label) return null;
+  if (!style.badge) return null;
 
   return (
     <span
@@ -32,7 +44,7 @@ export function StatusBadge({ status }: { status: WorkStatus }) {
       {status === "ongoing" && (
         <span className="animate-blink h-1 w-1 rounded-full bg-emerald-400" aria-hidden="true" />
       )}
-      {style.label}
+      {STATUS_LABELS[status]}
     </span>
   );
 }

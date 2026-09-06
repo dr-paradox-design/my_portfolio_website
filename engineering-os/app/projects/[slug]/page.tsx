@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Check, CircleDot, Download } from "lucide-react";
 import { getProjectPage, routedSlugs } from "@/lib/data/projectPage";
 import { Tag } from "@/components/ui/Tag";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { STATUS_LABELS } from "@/components/ui/StatusBadge";
 import { ProjectImage } from "@/components/ui/PlaceholderImage";
 import { ProjectGallery } from "@/components/projects/ProjectGallery";
 
@@ -312,33 +312,31 @@ export default async function ProjectPage({
 
       <p className="mb-6 text-lg leading-relaxed text-zinc-400">{summary}</p>
 
-      {/* Spec strip. Built only from fields every work item already has, so
-          it is never empty and never invented. On a page with no prose yet
-          this is what makes the header read as a deliberate index card
-          rather than a page that failed to load. */}
-      <dl className="mb-6 flex flex-wrap items-center gap-x-8 gap-y-3 border-y border-zinc-800/60 py-4">
-        <div>
-          <dt className="mb-1 font-mono text-[11px] uppercase tracking-widest text-zinc-600">
-            Status
-          </dt>
-          <dd>
-            <StatusBadge status={item.status} />
-          </dd>
-        </div>
-        <div>
-          <dt className="mb-1 font-mono text-[11px] uppercase tracking-widest text-zinc-600">
-            Domain
-          </dt>
-          <dd className="text-sm text-zinc-300">{item.domain}</dd>
-        </div>
-        {item.context && (
-          <div>
-            <dt className="mb-1 font-mono text-[11px] uppercase tracking-widest text-zinc-600">
-              Context
-            </dt>
-            <dd className="text-sm text-zinc-300">{item.context}</dd>
-          </div>
-        )}
+      {/* Spec strip. Built from fields every work item already has, so it is
+          never invented. On a page with no prose yet this is what makes the
+          header read as a deliberate index card rather than a page that
+          failed to load.
+
+          Same discipline as the sections below: the cells are a filtered
+          list, so a label can never appear above an empty value. Note that
+          status is the *word* here rather than the card's badge — the badge
+          deliberately renders nothing for completed work, which is right on
+          a card and would be a labelled blank here. */}
+      <dl className="mb-6 flex flex-wrap items-baseline gap-x-8 gap-y-3 border-y border-zinc-800/60 py-4">
+        {[
+          { label: "Status", value: STATUS_LABELS[item.status] },
+          { label: "Domain", value: item.domain },
+          { label: "Context", value: item.context },
+        ]
+          .filter((cell) => cell.value)
+          .map((cell) => (
+            <div key={cell.label}>
+              <dt className="mb-1 font-mono text-[11px] uppercase tracking-widest text-zinc-600">
+                {cell.label}
+              </dt>
+              <dd className="text-sm text-zinc-300">{cell.value}</dd>
+            </div>
+          ))}
       </dl>
 
       <div className="mb-12 flex flex-wrap gap-x-3 gap-y-1.5">
