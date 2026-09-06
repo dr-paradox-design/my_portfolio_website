@@ -15,10 +15,13 @@ import { BLUEPRINT_GRID } from "@/components/projects/blueprint";
  *      letter-spacing. Never reach for `fontWeight: bold` here; satori would
  *      either ignore it or synthesise something ugly.
  *
- *   2. **Flexbox only.** Satori supports no `display: grid`, and throws on
- *      any element with children that lacks an explicit `display: "flex"`.
- *      The redundant-looking `display: "flex"` on single-child divs below is
- *      load-bearing.
+ *   2. **Flexbox only, and a smaller CSS vocabulary than the browser's.**
+ *      Satori supports no `display: grid`, and throws on any element with
+ *      children that lacks an explicit `display: "flex"` — so the
+ *      redundant-looking `display: "flex"` on single-child divs below is
+ *      load-bearing. Properties it does *not* implement are dropped without
+ *      an error, which is the more dangerous half: `inset: 0` on the grid
+ *      overlay below silently produced a 0×0 element and a blank card.
  *
  *   3. **No photographs.** Static image imports resolve to hashed
  *      `/_next/static/media/…` paths, so the original file is not reachable
@@ -49,14 +52,31 @@ export default function Image() {
           position: "relative",
         }}
       >
-        {/* 40px rather than the site's 22px: at 1200×630 a 22px tile is
-            ~1500 repeats, which reads as noise instead of a grid. */}
+        {/* Three values here were each arrived at by rendering, not by taste:
+
+            - **`top`/`left`/`width`/`height`, never `inset: 0`.** Satori does
+              not implement the `inset` shorthand — it is not in its style
+              parser at all, and unknown properties are dropped in silence.
+              With no children and no size the overlay collapses to 0×0 and the
+              grid never paints. There is no warning; the card just renders
+              flat and looks intentional.
+
+            - **40px, not the site's 22px.** At 1200×630 a 22px tile is ~1500
+              repeats, which reads as noise rather than as a grid.
+
+            - **0.10, not the site's 0.05.** On the site this grid sits over
+              photographs, which give it something to bite against. Over flat
+              #09090b at 5% it is invisible, and a share card is often
+              displayed at half size or less. */}
         <div
           style={{
             position: "absolute",
-            inset: 0,
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
             display: "flex",
-            opacity: 0.5,
+            opacity: 0.1,
             ...BLUEPRINT_GRID,
             backgroundSize: "40px 40px",
           }}

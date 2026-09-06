@@ -66,12 +66,18 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           position: "relative",
         }}
       >
+        {/* Sized explicitly rather than with `inset: 0`, and at 0.10 rather
+            than the site's 0.05 — see `app/opengraph-image.tsx` for why both
+            of those are load-bearing. */}
         <div
           style={{
             position: "absolute",
-            inset: 0,
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
             display: "flex",
-            opacity: 0.05,
+            opacity: 0.1,
             ...BLUEPRINT_GRID,
             backgroundSize: "40px 40px",
           }}
