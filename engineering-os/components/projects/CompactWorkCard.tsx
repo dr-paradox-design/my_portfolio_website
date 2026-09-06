@@ -13,7 +13,12 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
  * Items without a case study are still shown — they are simply not clickable,
  * same rule as the full inventory.
  */
-const MAX_TECHS = 3;
+/**
+ * Two, not three. Names like "Pipelined microarchitecture" push a third tag
+ * onto a second line, which makes some cards taller than their row-mates.
+ * The full list is on the case study and on /projects.
+ */
+const MAX_TECHS = 2;
 
 export function CompactWorkCard({ item }: { item: WorkItem }) {
   const shown = item.technologies.slice(0, MAX_TECHS);
@@ -29,7 +34,10 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
         >
           {item.title}
         </h3>
+        {/* Status sits up here rather than in the tag row, where it competed
+            for horizontal space and forced the tags onto a second line. */}
         <div className="flex shrink-0 items-center gap-1.5">
+          <StatusBadge status={item.status} />
           {item.tier === "flagship" && (
             <span
               className="text-emerald-400/70"
@@ -49,7 +57,7 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
         </div>
       </div>
 
-      <p className="mb-3 line-clamp-2 text-xs leading-relaxed text-zinc-500">
+      <p className="mb-2.5 line-clamp-2 text-xs leading-relaxed text-zinc-500">
         {item.summary}
       </p>
 
@@ -66,12 +74,11 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
           </span>
         ))}
         {overflow > 0 && <span className="text-zinc-600">+{overflow}</span>}
-        <StatusBadge status={item.status} />
       </div>
     </>
   );
 
-  const shell = "panel flex h-full flex-col p-4 transition-all duration-300";
+  const shell = "panel flex h-full flex-col px-4 py-3.5 transition-all duration-300";
 
   if (item.caseStudy) {
     return (

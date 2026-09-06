@@ -377,15 +377,21 @@ export const memberships: Membership[] = [
  * sync the way hardcoded counts did. Upcoming work is excluded from the
  * project count deliberately — it has not been built yet.
  *
- * Graduation year is deliberately NOT a stat: the hero already states it in
- * both the availability pill and the eyebrow, and three copies of "2027" in
- * one viewport read as padding.
+ * Graduation year is deliberately NOT a stat — the eyebrow already states it.
+ *
+ * A single competition result is not a stat either. SAUVC used to sit here,
+ * which made one event carry the whole headline. Breadth across domains says
+ * more about the engineer than any one podium, and it stays true as the work
+ * grows.
  */
 export const portfolioStats = [
   {
     label: "Projects & builds",
     value: String(workItems.filter((w) => w.status !== "upcoming").length),
   },
+  {
+    label: "Technical domains",
+    value: String(new Set(workItems.map((w) => w.domain)).size),
+  },
   { label: "Competitions", value: String(competitions.length) },
-  { label: "Global podium", value: "SAUVC 2026" },
 ];

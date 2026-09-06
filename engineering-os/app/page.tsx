@@ -6,21 +6,33 @@ import { CompactWorkCard } from "@/components/projects/CompactWorkCard";
 import { SpotlightEffect } from "@/components/ui/SpotlightEffect";
 
 /**
- * The home page leads with the strongest work rather than only the four
- * items that happen to have a written case study. Flagship and major tier
- * covers all four technical domains; everything else lives on /projects.
+ * The home page leads with the strongest work rather than only the items
+ * that happen to have a written case study. Ongoing work sorts first — it
+ * is the most current signal about what he is actually doing right now —
+ * then flagship before major. Everything else lives on /projects.
  */
 const TIER_RANK = { flagship: 0, major: 1, supporting: 2, foundational: 3 } as const;
+
+/** Two full rows at three columns. The rest is one click away. */
+const HOME_LIMIT = 6;
 
 export default function HomePage() {
   const featured = workItems
     .filter((item) => item.tier === "flagship" || item.tier === "major")
-    .sort((a, b) => TIER_RANK[a.tier] - TIER_RANK[b.tier]);
+    .sort((a, b) => {
+      const ongoing = Number(b.status === "ongoing") - Number(a.status === "ongoing");
+      return ongoing !== 0 ? ongoing : TIER_RANK[a.tier] - TIER_RANK[b.tier];
+    })
+    .slice(0, HOME_LIMIT);
 
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="relative flex min-h-screen items-center overflow-hidden pt-14">
+      {/* Not min-h-screen: with the availability pill gone the hero content no
+          longer fills a full viewport, so centering it left a ~265px void
+          before the next section. 88vh keeps the hero dominant while letting
+          the first row of project cards peek above the fold. */}
+      <section className="relative flex min-h-[88vh] items-center overflow-hidden pt-14">
         {/* Blueprint grid, faded out toward the edges so it never boxes the text in */}
         <div
           className="absolute inset-0 opacity-[0.04]"
@@ -47,20 +59,9 @@ export default function HomePage() {
           aria-hidden="true"
         />
 
-        <div className="relative mx-auto w-full max-w-6xl px-4 py-24 sm:px-6">
-          {/* Availability pill */}
-          <div className="animate-fade-up mb-7 inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/[0.07] px-3 py-1">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="animate-blink absolute inline-flex h-full w-full rounded-full bg-emerald-400" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400/60" />
-            </span>
-            <span className="font-mono text-[11px] uppercase tracking-wider text-emerald-300">
-              Open to {profile.graduationYear} roles
-            </span>
-          </div>
-
+        <div className="relative mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
           {/* Eyebrow */}
-          <p className="animate-fade-up delay-1 mb-6 font-mono text-xs uppercase tracking-widest text-zinc-500">
+          <p className="animate-fade-up mb-6 font-mono text-xs uppercase tracking-widest text-zinc-500">
             <span className="text-emerald-400">{profile.institution}</span>
             <span className="mx-2 text-zinc-700">/</span>
             {profile.program}
@@ -69,24 +70,24 @@ export default function HomePage() {
           </p>
 
           {/* Name */}
-          <h1 className="animate-fade-up delay-2 text-gradient mb-4 text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl md:text-7xl">
+          <h1 className="animate-fade-up delay-1 text-gradient mb-4 text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl md:text-7xl">
             {profile.name}
           </h1>
 
           {/* Title — `profile.title` ("Electrical Engineer") is deliberately not
               shown here; the eyebrow one line above already says "B.Tech
               Electrical Engineering". It still drives the page metadata. */}
-          <p className="animate-fade-up delay-3 mb-8 text-lg font-medium text-emerald-400 sm:text-xl">
+          <p className="animate-fade-up delay-2 mb-8 text-lg font-medium text-emerald-400 sm:text-xl">
             {profile.secondaryTitle}
           </p>
 
           {/* Tagline */}
-          <p className="animate-fade-up delay-4 mb-10 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg">
+          <p className="animate-fade-up delay-3 mb-10 max-w-xl text-base leading-relaxed text-zinc-400 sm:text-lg">
             {profile.tagline}
           </p>
 
           {/* CTAs */}
-          <div className="animate-fade-up delay-5 flex flex-wrap gap-3">
+          <div className="animate-fade-up delay-4 flex flex-wrap gap-3">
             <Link
               href="/projects"
               className="group inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-zinc-950 shadow-[0_0_24px_-6px_rgba(52,211,153,0.5)] transition-all duration-300 hover:bg-emerald-400 hover:shadow-[0_0_32px_-4px_rgba(52,211,153,0.65)]"
@@ -117,7 +118,7 @@ export default function HomePage() {
 
           {/* Quick stats — a hairline fact strip rather than boxes, so the hero
               stays a hero instead of turning into a dashboard. */}
-          <dl className="animate-fade-up delay-6 mt-14 flex max-w-xl flex-wrap gap-x-10 gap-y-5 border-t border-zinc-800/70 pt-7 sm:gap-x-14">
+          <dl className="animate-fade-up delay-5 mt-14 flex max-w-xl flex-wrap gap-x-10 gap-y-5 border-t border-zinc-800/70 pt-7 sm:gap-x-14">
             {portfolioStats.map((stat) => (
               /* Reversed so the value reads first while the DOM keeps dt→dd order */
               <div key={stat.label} className="flex flex-col-reverse">
@@ -132,8 +133,8 @@ export default function HomePage() {
       </section>
 
       {/* ── Featured Projects ─────────────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
-        <div className="mb-10">
+      <section className="mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-6">
+        <div className="mb-8">
           <p className="mb-2 font-mono text-xs uppercase tracking-widest text-emerald-400">
             Selected work
           </p>
@@ -162,39 +163,31 @@ export default function HomePage() {
       </section>
 
       {/* ── Closing CTA ───────────────────────────────────────────
-          The page used to end on the last project card, leaving no route
-          to the contact page from the home page at all. */}
-      <section className="mx-auto max-w-6xl px-4 pb-28 sm:px-6">
-        <div className="panel spotlight relative isolate flex flex-col items-start justify-between gap-6 overflow-hidden p-7 sm:flex-row sm:items-center sm:p-9">
+          The whole panel is the link, so there is no button to aim at.
+          That also means no nested anchors — the Experience button that
+          used to sit here could not survive inside a link, and the navbar
+          already covers it. */}
+      <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
+        <Link
+          href="/contact"
+          className="panel spotlight group relative isolate flex items-center justify-between gap-5 overflow-hidden px-6 py-5 transition-all duration-300 hover:border-zinc-700"
+        >
           <SpotlightEffect />
-          <div className="relative z-10">
-            <h2 className="text-xl font-semibold tracking-tight text-zinc-100 sm:text-2xl">
+          <div className="relative z-10 min-w-0">
+            <h2 className="text-base font-semibold tracking-tight text-zinc-100 transition-colors group-hover:text-emerald-400">
               Get in touch
             </h2>
-            <p className="mt-1.5 max-w-md text-sm leading-relaxed text-zinc-500">
+            <p className="mt-1 text-sm leading-relaxed text-zinc-500">
               Semiconductor roles, research opportunities, embedded systems, and
               robotics.
             </p>
           </div>
-          <div className="relative z-10 flex shrink-0 flex-wrap gap-3">
-            <Link
-              href="/contact"
-              className="group inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-zinc-950 shadow-[0_0_24px_-6px_rgba(52,211,153,0.5)] transition-all duration-300 hover:bg-emerald-400 hover:shadow-[0_0_32px_-4px_rgba(52,211,153,0.65)]"
-            >
-              Contact
-              <ArrowRight
-                size={15}
-                className="transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </Link>
-            <Link
-              href="/experience"
-              className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900/40 px-5 py-2.5 text-sm font-semibold text-zinc-300 transition-all duration-300 hover:border-emerald-400/40 hover:bg-zinc-800/60 hover:text-zinc-100"
-            >
-              Experience
-            </Link>
-          </div>
-        </div>
+          <ArrowRight
+            size={18}
+            className="relative z-10 shrink-0 text-zinc-600 transition-all duration-300 group-hover:translate-x-1 group-hover:text-emerald-400"
+            aria-hidden="true"
+          />
+        </Link>
       </section>
     </>
   );
