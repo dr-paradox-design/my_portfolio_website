@@ -18,8 +18,14 @@ import type { ProjectDetail } from "@/types/project";
 export const projectDetails: ProjectDetail[] = [
   {
     slug: "tiburon-auv",
-    summary:
-      "Firmware, sensor fusion, and 6-DOF control stack for an autonomous underwater vehicle — global podium at SAUVC 2026.",
+    /* The `summary` override that used to sit here — "Firmware, sensor
+       fusion, and 6-DOF control stack … global podium at SAUVC 2026" — was
+       removed because it collided with the paragraph directly beneath it.
+       It named the same three subsystems and closed on the same podium as
+       `executiveSummary`, so the page opened by saying one thing twice.
+       The work item's own summary covers what neither does: the 1.5-year
+       span and the full mechanical-through-integration scope. Same class of
+       fix as the aquatic page. */
     domainTags: ["Robotics", "Control Theory", "Embedded Systems"],
     executiveSummary:
       "Tiburon is NIT Rourkela's autonomous underwater vehicle. As team captain and firmware lead I owned the low-level stack: RP2350 firmware, the sensor interfaces, the state estimator, and the 6-DOF control and thrust-allocation chain that turns a desired motion into eight thruster commands. The vehicle took a global podium place at SAUVC 2026.",

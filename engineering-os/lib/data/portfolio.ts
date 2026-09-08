@@ -181,6 +181,19 @@ export const workDomains: WorkDomain[] = [
   "Embedded Systems & Firmware",
 ];
 
+/**
+ * An entry earns its place by describing work that exists. Two were removed
+ * for failing that: "Analog Compute-in-Memory" ("In progress — no results
+ * yet") and "Headphone Electronics Reverse Engineering" ("Not yet started").
+ * Both rendered as full cards in the inventory while saying, in their own
+ * summary, that there was nothing to see — which reads as padding and makes
+ * a visitor discount the cards either side of them.
+ *
+ * The analog-compute ambition is not lost: `technicalThreads` still ends the
+ * "Mixed-signal acquisition to analog compute" chain on it. A thread is the
+ * right place to state a direction, because it claims a direction and not a
+ * project. Re-add either item as a work item when there is a result to show.
+ */
 export const workItems: WorkItem[] = [
   // ── Autonomous Systems & Robotics ───────────────────────────────
   {
@@ -603,15 +616,6 @@ export const workItems: WorkItem[] = [
     ],
   },
   {
-    title: "Analog Compute-in-Memory",
-    domain: "Analog, Mixed-Signal & Instrumentation",
-    status: "ongoing",
-    tier: "major",
-    summary:
-      "Design work on an analog compute-in-memory architecture. In progress — no results yet.",
-    technologies: ["Analog compute-in-memory", "Mixed-signal architecture"],
-  },
-  {
     title: "Embedded Test Equipment Suite",
     domain: "Analog, Mixed-Signal & Instrumentation",
     status: "complete",
@@ -620,15 +624,6 @@ export const workItems: WorkItem[] = [
       "ESP32-based lab instrumentation — oscilloscope-style capture and transformer-isolated AC voltage sensing through a ZMPT101B, with host-side analysis.",
     technologies: ["ESP32", "ZMPT101B", "Python", "MATLAB", "Signal conditioning"],
     slug: "test-equipment-suite",
-  },
-  {
-    title: "Headphone Electronics Reverse Engineering",
-    domain: "Analog, Mixed-Signal & Instrumentation",
-    status: "upcoming",
-    tier: "supporting",
-    summary:
-      "Planned teardown and reverse engineering of headphone electronics. Not yet started.",
-    technologies: ["Audio electronics", "Reverse engineering"],
   },
 
   // ── Embedded Systems & Firmware ─────────────────────────────────

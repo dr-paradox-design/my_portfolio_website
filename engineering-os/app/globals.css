@@ -193,15 +193,6 @@ body {
   }
 }
 
-@keyframes trace {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(100%);
-  }
-}
-
 .animate-fade-up {
   opacity: 0;
   animation: fade-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -215,17 +206,13 @@ body {
   animation: drift 15s ease-in-out infinite;
 }
 
-/* Signal pulse that runs along a hairline rule. */
-.animate-trace {
-  animation: trace 3.5s ease-in-out infinite;
-}
-
+/* Stagger steps for `.animate-fade-up`. Only as many as are actually used —
+   add the next one when something needs it. */
 .delay-1 { animation-delay: 0.07s; }
 .delay-2 { animation-delay: 0.14s; }
 .delay-3 { animation-delay: 0.21s; }
 .delay-4 { animation-delay: 0.28s; }
 .delay-5 { animation-delay: 0.35s; }
-.delay-6 { animation-delay: 0.42s; }
 
 /* ── Page transitions ───────────────────────────────────────────────
    Drives the `<ViewTransition>` in app/layout.tsx. The class names below
