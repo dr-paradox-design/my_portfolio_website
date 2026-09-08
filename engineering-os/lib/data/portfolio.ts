@@ -267,7 +267,7 @@ export const workItems: WorkItem[] = [
     status: "complete",
     tier: "major",
     summary:
-      "Two cooperating drones for the NIDAR 2025 disaster-management track, flown fully autonomously: a scout that scans the ground through a gimballed camera to detect people, and a delivery drone that carries a 200 g medicine kit out to them. Placed Rank 6 of 70+ teams.",
+      "Two cooperating drones for the NIDAR 2025 disaster-management track, flown fully autonomously: a scout that scans the ground through a gimballed camera for people, and a delivery drone that carries a 200 g medicine kit to them. Placed Rank 6 of 70+ teams.",
     technologies: [
       "Flight controller",
       "Mission planning",
