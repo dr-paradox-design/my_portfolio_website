@@ -597,8 +597,8 @@ export const workItems: WorkItem[] = [
     status: "complete",
     tier: "supporting",
     summary:
-      "24-hour hackathon build focused on accessing and modifying the non-volatile memory of the ESP32.",
-    technologies: ["ESP32", "Non-volatile memory"],
+      "24-hour hackathon build focused on accessing and modifying the non-volatile memory of the ESP32, dumping the flash contents out over serial to inspect what the chip had persisted.",
+    technologies: ["ESP32", "Non-volatile memory", "Serial flash dump"],
     context: "24-hour hackathon",
   },
   {
