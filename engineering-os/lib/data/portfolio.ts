@@ -442,11 +442,11 @@ export const workItems: WorkItem[] = [
        Swastik, and a visitor reasonably reads every photo on a project page
        as the page owner's work. Do not add it back. */
     summary:
-      "Hackathon work on robotics for environmental sustainability in an aquatic context. Swastik designed the motor-control interconnect board for it — a single-layer PCB tying the ESCs together — and etched and fabricated it in house rather than ordering it, then tested it.",
+      "Hackathon work on robotics for environmental sustainability in an aquatic context. Swastik designed the propulsion interconnect board for it — a single-layer PCB tying the thruster ESCs together — and etched and fabricated it in house rather than ordering it, then tested it.",
     technologies: [
       "PCB design",
       "In-house PCB fabrication",
-      "ESC / motor control",
+      "Thruster ESC control",
       "Aquatic robotics",
     ],
     context: "IIT Guwahati Aquatic Hackathon",
@@ -464,7 +464,7 @@ export const workItems: WorkItem[] = [
       {
         src: aquaticEscBoardPopulated,
         alt: "The same board held in one hand, now populated: three ESCs wrapped in red heat-shrink across the top with bundles of blue motor leads running off them, a row of small modules on green terminal blocks lower down, and four yellow power connectors along the bottom edge.",
-        caption: "Populated and wired — ESCs, motor leads, and power connectors",
+        caption: "Populated and wired — ESCs, thruster leads, and power connectors",
         cover: true,
       },
       {
