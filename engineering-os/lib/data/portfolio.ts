@@ -431,18 +431,19 @@ export const workItems: WorkItem[] = [
     domain: "Autonomous Systems & Robotics",
     status: "complete",
     tier: "supporting",
-    /* The summary leads with the board because that is the part Swastik
-       actually designed and can answer questions about. What the team's
-       machine itself does is still not recorded — he has not said, and it is
-       not guessable from the photograph, so the entry does not characterise
-       it. Add that line when he says what it was built to do.
+    /* The summary names the machine's purpose in one clause and then moves
+       to the board, because the board is the part Swastik designed and can
+       answer questions about. What exactly it surveils, and what changed in
+       the versions after the hackathon, are both still unrecorded — the
+       entry says "surveillance" and "improved on afterwards" and stops
+       there rather than filling either in.
 
        A fourth photograph from this batch — a cylindrical-hull underwater
        robot — is deliberately NOT here: it was designed by a senior, not by
        Swastik, and a visitor reasonably reads every photo on a project page
        as the page owner's work. Do not add it back. */
     summary:
-      "Hackathon work on robotics for environmental sustainability in an aquatic context. Swastik designed the propulsion interconnect board for it — a single-layer PCB tying the thruster ESCs together — and etched and fabricated it in house rather than ordering it, then tested it.",
+      "A surveillance platform for environmental monitoring in an aquatic setting, built over the hackathon and improved on afterwards. Swastik designed its propulsion interconnect board — a single-layer PCB tying the thruster ESCs and their power distribution together — and etched and fabricated it in house rather than ordering it, then tested it.",
     technologies: [
       "PCB design",
       "In-house PCB fabrication",
@@ -470,7 +471,7 @@ export const workItems: WorkItem[] = [
       {
         src: aquaticTeamCertificates,
         alt: "Three team members crouching with their hackathon certificates behind the build: an aluminium extrusion frame with clear acrylic panels forming an angled roof, a black funnel at the front, and components mounted inside.",
-        caption: "The team at the hackathon",
+        caption: "The team, with the surveillance platform behind them",
       },
     ],
   },

@@ -972,4 +972,26 @@ export const projectDetails: ProjectDetail[] = [
     problemAndRequirements:
       "The point of the build was ownership of the whole path rather than the result: not assembling a kit chassis, but designing every structural part, producing it, and finding out what survives contact with real actuators and real load. That framing sets the hard constraint, which is the material — printed plastic has to take the load at each leg joint without the linkage binding or the pin holes wearing oval, and hold its shape under the robot's own weight while staying light enough for the actuators to move. Every part also had to be printable on a hobby machine, which limits how thin a wall or how unsupported a span the design is allowed to ask for.",
   },
+
+  /* Aquatic hackathon. Deliberately two paragraphs and no further: the
+     whole machine was a team build and Swastik owned one board on it, so
+     this page is about that board and says so in the first sentence.
+     What the platform surveils, how it was improved after the event, and
+     what drove the specific topology are all unrecorded — the previous
+     version of this entry did not exist at all for exactly that reason,
+     and it exists now only because "surveillance platform" and "thrusters"
+     are finally confirmed.
+
+     The single-layer discussion is reasoning from a confirmed fact (it was
+     etched in house, one copper face), not an inferred design story. It
+     does not claim how the crossings were actually resolved, because the
+     photograph does not show the underside and nobody has said. */
+  {
+    slug: "aquatic-robotics",
+    domainTags: ["PCB Design", "Fabrication", "Aquatic Robotics"],
+    executiveSummary:
+      "A surveillance platform for environmental monitoring in an aquatic setting, built by a team at the IIT Guwahati Aquatic Hackathon and iterated on after the event. Swastik owned the propulsion electronics: he designed the interconnect board that ties the thruster ESCs to their power distribution and control lines, etched and populated it in house instead of ordering it from a fab, and tested it on the machine.",
+    problemAndRequirements:
+      "The board sits between the controller and the thrusters. It has to distribute battery power to each ESC and carry that ESC's control signal out to it, with the high-current propulsion paths and the low-current signal paths running across the same small board without interfering. The fabrication method set the harder constraint: etching in house means a single copper layer, so the routing has to come out planar or be bridged by hand — there is no second layer and no via to escape a crossing with. The trade that buys is turnaround against tolerance, a board in an afternoon rather than a week, at track widths and edge quality a hackathon can live with and a product could not.",
+  },
 ];
