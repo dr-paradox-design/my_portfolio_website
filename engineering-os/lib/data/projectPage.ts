@@ -81,7 +81,21 @@ for (const item of routedWorkItems) {
     );
   }
 
-  // 3. `youtubeId` is an ID, not a URL. The type cannot say that — both are
+  // 3. `repoUrl` is for cards that are *not* links. Every item in this loop
+  //    has a slug, so its card is already a `<Link>` — putting an anchor
+  //    inside one is invalid HTML that React will not warn about on the
+  //    server, and the nested link is unreachable by keyboard. The item also
+  //    has a better place for the URL: `ProjectDetail.links`, which renders a
+  //    proper row on the page the slug already opens.
+  if (item.repoUrl) {
+    throw new Error(
+      `"${item.title}" sets both a slug and repoUrl. A slugged card is itself ` +
+        `a link, so the repo link would be a nested anchor. Move the URL to ` +
+        `the "links" array of its ProjectDetail in projects.ts instead.`,
+    );
+  }
+
+  // 4. `youtubeId` is an ID, not a URL. The type cannot say that — both are
   //    `string` — and the failure is a silently broken player rather than an
   //    error, because a bad ID still produces a well-formed embed URL that
   //    YouTube answers with "Video unavailable" inside the iframe. Pasting a

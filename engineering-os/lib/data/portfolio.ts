@@ -135,6 +135,20 @@ export interface WorkItem {
   images?: WorkImage[];
   /** Video of it working. Absent until a real upload exists. */
   video?: WorkVideo;
+  /**
+   * Public source repository, rendered as a link on the card itself.
+   *
+   * **Only for items with no `slug`.** An item that has a page already has
+   * somewhere better to put its links — `ProjectDetail.links` renders them
+   * in a proper row there — and, more practically, a card with a `slug` *is*
+   * a `<Link>`, so an anchor inside it would be a nested anchor. The two are
+   * mutually exclusive and `projectPage.ts` fails the build if both are set.
+   *
+   * This exists because a repo is sometimes the only thing behind an item.
+   * Work that is real and public but has no photographs and no write-up
+   * would otherwise render as a dead card, which undersells it.
+   */
+  repoUrl?: string;
 }
 
 /** Domain order used for grouping in the UI. */
@@ -314,18 +328,42 @@ export const workItems: WorkItem[] = [
     domain: "Digital Design & Computer Architecture",
     status: "ongoing",
     tier: "flagship",
+    /* Wording tracks the repo's README, which is the only source that is
+       updated as the work lands. Two earlier claims were removed because the
+       README contradicts them: "complete through RTL" (the hazard unit,
+       forwarding and flush logic are still open) and "the full ASIC design
+       flow is planned" (the roadmap ends at PYNQ-Z2 FPGA verification, not an
+       ASIC flow). The repo's own GitHub *description* still carries the first
+       claim — the README wins, because it is the one he keeps current. */
     summary:
-      "Pipelined RISC-V processor design, currently complete through RTL. The full ASIC design flow is planned but not yet implemented.",
-    technologies: ["Verilog", "RISC-V", "Pipelined microarchitecture", "RTL"],
+      "RV32I core written from scratch in Verilog, built in stages: a single-cycle datapath first, then the four pipeline registers that split it into five stages. Both cores pass the same 12-check self-checking regression. Hazards are currently scheduled by hand in software — forwarding, hazard detection, and flush logic are the next milestones, then FPGA verification on a PYNQ-Z2.",
+    technologies: ["Verilog", "RV32I", "5-stage pipeline", "Icarus Verilog"],
+    repoUrl: "https://github.com/dr-paradox-design/5_Stage_Pipelined_RISC-V",
   },
   {
     title: "FPGA Sensor Fusion",
     domain: "Digital Design & Computer Architecture",
     status: "complete",
     tier: "major",
+    /* Rewritten against the repo's README, which corrected two things the old
+       copy asserted. There is no compass — the sensors are a UART GPS and an
+       I2C IMU, nothing else. And the fusion was never "moved into fabric":
+       the custom AXI4-Lite IP is the *sensor interface*, while the
+       complementary/Kalman estimator runs in C on the Zynq's ARM cores. That
+       is a normal and defensible split, but it is the opposite of what the
+       sentence claimed, and the claim was the more impressive one. */
     summary:
-      "Sensor fusion of IMU, GPS, and compass data targeting an FPGA — moving estimation work out of software and into fabric.",
-    technologies: ["FPGA", "Sensor fusion", "IMU", "GPS", "Compass"],
+      "Two custom AXI4-Lite peripherals on a Zynq-7000 ZedBoard — a UART front end for the GPS and an I2C master for the IMU — feeding a C fusion pipeline that outputs orientation and local position at 100 Hz. Implemented in Vivado at 100 MHz with setup and hold both met, in roughly 1.4% of the device's LUTs. Validated hardware-in-the-loop, including a ~50 m outdoor trajectory logged against a GPS reference.",
+    technologies: [
+      "Zynq-7000",
+      "AXI4-Lite",
+      "Verilog",
+      "Vivado",
+      "C",
+      "Kalman filter",
+      "MPU6050",
+    ],
+    repoUrl: "https://github.com/dr-paradox-design/AXI4-IP-for-GPS-IMU-Sensor-Fusion",
   },
 
   // ── Analog, Mixed-Signal & Instrumentation ──────────────────────

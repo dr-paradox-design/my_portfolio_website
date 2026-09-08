@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Code2, Star } from "lucide-react";
 import type { WorkItem } from "@/lib/data/portfolio";
 import { hasCaseStudy } from "@/lib/data/projectPage";
 import { Tag } from "@/components/ui/Tag";
@@ -66,7 +66,7 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
             `items-center` would float the link into the middle of a
             three-line tag block and read as accidental. */}
         <div className="mt-auto flex flex-wrap items-end justify-end gap-x-4 gap-y-3 pt-1">
-          {item.slug && (
+          {item.slug ? (
             <span className="mr-auto flex shrink-0 items-center gap-1.5 text-sm font-medium text-emerald-400">
               {ctaLabel}
               <ArrowRight
@@ -74,6 +74,29 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
                 className="transition-transform duration-300 group-hover:translate-x-1"
               />
             </span>
+          ) : (
+            /* The repo takes the slot the case-study link would have used, so
+               a card with public source stops looking like a dead end. Only
+               reachable on the `else` branch, which is also the branch where
+               the shell is a plain div — the type forbids slug + repoUrl and
+               projectPage.ts fails the build on it, but nesting the JSX in the
+               same ternary means the invalid markup cannot be written here at
+               all, guard or no guard. */
+            item.repoUrl && (
+              <a
+                href={item.repoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group/repo mr-auto flex shrink-0 items-center gap-1.5 text-sm font-medium text-zinc-400 transition-colors hover:text-emerald-400"
+              >
+                <Code2 size={14} aria-hidden="true" />
+                Source on GitHub
+                <ArrowUpRight
+                  size={14}
+                  className="transition-transform duration-300 group-hover/repo:-translate-y-0.5 group-hover/repo:translate-x-0.5"
+                />
+              </a>
+            )
           )}
           <div className="flex flex-wrap items-center justify-end gap-x-2.5 gap-y-1.5">
             {item.technologies.map((tech) => (

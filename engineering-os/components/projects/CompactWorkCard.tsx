@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Star } from "lucide-react";
+import { ArrowUpRight, Code2, Star } from "lucide-react";
 import { coverImage, type WorkItem } from "@/lib/data/portfolio";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 
@@ -73,12 +73,39 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
               <Star size={11} fill="currentColor" />
             </span>
           )}
-          {item.slug && (
+          {/* The affordance in this corner tells you what the card does. With
+              a slug the whole card is the link, so the arrow is decorative and
+              hidden from assistive tech. Without one, the only thing to open
+              is the repo, so the icon *is* the control and has to carry its
+              own accessible name.
+
+              Icon-only because this grid is deliberately dense — "Source on
+              GitHub" in full is on the /projects card, which has the room.
+              A 14px icon is well under the 24px minimum target size, so the
+              padding grows the hit area to 26px and the matching negative
+              margin pulls the box back so the glyph does not move. The two
+              must stay equal and opposite; changing one alone shifts the
+              icon. The extra 6px overlaps the star, which is not a control,
+              and stays inside the card's own px-4 padding. */}
+          {item.slug ? (
             <ArrowUpRight
               size={14}
               className="text-zinc-600 transition-colors group-hover:text-emerald-400"
               aria-hidden="true"
             />
+          ) : (
+            item.repoUrl && (
+              <a
+                href={item.repoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Source on GitHub"
+                aria-label={`${item.title} — source on GitHub`}
+                className="-m-1.5 p-1.5 text-zinc-600 transition-colors hover:text-emerald-400"
+              >
+                <Code2 size={14} />
+              </a>
+            )
           )}
         </div>
       </div>
