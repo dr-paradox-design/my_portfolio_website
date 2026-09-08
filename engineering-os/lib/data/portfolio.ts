@@ -42,6 +42,9 @@ import eyantraDrone from "@/public/projects/eyantra-drone.png";
 import eyantraTestSetup from "@/public/projects/eyantra-test-setup.png";
 import eyantraTeammates from "@/public/projects/eyantra-teammates.png";
 import eyantraCompetitionDay from "@/public/projects/eyantra-competition-day.webp";
+import quadcopterCad from "@/public/projects/quadcopter-cad.webp";
+import quadcopterPrintedParts from "@/public/projects/quadcopter-printed-parts.webp";
+import quadcopterAssembled from "@/public/projects/quadcopter-assembled.webp";
 
 export type WorkStatus = "complete" | "ongoing" | "upcoming";
 
@@ -301,6 +304,37 @@ export const workItems: WorkItem[] = [
     summary:
       "Second-year quadcopter taken from CAD to hardware solo: the complete airframe modelled in SolidWorks, 3D printed, then assembled with its electronics and brought up until it moved under its own power.",
     technologies: ["SolidWorks", "3D printing", "Mechanical design"],
+    slug: "3d-printed-quadcopter",
+    /* Design → parts → assembly, which is the order the work happened in and
+       the only ordering that explains the project without a paragraph.
+       The assembly shot is the `cover` because it is the only one of the
+       three that reads as an aircraft at card size; the CAD screenshot is a
+       single bracket and the parts photo is a pile of green. */
+    images: [
+      {
+        src: quadcopterCad,
+        alt: "CAD model of one of the quadcopter's frame components on screen, a dark twin-armed bracket viewed in the modelling software.",
+        caption: "Frame part in CAD",
+      },
+      {
+        src: quadcopterPrintedParts,
+        alt: "The printed airframe laid out on a workbench in bright green filament: four arms, motor mounts, the centre chassis, and an assortment of spacers and discs.",
+        caption: "The airframe, printed",
+      },
+      {
+        src: quadcopterAssembled,
+        /* Says "housings" and "wiring", not "motors" and "propellers" — at
+           this resolution the ducts read as empty lattice mounts and neither
+           is actually visible in the frame. Alt text describes what is in the
+           photograph; the summary is where the build gets characterised. */
+        alt: "The assembled green quadcopter on the floor beside a laptop, with four square ducted rotor housings, electronics mounted on the centre plate, and orange wiring run along the arms.",
+        caption: "Assembled with electronics",
+        cover: true,
+        /* Portrait phone shot — the card band is 16:9, so without this the
+           crop lands on the floor and the laptop instead of the aircraft. */
+        focus: "50% 40%",
+      },
+    ],
   },
   {
     title: "Aquatic Robotics for Sustainability",
