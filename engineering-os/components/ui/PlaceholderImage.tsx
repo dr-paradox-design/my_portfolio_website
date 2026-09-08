@@ -6,13 +6,20 @@ import { BLUEPRINT_GRID } from "@/components/projects/blueprint";
 interface PlaceholderImageProps {
   asset: MediaAsset;
   className?: string;
-  priority?: boolean;
+  /**
+   * Not `priority`. Next 16 deprecated that prop in favour of `preload`
+   * — see the v16.0.0 row of the version table in
+   * `node_modules/next/dist/docs/01-app/03-api-reference/02-components/image.md`
+   * — because "priority" named the intent rather than the mechanism, which
+   * is a `<link rel="preload">`.
+   */
+  preload?: boolean;
 }
 
 export function ProjectImage({
   asset,
   className = "",
-  priority = false,
+  preload = false,
 }: PlaceholderImageProps) {
   if (asset.isPlaceholder) {
     return (
@@ -43,15 +50,28 @@ export function ProjectImage({
   }
 
   return (
-    /* `relative` is required — the Image below uses `fill`. */
-    <figure className={`relative ${className}`}>
-      <Image
-        src={asset.src}
-        alt={asset.alt}
-        fill
-        className="rounded-xl object-cover"
-        priority={priority}
-      />
+    <figure>
+      {/* `className` sizes *this* box, not the <figure>. The caller passes
+          `aspect-video w-full`, and a `fill` image is absolutely positioned
+          against its nearest positioned ancestor — so when the ratio and the
+          `relative` both sat on the <figure>, the image covered the entire
+          element and the caption below it was painted over, clipped by the
+          fixed aspect height. Keeping the ratio on an inner div leaves the
+          <figure> a normal-flow block that grows to fit image + caption. */}
+      <div className={`relative ${className}`}>
+        {/* `object-contain`, not `object-cover`. The only caller renders
+            `architectureDiagrams` into a fixed `aspect-video` box, and a
+            block diagram is not a photograph: cropping it to fill the frame
+            silently cuts the pin labels off the edges, which are the part
+            worth reading. Letterboxing is the correct failure mode here. */}
+        <Image
+          src={asset.src}
+          alt={asset.alt}
+          fill
+          className="rounded-xl object-contain"
+          preload={preload}
+        />
+      </div>
       {asset.caption && (
         <figcaption className="mt-2 text-center text-xs text-zinc-500">
           {asset.caption}

@@ -45,6 +45,8 @@ import eyantraCompetitionDay from "@/public/projects/eyantra-competition-day.web
 import quadcopterCad from "@/public/projects/quadcopter-cad.webp";
 import quadcopterPrintedParts from "@/public/projects/quadcopter-printed-parts.webp";
 import quadcopterAssembled from "@/public/projects/quadcopter-assembled.webp";
+import sensorFusionHitlSetup from "@/public/projects/sensorfusion-hitl-setup.webp";
+import sensorFusionPositionTest from "@/public/projects/sensorfusion-position-test.webp";
 
 export type WorkStatus = "complete" | "ongoing" | "upcoming";
 
@@ -397,7 +399,23 @@ export const workItems: WorkItem[] = [
       "Kalman filter",
       "MPU6050",
     ],
-    repoUrl: "https://github.com/dr-paradox-design/AXI4-IP-for-GPS-IMU-Sensor-Fusion",
+    slug: "fpga-sensor-fusion",
+    /* `repoUrl` moved to this project's `links` in projects.ts when the slug
+       was added — a slugged card is a link, so the two cannot coexist and
+       projectPage.ts fails the build if they do. */
+    images: [
+      {
+        src: sensorFusionHitlSetup,
+        alt: "Hardware-in-the-loop bench: a ZedBoard wired by jumper leads to an MPU6050 breakout on a breadboard, with a USB serial lead running to a laptop.",
+        caption: "HITL bench setup",
+        cover: true,
+      },
+      {
+        src: sensorFusionPositionTest,
+        alt: "Two plots. Left: an outdoor walking loop about 28 by 14 metres, with scattered raw GPS crosses and a smooth filtered path through them. Right: pitch, roll and yaw against sample index, yaw sweeping continuously through roughly 450 degrees.",
+        caption: "Position test: filtered path vs raw GPS",
+      },
+    ],
   },
 
   // ── Analog, Mixed-Signal & Instrumentation ──────────────────────

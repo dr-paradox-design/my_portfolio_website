@@ -114,6 +114,146 @@ export const projectDetails: ProjectDetail[] = [
     },
   },
   {
+    slug: "fpga-sensor-fusion",
+    domainTags: ["FPGA", "Digital Design", "Sensor Fusion"],
+    executiveSummary:
+      "The interesting part of this project is where the line was drawn. Serial protocol timing — UART framing for a NMEA GPS, a full I2C transaction engine for an MPU6050 — was pushed down into Verilog as two custom AXI4-Lite peripherals, so the processor reads a register instead of a waveform. Everything above that line stayed in C on the Zynq's ARM cores: the drivers, a complementary filter for attitude, and a pair of 1-D Kalman filters for North and East position. The result holds a 100 Hz loop in about 1.4% of the device's logic, and it was walked around a field rather than declared finished at the end of simulation.",
+    problemAndRequirements:
+      "The two sensors speak incompatible protocols at incompatible rates: the GPS streams asynchronous NMEA sentences over UART at roughly 1 Hz, while the IMU is polled over I2C at hundreds of hertz. Bit-banging both from software would have put protocol timing at the mercy of whatever else the processor was doing, and the fusion loop needs a trustworthy time step more than it needs raw speed. The requirement was deterministic sensor access — the processor should read a register, never a waveform.",
+    systemArchitecture:
+      "A ZYNQ7 processing system connects through an AXI Interconnect to two custom IP blocks in the programmable logic. The GPS controller is a UART receiver and transmitter with FIFO buffering behind a register map; the IMU controller is an I2C master stack — bit engine, byte engine, and a data controller handling MPU6050 initialisation, burst fetch, and an interrupt-aware ready/acknowledge handshake. On the software side, C drivers hide the register layout behind a two-call fetch-and-update API, and the fusion stack above them runs a complementary filter for orientation (gyro integration corrected by accelerometer tilt) and two independent 1-D Kalman filters for North and East position. Body-frame acceleration is rotated into the Earth frame using the current attitude before it becomes a prediction input.",
+    architectureDiagrams: [
+      {
+        src: "/projects/sensorfusion-block-diagram.webp",
+        alt: "Vivado IP integrator block design. A ZYNQ7 Processing System block on the left drives an AXI Interconnect, which fans out to two custom blocks: gps_controller_0, with uart_rx_pin and uart_tx_pin brought to external ports, and imu_controller_0, with scl and sda brought out. A Processor System Reset block feeds the reset lines, and the PS exposes DDR and FIXED_IO externally.",
+        caption:
+          "The Vivado block design: both custom IPs sit behind the AXI interconnect, so the processor sees registers rather than protocol timing.",
+      },
+    ],
+    technicalDecisions: [
+      {
+        title: "Protocol timing in fabric, estimation in C",
+        decision:
+          "Put the UART and I2C engines in programmable logic as AXI4-Lite IP, and leave the complementary filter and Kalman filters as C running on the ARM cores.",
+        alternativesConsidered:
+          "Bit-banging both protocols from software on the PS, or pushing the filter maths into the fabric as well.",
+        reasoning:
+          "The split follows where determinism actually matters. Serial framing is unforgiving about timing and trivially parallel, which is what fabric is good at; the fusion maths is floating point, changed constantly during tuning, and runs at 100 Hz — a rate a processor meets without effort. Hardening the filters would have bought no headroom and made every gain change a resynthesis.",
+      },
+      {
+        title: "Freeze position under ZUPT instead of tracking GPS while stationary",
+        decision:
+          "Gate the estimator with a Zero-Velocity Update: when gyro rates are under 1.0 deg/s on all axes and Earth-frame acceleration is under 0.30 m/s² on both horizontal axes, force the Kalman velocities to zero, zero the prediction input, and skip the GPS correction entirely.",
+        alternativesConsidered:
+          "Continuing to apply GPS updates at standstill, which is what the filter would otherwise do with a perfectly valid fix.",
+        reasoning:
+          "A stationary GPS receiver does not report a stationary position — multipath makes the fix wander, measured here at up to 0.45 m. Feeding that into the filter converts sensor noise into apparent motion, which is exactly the error a pedestrian-scale system can least afford. When the IMU says the platform is not moving, the IMU is the better witness, so the correct output is a frozen position rather than an honestly-derived wrong one.",
+      },
+      {
+        title: "Reset the loop timestamp on IMU recovery, not just on boot",
+        decision:
+          "When an IMU fetch fails and re-initialisation succeeds, reset the loop timestamp immediately before the next fusion update; on failed re-init, back off one second before retrying.",
+        alternativesConsidered:
+          "Letting the loop resume with its existing timestamp and computing the time step normally.",
+        reasoning:
+          "The time step is a multiplier on every integration in the stack. A recovery that takes a second and then reports it as one loop interval injects a time step roughly two orders of magnitude too large, and the filter integrates that into a position jump that it has no way to undo. Resetting the timestamp discards the outage instead of pretending it was a sample.",
+      },
+    ],
+    validationResults: [
+      {
+        test: "Module-level simulation of all six RTL blocks",
+        outcome:
+          "GPS UART top integration, UART RX, UART TX, I2C bit engine, I2C byte engine and the IMU data controller each ran under their own testbench, with Tcl console pass logs and waveform captures kept as evidence.",
+      },
+      {
+        test: "Vivado implementation timing at 100 MHz",
+        outcome:
+          "Worst negative slack +3.100 ns and worst hold slack +0.037 ns, both MET.",
+      },
+      {
+        test: "Post-implementation resource utilisation",
+        outcome:
+          "767 LUTs (1.44%), 1,094 flip-flops (1.03%) and 164 LUTs as distributed RAM (0.94%) on the Zynq-7000.",
+      },
+      {
+        test: "Vivado power estimate",
+        outcome: "1.537 W dynamic, 0.141 W device static, 1.678 W total on-chip.",
+      },
+      {
+        test: "Stationary hold with live GPS",
+        outcome:
+          "Fused local X and Y stayed at 0.00 while the raw GPS fix wandered up to 0.45 m from multipath — the ZUPT gate rejected the updates as intended.",
+      },
+      {
+        test: "Axis isolation under manual rotation",
+        outcome:
+          "Yaw rotation moved heading, nose-up and nose-down moved pitch, and side tilt moved roll, with the cross-coupling low enough to confirm the configured ENU frame mapping was correct.",
+      },
+      {
+        test: "Large-angle orientation sweep",
+        outcome:
+          "The complementary filter tracked pitch beyond 150° and roll beyond 90° without losing stability.",
+      },
+      {
+        test: "Outdoor dynamic position test, roughly 50 m",
+        outcome:
+          "The hardware was walked across a test field with raw GPS and filtered X/Y logged to CSV at 115200 baud. The filtered trajectory followed the walked path with visibly less scatter than the raw fixes, and held position at each standstill.",
+      },
+    ],
+    failuresAndLessons: [
+      {
+        title: "Yaw has no absolute reference",
+        whatHappened:
+          "Yaw drifts over a long run in a way roll and pitch do not.",
+        rootCause:
+          "There is no magnetometer in the build. Roll and pitch are continuously corrected by gravity through the accelerometer, so their gyro drift is bounded. Yaw is rotation about the gravity vector, so the accelerometer says nothing about it, and it is left as a pure integration of gyro Z — which accumulates bias without limit.",
+        resolved: false,
+        resolutionOrNextStep:
+          "Add a magnetometer for an absolute heading reference, or derive a heading correction from GPS course-over-ground once the platform is reliably moving. Until then, yaw should be read as short-term relative rotation, not as a compass bearing.",
+      },
+      {
+        title: "A stale time-step spike after an IMU fetch failure",
+        whatHappened:
+          "When the IMU dropped out and the driver re-initialised it, the next fusion update ran with a time step covering the whole outage, and the integrators took a large step.",
+        rootCause:
+          "The recovery path restored the sensor but not the loop's notion of time. The interval was still measured from the last successful sample, so the gap was silently reported to the filter as one very long loop interval.",
+        resolved: true,
+        resolutionOrNextStep:
+          "The loop timestamp is now reset immediately on successful re-initialisation, and a failed re-init backs off for one second before retrying instead of spinning.",
+      },
+      {
+        title: "ZUPT rejects genuine slow motion",
+        whatHappened:
+          "Motion slower than the ZUPT thresholds is treated as standstill, so position stops updating while the platform is still moving.",
+        rootCause:
+          "The gate is a fixed threshold on gyro rate and Earth-frame acceleration. It cannot distinguish very slow real motion from sensor noise, because at that scale they are the same size.",
+        resolved: false,
+        resolutionOrNextStep:
+          "Accepted for now — the alternative is drifting on GPS multipath at every standstill, which is the more common case for this platform. A velocity-aware or adaptive threshold would narrow the dead band, at the cost of a harder gate to reason about.",
+      },
+    ],
+    whatsNext:
+      "The repository sets out a roadmap for hardening the sensor-fusion IP into an ASIC on the SkyWater 130 nm open PDK — integrating it into an Efabless Caravel user project and taking it through the OpenLane RTL-to-GDSII flow. That is planned work, not work in progress; the design currently exists only on FPGA.",
+    links: [
+      {
+        label: "GitHub",
+        url: "https://github.com/dr-paradox-design/AXI4-IP-for-GPS-IMU-Sensor-Fusion",
+      },
+      {
+        label: "Calibration and ZUPT validation (video)",
+        url: "https://www.youtube.com/watch?v=hqHYkSqaP-g",
+      },
+      {
+        label: "Dynamic position test (video)",
+        url: "https://www.youtube.com/watch?v=Ww-xqwfYFvs",
+      },
+      {
+        label: "Orientation test (video)",
+        url: "https://www.youtube.com/watch?v=I062Mg0MvDc",
+      },
+    ],
+  },
+  {
     slug: "embedded-sar-adc",
     domainTags: ["Hardware", "FPGA", "Data Acquisition"],
     executiveSummary:
