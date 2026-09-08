@@ -772,4 +772,124 @@ export const projectDetails: ProjectDetail[] = [
     problemAndRequirements:
       "Non-volatile storage is what an ESP32 keeps across a power cycle. The challenge planted an encrypted message inside it; the task was to recover and decrypt that message, and to demonstrate write access by storing new data of the team's own.",
   },
+
+  {
+    slug: "auv-sim",
+    domainTags: ["Control Theory", "Marine Robotics", "Numerical Simulation"],
+    executiveSummary:
+      "A 6-DOF nonlinear simulator for a BlueROV2-Heavy class underwater vehicle, written to be trusted rather than merely to run. The plant, environment, and a fixed-step simulator driving a discrete controller sit behind a seven-suite validation testbench that checks the model against closed-form solutions, conservation laws, frame invariance, and a second independent implementation. Every check reports a number rather than a pass/fail, so a margin can be watched degrading before it crosses a tolerance. Runs unmodified in MATLAB and GNU Octave with no toolboxes.",
+    problemAndRequirements:
+      "A vehicle simulator is only worth as much as the confidence that its physics are right, and the usual failure mode is a model that looks plausible, runs clean, and is quietly wrong — a sign error in a Coriolis term or a mis-tracked relative velocity produces trajectories that pass the eye test. The requirement was a plant whose correctness is established by independent evidence before any controller result is quoted from it, and which fails loudly when a change breaks the physics rather than silently degrading.",
+    systemArchitecture:
+      "The state is x = [eta; nu] in a NED navigation frame with a body frame of x-forward, y-starboard, z-down, governed by eta_dot = J(eta)nu and M nu_dot + C_RB(nu)nu + C_A(nu_r)nu_r + D(nu_r)nu_r + g(eta) = tau_thr + tau_dist, with M = M_RB + M_A. Added mass and damping act on the water-relative velocity nu_r while rigid-body Coriolis acts on nu. Both Coriolis matrices are produced by the same m2c(M, nu) routine, so skew-symmetry holds by construction and is then checked rather than assumed. Around the plant sit an environment layer (depth-sheared current with gusts, plus a smooth band-limited disturbance wrench), a thruster chain of weighted-pseudoinverse allocation with saturation feeding a first-order lag with deadband, and a simulator that runs a zero-order-hold controller at 50 Hz against a plant integrated by RK4 at 500 Hz. A separate quaternion implementation of the plant exists purely as a cross-check and shares no attitude or restoring code with the Euler-angle version.",
+    technicalDecisions: [
+      {
+        title: "A second, independent plant implementation kept solely as a cross-check",
+        decision:
+          "quat_plant is a full quaternion-based implementation of the same vehicle, maintained in parallel with the Euler-angle auv_plant and run against it through a 20-second aggressive manoeuvre, where the two agree to 1e-12.",
+        alternativesConsidered:
+          "The cheaper option is one implementation plus unit tests on its subroutines, which is what most vehicle simulators ship.",
+        reasoning:
+          "Two implementations that share their subroutines can only confirm each other's typos. The cross-check is only meaningful because the two paths share no attitude code and no restoring code, so agreement is evidence about the physics rather than about the plumbing. The same reasoning produced a second derivation of the restoring term, computed from the rotation matrix rather than in trig form.",
+      },
+      {
+        title: "Physical discrepancies reported as INFO, never as test failures",
+        decision:
+          "The benchmark suite reports disagreements with published vehicle data as informational findings, and only structural and analytic checks are allowed to fail the run.",
+        alternativesConsidered:
+          "Asserting the benchmark comparisons as hard tolerances alongside everything else.",
+        reasoning:
+          "A disagreement with the literature is a finding about the model or about the literature, not a regression. Turning it into a red FAIL creates pressure to loosen the tolerance until it passes, which destroys the signal. Keeping it as INFO means the number stays visible and uncomfortable without corrupting the suite that guards correctness.",
+      },
+      {
+        title: "Every check reports an error magnitude, not a pass/fail",
+        decision:
+          "run_validation prints quantitative errors against tolerances for all seven suites rather than a list of PASS labels.",
+        alternativesConsidered:
+          "A conventional boolean test harness.",
+        reasoning:
+          "A number that used to read 1e-12 and now reads 1e-5 still passes, but something changed — and that is exactly the signal worth catching while the edit that caused it is still fresh. Booleans discard the margin, which is the part that moves first.",
+      },
+      {
+        title: "Parameters tagged by provenance rather than presented as equally solid",
+        decision:
+          "Each entry in auv_params carries a [measured], [CAD estimate], [literature] or [datasheet] tag; hydrodynamic derivatives come from Wu (2018), thruster geometry from the nominal BlueROV2 Heavy, and actuator limits from the T200 datasheet.",
+        alternativesConsidered:
+          "A flat parameter file, which is the norm.",
+        reasoning:
+          "The validation suite can prove the equations are integrated correctly but can say nothing about whether the numbers describe the actual vehicle. Tagging provenance makes the boundary between a verified model and an assumed parameter visible at the point of use, and is what makes the two open benchmark findings legible as parameter problems rather than code problems.",
+      },
+    ],
+    validationResults: [
+      {
+        test: "Analytic suite — reduced parameter cases with closed-form solutions",
+        outcome:
+          "With neutral buoyancy and r_g = r_b = 0, a single-axis excitation stays on that axis, so the full 6-DOF code can be integrated and compared against exact solutions. Surge with linear drag matched its exponential to 1e-11; surge with quadratic drag matched u_ss*tanh(t/T) to 1e-11; terminal velocity matched the root of k u^2 + c u - X = 0 to 7e-12; heave with linear drag matched to 3e-11; the undamped roll pendulum matched wn = sqrt(zb*B/M44) to 2e-5 relative. Each case also asserts the off-axis states stayed at zero, so the comparison is meaningful rather than accidental.",
+      },
+      {
+        test: "Cross-check suite — quaternion plant against Euler plant",
+        outcome:
+          "Both implementations driven through the same 20-second aggressive manoeuvre agree to 1e-12, sharing no attitude or restoring code.",
+      },
+      {
+        test: "Conservation and invariance suites",
+        outcome:
+          "Momentum, angular momentum, energy, and passivity checks constrain the Coriolis and kinematics terms; yaw-rotation and Galilean-boost checks in a uniform current constrain the water-relative velocity bookkeeping. The Galilean check now passes at 2e-11 (see failures below for what it caught first).",
+      },
+      {
+        test: "Numerics suite — integrator accuracy and convergence order",
+        outcome:
+          "RK4 compared against a tight ode45 reference, with the observed convergence order measured rather than assumed, guarding against step-size and non-smoothness problems.",
+      },
+      {
+        test: "Closed-loop depth and heading hold across three scenarios",
+        outcome:
+          "A 50 Hz zero-order-hold controller drives the 500 Hz plant through saturating actuators with 0.15 s of lag, in still water, in a 0.25 m/s sheared current with gusts, and under deliberate model mismatch where the controller believes the vehicle is 10% more buoyant than it is. The demonstration also shows what the integral term is for: with perfect restoring feedforward and no model error it earns nothing and costs overshoot, since the PID zero at -Kp/Ki walks in towards the closed-loop poles — its value only appears under mismatch.",
+      },
+    ],
+    failuresAndLessons: [
+      {
+        title: "The Galilean invariance test failed on its first run, by 1.4 m",
+        whatHappened:
+          "A vehicle in a uniform current did not follow the still-water trajectory advected by that current, and the error grew every time the vehicle turned.",
+        rootCause:
+          "The plant had assumed a slowly varying current and set nu_r_dot = nu_dot, which is what nearly every ROV implementation does. That is wrong even for a perfectly constant current in NED, because the current expressed in the body frame still rotates with the vehicle: d/dt (R' nu_c) = -omega x (R' nu_c) + R' dnu_c/dt, so the added-mass term contributes an extra M_A * nu_c_b_dot.",
+        resolved: true,
+        resolutionOrNextStep:
+          "auv_plant now carries the term and the invariance check passes at 2e-11. The lesson is the reason the suite exists: this is a bug that produces entirely plausible trajectories and would never have been caught by inspection or by a plot.",
+      },
+      {
+        title: "The literature damping disagrees with the manufacturer's top speed by a factor of 2.6",
+        whatHappened:
+          "Wu (2018)'s Xu|u| = -18.18 predicts a top speed of 2.39 m/s at 113 N of net surge thrust. Blue Robotics quotes 1.5 m/s. Matching the published spec would require Xu|u| of about -47.6.",
+        rootCause:
+          "At least one of the two is wrong for this vehicle, and it is not yet established which. A large number of BlueROV2 control papers use these derivatives without checking them against the quoted speed.",
+        resolved: false,
+        resolutionOrNextStep:
+          "A bollard-pull test plus a timed straight run settles it in an afternoon. Until then the drag parameters are explicitly not trustworthy for quantitative claims, and the finding is reported as INFO rather than buried.",
+      },
+      {
+        title: "The open-loop pitch axis is unstable above roughly 0.71 m/s",
+        whatHappened:
+          "The destabilising Munk moment, 0.5*(Zwdot - Xudot)*U^2*sin(2*alpha), overtakes the only restoring term available — the BG righting moment zg*W*sin(theta), which peaks at 2.26 N m. In simulation, 0.85x that speed produces a 21 degree peak pitch and 1.3x produces a tumble.",
+        rootCause:
+          "Either the real vehicle genuinely does this, or the diagonal damping model is too weak in pitch. Which one is an open and concretely testable question.",
+        resolved: false,
+        resolutionOrNextStep:
+          "It bounds any speed envelope a controller built on this model can honestly claim, so it needs resolving against the physical vehicle before quantitative control claims are made. Reported as INFO for the same reason as the damping finding.",
+      },
+      {
+        title: "Known modelling gaps left explicit rather than papered over",
+        whatHappened:
+          "The depth-shear contribution to the current derivative, dnu_c/dz * zdot, is still neglected, and the Euler-angle kinematics are singular at pitch of plus or minus 90 degrees.",
+        rootCause:
+          "The shear term matters only for vertical transits through a strong shear layer, and the singularity is inherent to the Euler parameterisation rather than a defect.",
+        resolved: false,
+        resolutionOrNextStep:
+          "Through-vertical manoeuvres are run on quat_plant, which has no singularity. The shear term is documented as a known omission with its regime of validity stated, so a future user knows exactly when it stops being safe to ignore.",
+      },
+    ],
+    whatsNext:
+      "Measuring the vehicle's own hydrodynamic parameters — a bollard-pull test and a timed straight run — to settle the damping discrepancy and replace the literature derivatives, which the parameter provenance tags are already structured for. Resolving the pitch-instability question against the physical vehicle. The placeholder depth/yaw PID exists to exercise the workflow rather than to be a contribution, and is the natural slot for a real controller: the harness already models the 50 Hz zero-order hold, actuator saturation and lag that any hardware claim has to survive.",
+  },
 ];

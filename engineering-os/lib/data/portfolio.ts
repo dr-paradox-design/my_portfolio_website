@@ -60,6 +60,7 @@ import acousticFrontendPowerSupply from "@/public/projects/acoustic-frontend-pow
 import acousticFrontendBenchBringup from "@/public/projects/acoustic-frontend-bench-bringup.webp";
 import acousticFrontendWetTest from "@/public/projects/acoustic-frontend-wet-test.webp";
 import esp32DevkitBoard from "@/public/projects/esp32-devkit-board.webp";
+import auvSimDepthHold from "@/public/projects/auv-sim-depth-hold.webp";
 
 export type WorkStatus = "complete" | "ongoing" | "upcoming";
 
@@ -228,6 +229,32 @@ export const workItems: WorkItem[] = [
         alt: "A tall IEEE Oceanic Engineering Society banner reading \"To the Ocean, Through Hard Work\", standing against a wall near a staircase",
         caption: "IEEE OES at SAUVC 2026",
         focus: "50% 30%",
+      },
+    ],
+  },
+  {
+    title: "AUV Simulation & Validation Testbench",
+    domain: "Autonomous Systems & Robotics",
+    status: "ongoing",
+    tier: "major",
+    summary:
+      "6-DOF nonlinear plant model for a BlueROV2-Heavy class vehicle in MATLAB/Octave, with an environment layer, a fixed-step simulator driving a discrete controller, and a seven-suite validation testbench that cross-checks the plant against closed-form solutions and an independent quaternion implementation.",
+    technologies: [
+      "MATLAB",
+      "GNU Octave",
+      "6-DOF dynamics",
+      "Fossen model",
+      "RK4",
+      "Thrust allocation",
+      "PID",
+    ],
+    slug: "auv-sim",
+    images: [
+      {
+        src: auvSimDepthHold,
+        alt: "Six-panel MATLAB figure titled with NED position, attitude, body linear and angular velocity, post-lag thruster forces, and a heave force budget, showing a depth step to 1 m then 1.5 m and a 45 degree yaw step settling without steady-state error",
+        caption: "Closed-loop depth and heading hold — the six-panel output of plot_results, including the heave force budget",
+        cover: true,
       },
     ],
   },
