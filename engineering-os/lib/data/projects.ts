@@ -945,23 +945,31 @@ export const projectDetails: ProjectDetail[] = [
     ],
   },
 
-  /* Kept to what the photographs and Swastik's own account support, which is a
-     CAD-to-hardware mechanical build: designed in SolidWorks, printed, wired,
-     and powered up. There is no record of the propulsion parts, the flight
-     controller, the power budget, or any tuning, so none appears here.
+  /* Corrected from "3d-printed-quadcopter": this is a legged robot, not a
+     flying one. The three photographs show hinged leg-linkage brackets, a
+     lattice chassis, and servo motors at the joints — no rotors, no
+     propellers, no airframe. The earlier copy inferred "rotors" and "thrust
+     load" from the word "quad-" without ever looking at the images, which is
+     the exact failure `AGENTS.md`'s no-fabrication rule exists to prevent.
+     Fixed the moment it was caught; left this comment so the mistake and the
+     fix are both on the record rather than just the fix.
 
-     Note what this page does not say: it does not say the aircraft flew.
-     "Moved under its own power" is what was reported, and the distance between
-     that and controlled flight is exactly the distance an interviewer will
-     probe. The portfolio card carries the same restraint for the same reason
-     (see the comment on this entry in portfolio.ts). If it did fly, both
-     strings should be upgraded together. */
+     Kept to what the photographs and Swastik's own account support: designed
+     in SolidWorks, printed, wired with motors, ESCs, a flight-controller
+     board and a battery, and powered up. No leg count, gait, or control
+     scheme is recorded, so none is claimed here.
+
+     Note what this page does not say: it does not say the robot walked.
+     "Stood and held its own weight under power" is what was reported, and the
+     distance between that and a walking gait is exactly the distance an
+     interviewer will probe. The portfolio card carries the same restraint for
+     the same reason. If it walked, both strings should be upgraded together. */
   {
-    slug: "3d-printed-quadcopter",
+    slug: "3d-printed-quadruped",
     domainTags: ["Mechanical Design", "CAD", "Additive Manufacturing"],
     executiveSummary:
-      "A second-year quadcopter taken from a blank CAD document to powered hardware, solo. The entire airframe — four arms, motor mounts, the centre chassis and the spacers that stack it — was modelled in SolidWorks, 3D printed, then assembled with its electronics and brought up until it moved under its own power. The finished aircraft carries its electronics on a central plate with the wiring run out along the arms, and mounts its rotors inside square ducted housings rather than on open booms.",
+      "A second-year quadruped robot taken from a blank CAD document to powered hardware, solo. The leg linkages and chassis were modelled in SolidWorks, 3D printed, then assembled with motors, ESCs, a flight-controller board and a battery, and brought up until it stood and held its own weight under power.",
     problemAndRequirements:
-      "The point of the build was ownership of the whole path rather than the result: not assembling a kit airframe, but designing every structural part, producing it, and finding out what survives contact with real motors. That framing sets the hard constraint, which is the material — printed plastic has to take the thrust load at the motor mounts, resist the vibration a spinning rotor puts into an arm, and hold the electronics rigidly, all while staying light enough to be worth lifting. Every part also had to be printable on a hobby machine, which limits how thin a wall or how unsupported a span the design is allowed to ask for.",
+      "The point of the build was ownership of the whole path rather than the result: not assembling a kit chassis, but designing every structural part, producing it, and finding out what survives contact with real actuators and real load. That framing sets the hard constraint, which is the material — printed plastic has to take the load at each leg joint without the linkage binding or the pin holes wearing oval, and hold its shape under the robot's own weight while staying light enough for the actuators to move. Every part also had to be printable on a hobby machine, which limits how thin a wall or how unsupported a span the design is allowed to ask for.",
   },
 ];

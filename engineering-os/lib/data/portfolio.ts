@@ -43,9 +43,9 @@ import eyantraTestSetup from "@/public/projects/eyantra-test-setup.png";
 import eyantraTeammates from "@/public/projects/eyantra-teammates.png";
 import eyantraCompetitionDay from "@/public/projects/eyantra-competition-day.webp";
 import eyantraVideoPoster from "@/public/projects/eyantra-video-poster.webp";
-import quadcopterCad from "@/public/projects/quadcopter-cad.webp";
-import quadcopterPrintedParts from "@/public/projects/quadcopter-printed-parts.webp";
-import quadcopterAssembled from "@/public/projects/quadcopter-assembled.webp";
+import quadrupedCad from "@/public/projects/quadruped-cad.webp";
+import quadrupedPrintedParts from "@/public/projects/quadruped-printed-parts.webp";
+import quadrupedAssembled from "@/public/projects/quadruped-assembled.webp";
 import sensorFusionHitlSetup from "@/public/projects/sensorfusion-hitl-setup.webp";
 import sensorFusionPositionTest from "@/public/projects/sensorfusion-position-test.webp";
 import flightControllerIso from "@/public/projects/flight-controller-iso.webp";
@@ -379,44 +379,46 @@ export const workItems: WorkItem[] = [
     },
   },
   {
-    title: "3D-Printed Quadcopter",
+    title: "3D-Printed Quadruped",
     domain: "Autonomous Systems & Robotics",
     status: "complete",
     tier: "major",
-    /* Deliberately does not claim it flew — "implemented its movement" is what
-       was reported, and a flight claim is the kind of thing an interviewer
-       will ask to see. Upgrade this line if it did fly. */
+    /* Deliberately does not claim it walked — "stood and held its own weight
+       under power" is what was reported, and a gait claim is the kind of thing
+       an interviewer will ask to see. Upgrade this line if it walked.
+       Corrected from "3D-Printed Quadcopter": the photographs show a
+       servo-driven legged robot (hinged leg linkages, a lattice chassis, no
+       rotors or propellers anywhere), not a flying quadcopter — the earlier
+       name and copy assumed "quad-" meant rotors and were wrong. See the
+       git history on this entry for what that looked like before the
+       correction. */
     summary:
-      "Second-year quadcopter taken from CAD to hardware solo: the complete airframe modelled in SolidWorks, 3D printed, then assembled with its electronics and brought up until it moved under its own power.",
-    technologies: ["SolidWorks", "3D printing", "Mechanical design"],
-    slug: "3d-printed-quadcopter",
+      "Second-year quadruped robot taken from CAD to hardware solo: the leg linkages and chassis modelled in SolidWorks, 3D printed, then assembled with motors, ESCs, a flight-controller board and a battery, and brought up until it stood and held its own weight under power.",
+    technologies: ["SolidWorks", "3D printing", "Mechanical design", "Legged robotics"],
+    slug: "3d-printed-quadruped",
     /* Design → parts → assembly, which is the order the work happened in and
        the only ordering that explains the project without a paragraph.
        The assembly shot is the `cover` because it is the only one of the
-       three that reads as an aircraft at card size; the CAD screenshot is a
+       three that reads as a robot at card size; the CAD screenshot is a
        single bracket and the parts photo is a pile of green. */
     images: [
       {
-        src: quadcopterCad,
-        alt: "CAD model of one of the quadcopter's frame components on screen, a dark twin-armed bracket viewed in the modelling software.",
-        caption: "Frame part in CAD",
+        src: quadrupedCad,
+        alt: "CAD model of one of the quadruped's leg-linkage components on screen, a dark articulated bracket with hinge points, viewed in the modelling software.",
+        caption: "Leg linkage in CAD",
       },
       {
-        src: quadcopterPrintedParts,
-        alt: "The printed airframe laid out on a workbench in bright green filament: four arms, motor mounts, the centre chassis, and an assortment of spacers and discs.",
-        caption: "The airframe, printed",
+        src: quadrupedPrintedParts,
+        alt: "The printed parts laid out on a desk in bright green filament: a lattice-frame chassis at the centre, several long leg-link struts, small support brackets, and an assortment of pins and discs.",
+        caption: "Legs and chassis, printed",
       },
       {
-        src: quadcopterAssembled,
-        /* Says "housings" and "wiring", not "motors" and "propellers" — at
-           this resolution the ducts read as empty lattice mounts and neither
-           is actually visible in the frame. Alt text describes what is in the
-           photograph; the summary is where the build gets characterised. */
-        alt: "The assembled green quadcopter on the floor beside a laptop, with four square ducted rotor housings, electronics mounted on the centre plate, and orange wiring run along the arms.",
+        src: quadrupedAssembled,
+        alt: "The assembled green quadruped resting on a workbench beside a laptop, its lattice-frame legs and chassis printed in bright green, with a servo motor and orange wiring visible at the joints.",
         caption: "Assembled with electronics",
         cover: true,
         /* Portrait phone shot — the card band is 16:9, so without this the
-           crop lands on the floor and the laptop instead of the aircraft. */
+           crop lands on the floor and the laptop instead of the robot. */
         focus: "50% 40%",
       },
     ],
