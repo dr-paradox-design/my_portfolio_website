@@ -989,8 +989,12 @@ export const projectDetails: ProjectDetail[] = [
   {
     slug: "aquatic-robotics",
     domainTags: ["PCB Design", "Fabrication", "Aquatic Robotics"],
+    /* Does not restate the platform: the card summary is already rendered as
+       this page's lede, directly above, and repeating it verbatim is the
+       most visible way to make a short page look padded. This paragraph
+       starts where the lede stops — at scope. */
     executiveSummary:
-      "A surveillance platform for environmental monitoring in an aquatic setting, built by a team at the IIT Guwahati Aquatic Hackathon and iterated on after the event. Swastik owned the propulsion electronics: he designed the interconnect board that ties the thruster ESCs to their power distribution and control lines, etched and populated it in house instead of ordering it from a fab, and tested it on the machine.",
+      "Swastik owned one part of a team build: the propulsion electronics. He designed the interconnect board that ties the machine's thruster ESCs to their power distribution and control lines, etched and populated it in house instead of ordering it from a fab, and tested it on the platform. The frame, the sensing, and the changes made in the versions after the hackathon were other people's work and are not documented here.",
     problemAndRequirements:
       "The board sits between the controller and the thrusters. It has to distribute battery power to each ESC and carry that ESC's control signal out to it, with the high-current propulsion paths and the low-current signal paths running across the same small board without interfering. The fabrication method set the harder constraint: etching in house means a single copper layer, so the routing has to come out planar or be bridged by hand — there is no second layer and no via to escape a crossing with. The trade that buys is turnaround against tolerance, a board in an afternoon rather than a week, at track widths and edge quality a hackathon can live with and a product could not.",
   },
