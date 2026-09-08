@@ -550,4 +550,107 @@ export const projectDetails: ProjectDetail[] = [
     whatsNext:
       "Finish routing the remaining nets, draw the board outline, wire the three sensor interrupt lines, clear the DRC report, then generate Gerbers and order a prototype run for bring-up and testing — none of which has happened yet.",
   },
+  {
+    slug: "acoustic-processing-stack",
+    domainTags: ["Analog Design", "Signal Processing", "Robotics"],
+    executiveSummary:
+      "Tiburon's acoustic homing needs to pick a 45 kHz continuous-wave pulse out of a piezoelectric hydrophone's output while everything else in the water — thrusters, ESC switching noise, vibration — is trying to drown it out. This is the analog front end that does that: a charge amplifier, an 8th-order Butterworth bandpass filter, and an ADC-facing output buffer, designed and validated in SPICE, then built by hand as a Manhattan-style prototype and brought up on the bench. DSP and Time Difference of Arrival (TDOA) localization on top of this signal are the next phase, not yet started.",
+    problemAndRequirements:
+      "The target is a ULB-362 underwater locator beacon, which emits a 45 kHz tone burst once a second. At 1 meter, the estimated unconditioned signal at the hydrophone is only tens of millivolts, and a hydrophone's output impedance and cable capacitance make naive voltage amplification gain-dependent on cable length — a problem if the cable run changes between bench and vehicle. The frontend has to reject thruster and EMI noise well outside the 45 kHz band, present a clean, correctly-biased signal to a unipolar ADC, and survive the transition from an idealized SPICE model to real, tolerance-bearing hardware.",
+    systemArchitecture:
+      "Three cascaded stages. First, a charge amplifier (inverting, with the hydrophone modeled as a voltage source in series with its own capacitance and resistance) converts the hydrophone's charge output into a voltage, which makes the gain independent of cable length — the feedback resistor and capacitor are sized for unity DC gain and 20 dB of midband gain. Second, an 8th-order Butterworth bandpass filter built from two cascaded 2nd-order Multiple Feedback (MFB) high-pass stages and two cascaded 2nd-order MFB low-pass stages isolates a 35–58 kHz passband around the 45 kHz tone. Third, an inverting output buffer restores the signal to be in-phase with the original acoustic wave (the charge amp and filter stages together apply a net 180° shift), biases it to 1.65 V to center it in a unipolar 0–3.3 V ADC window, and a passive RC feedthrough filter ahead of the ADC suppresses sampling kickback and high-frequency EMI.",
+    technicalDecisions: [
+      {
+        title: "Charge amplifier front end instead of a direct voltage amplifier",
+        decision:
+          "Model the hydrophone as a voltage source behind its own capacitance and resistance, and condition its output with an inverting charge amplifier rather than amplifying the raw sensor voltage directly.",
+        alternativesConsidered:
+          "A conventional voltage (transimpedance-free) amplifier stage directly on the hydrophone output.",
+        reasoning:
+          "A charge amplifier's gain is set by the ratio of feedback to sensor capacitance, not by the cable or sensor's absolute impedance, so it stays correct if the hydrophone cable length changes between the bench and the vehicle — a voltage amplifier's gain would drift with exactly that.",
+      },
+      {
+        title: "Component values synthesized computationally against the E6 series, not hand-rounded",
+        decision:
+          "Write a Python script that sweeps standard E6 capacitor values, solves the MFB design equations for the matching resistors, and rejects any combination that falls outside a practical 1 kΩ–1 MΩ manufacturing range, instead of calculating exact theoretical values and rounding to the nearest stock part afterward.",
+        alternativesConsidered:
+          "Solving the filter equations for exact theoretical component values, then rounding each to the nearest standard part.",
+        reasoning:
+          "The two MFB stages needed for the bandpass response run at Q factors up to 1.3, and rounding continuous values post-hoc drifts the center frequency and Q of a high-Q stage much more than the same rounding error would in a low-Q stage. Anchoring the search to real stock values from the start avoids that drift entirely.",
+      },
+      {
+        title: "Manhattan-style build for the first hardware iteration, not a PCB",
+        decision:
+          "Build the first physical prototype by hand on a copper-clad board scored into isolated copper islands, soldering components point-to-point between islands over a continuous ground plane, rather than laying out and fabricating a PCB first.",
+        alternativesConsidered: "Going straight to PCB layout and fabrication before any hardware existed.",
+        reasoning:
+          "The SPICE model assumes ideal components; a Manhattan build lets the topology be bench-tested and reworked with real hydrophone-driven signals — including a wet test — before committing the tuned component values to a fixed board layout that's expensive to iterate on.",
+      },
+    ],
+    validationResults: [
+      {
+        test: "Charge amplifier AC sweep",
+        outcome:
+          "Simulated midband gain of 19.74 dB against a 20.00 dB target (1.28% error), with upper and lower -3 dB corners landing within 2.6–3.7% of their theoretical values.",
+      },
+      {
+        test: "Full-chain AC sweep across the 35–58 kHz passband",
+        outcome:
+          "Peak gain came in 7.75% below target (18.45 dB vs. 20.00 dB) and both passband edges landed within about 4–8% of their 35/58 kHz targets, but the resulting -3 dB bandwidth was 28.18 kHz against a 23.00 kHz target — a 22.5% overshoot, the largest error in the whole AC analysis.",
+      },
+      {
+        test: "Transient response and phase check",
+        outcome:
+          "The output tracked the input in phase (after the deliberate 180° restoration in the buffer stage) and sat centered on the 1.65 V bias, at 788.7 mV peak-to-peak against a 950 mV theoretical amplitude.",
+      },
+      {
+        test: "Harmonic rejection with 90 kHz and 135 kHz interferers injected",
+        outcome: "The filter stripped both injected harmonics, leaving a clean 45 kHz tone at the output.",
+      },
+      {
+        test: "10,000-run Monte Carlo tolerance sweep (Gaussian, 1% resistors / 5% capacitors)",
+        outcome:
+          "Worst-case channel-to-channel phase spread at 45 kHz came out to 27°, which the design's own analysis judged workable for short-range passive acoustic localization but non-trivial for TDOA timing precision.",
+      },
+      {
+        test: "Bench bring-up of the Manhattan-style build",
+        outcome:
+          "The hand-built prototype, powered from a battery/buck-boost supply, produced a captured waveform on the oscilloscope confirming the stage chain is alive end-to-end; a basin (wet) test with the assembled frontend has also been run as a first check outside dry-bench conditions.",
+      },
+    ],
+    failuresAndLessons: [
+      {
+        title: "-3 dB bandwidth overshot its target by 22.5%",
+        whatHappened:
+          "The simulated passband came out to 28.18 kHz wide against a 23.00 kHz design target — by far the largest error of any measured AC parameter, well beyond the 1.28–8.4% errors everywhere else in the same analysis.",
+        rootCause:
+          "The bandpass filter's two MFB stages run at Q factors up to 1.3, and high-Q MFB stages are inherently more sensitive to passive component tolerance than low-Q ones — the 1%/5% resistor and capacitor tolerances used compound across four cascaded 2nd-order stages instead of averaging out.",
+        resolved: false,
+        resolutionOrNextStep:
+          "Tighter-tolerance components, or re-deriving the filter with a Leapfrog topology (which is inherently less tolerance-sensitive than cascaded MFB stages), are the two directions flagged for reducing this before it becomes a hardware problem.",
+      },
+      {
+        title: "Group delay was never optimized for, and it shows",
+        whatHappened:
+          "The simulated chain carries roughly 9 µs of group delay, which a Butterworth response — chosen for its maximally flat magnitude and steep rolloff — does not control for.",
+        rootCause:
+          "Butterworth was picked to guarantee stopband rejection of thruster and EMI noise well outside 45 kHz, and that objective was prioritized over phase linearity at design time.",
+        resolved: false,
+        resolutionOrNextStep:
+          "A Bessel-Butterworth hybrid filter is the planned fix — it trades some of the current stopband steepness for a flatter group delay, which matters directly once TDOA localization starts timing arrivals across channels.",
+      },
+      {
+        title: "Hardware is still a hand-built prototype, not a fabricated board",
+        whatHappened:
+          "The only physical version of this frontend that exists is the Manhattan-style build: components soldered point-to-point onto copper islands, with no solder mask, no controlled trace impedance, and no fixed component placement.",
+        rootCause:
+          "SPICE validation was the deliverable at the design stage; PCB fabrication was deliberately deferred so the topology and tuned component values could be proven point-to-point first, where a wiring mistake costs a rework instead of a re-fabrication.",
+        resolved: false,
+        resolutionOrNextStep:
+          "Lay out and fabricate a PCB once the Manhattan build's bring-up and wet testing are fully characterized, to get a real read on noise performance the hand-built ground plane can't guarantee.",
+      },
+    ],
+    whatsNext:
+      "PCB layout to replace the Manhattan prototype, a Bessel-Butterworth hybrid redesign to fix the group delay, tighter-tolerance or Leapfrog-topology component selection to close the bandwidth gap, and — once the analog front end is trusted — the DSP and Time Difference of Arrival (TDOA) localization work on FPGA that this whole stack exists to feed.",
+  },
 ];

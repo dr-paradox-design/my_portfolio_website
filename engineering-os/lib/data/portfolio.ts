@@ -50,6 +50,14 @@ import sensorFusionPositionTest from "@/public/projects/sensorfusion-position-te
 import flightControllerIso from "@/public/projects/flight-controller-iso.webp";
 import flightControllerTop from "@/public/projects/flight-controller-top.webp";
 import flightControllerBottom from "@/public/projects/flight-controller-bottom.webp";
+import tiburonTeamSauvc from "@/public/projects/tiburon-team-sauvc.webp";
+import tiburonPoolTest from "@/public/projects/tiburon-pool-test.webp";
+import tiburonBenchTest from "@/public/projects/tiburon-bench-test.webp";
+import tiburonIeeeOesBanner from "@/public/projects/tiburon-ieee-oes-banner.webp";
+import acousticFrontendManhattanBuild from "@/public/projects/acoustic-frontend-manhattan-build.webp";
+import acousticFrontendPowerSupply from "@/public/projects/acoustic-frontend-power-supply.webp";
+import acousticFrontendBenchBringup from "@/public/projects/acoustic-frontend-bench-bringup.webp";
+import acousticFrontendWetTest from "@/public/projects/acoustic-frontend-wet-test.webp";
 
 export type WorkStatus = "complete" | "ongoing" | "upcoming";
 
@@ -187,6 +195,39 @@ export const workItems: WorkItem[] = [
     ],
     context: "Team Tiburon — Team Captain & Firmware Lead",
     slug: "tiburon-auv",
+    /* Build-up order: pool validation, then the bench/debug setup, then the
+       competition itself — team photo as the cover, banner last since it is
+       venue signage rather than the team or the vehicle. */
+    images: [
+      {
+        src: tiburonPoolTest,
+        alt: "Teammates crouched on a poolside mat working on the AUV, with the swimming pool used for testing visible behind them",
+        caption: "Pool testing",
+        /* Ceiling lighting fills the top of this frame; bias the 16:9 crop
+           down onto the people and the vehicle. */
+        focus: "50% 65%",
+      },
+      {
+        src: tiburonBenchTest,
+        alt: "The AUV on a paved courtyard floor, tethered by cables to a laptop, with three teammates seated around it",
+        caption: "Bench debugging setup",
+      },
+      {
+        src: tiburonTeamSauvc,
+        alt: "The Team Tiburon members standing behind the AUV on a table at the SAUVC competition, with the event's banners behind them",
+        caption: "Team Tiburon at SAUVC 2026",
+        cover: true,
+        /* Portrait phone photo — bias the 16:9 crop up onto the team's faces
+           and the vehicle, not the floor below the table. */
+        focus: "50% 35%",
+      },
+      {
+        src: tiburonIeeeOesBanner,
+        alt: "A tall IEEE Oceanic Engineering Society banner reading \"To the Ocean, Through Hard Work\", standing against a wall near a staircase",
+        caption: "IEEE OES at SAUVC 2026",
+        focus: "50% 30%",
+      },
+    ],
   },
   {
     title: "Autonomous Disaster-Management Drones",
@@ -438,8 +479,45 @@ export const workItems: WorkItem[] = [
     status: "ongoing",
     tier: "flagship",
     summary:
-      "Acoustic hardware and software processing stack. Currently working on the analog backend architecture, with DSP implementation on FPGA planned.",
-    technologies: ["DSP", "FPGA", "Analog front-end", "Signal processing"],
+      "Analog front end for acquiring the 45 kHz tone from an underwater locator beacon, for the Tiburon AUV's acoustic homing: a charge amplifier feeding an 8th-order Butterworth bandpass filter and an inverting output buffer with an ADC kickback filter. SPICE-validated — component values solved computationally against the E6 capacitor series, confirmed with AC, transient, and a 10,000-run Monte Carlo tolerance analysis — then built as a Manhattan-style hardware prototype and bench-tested. DSP and TDOA localization on FPGA are next.",
+    technologies: [
+      "LTspice",
+      "Charge amplifier",
+      "MFB Butterworth filter",
+      "Piezoelectric hydrophone",
+      "Python",
+      "DSP",
+      "FPGA",
+    ],
+    context: "Team Tiburon — analog frontend design & bring-up",
+    slug: "acoustic-processing-stack",
+    /* Build order: fabricate, power it, bring it up on the bench, then the
+       wet test — the bench shot is the cover because it is the one frame
+       that shows the actual design decision (a clean captured tone) paying
+       off, not just hardware sitting on a table. */
+    images: [
+      {
+        src: acousticFrontendManhattanBuild,
+        alt: "Close-up of the analog frontend built Manhattan-style: op-amp ICs and passive components soldered onto individual copper islands scored into a copper-clad board, wired point-to-point",
+        caption: "Manhattan-style hardware build",
+      },
+      {
+        src: acousticFrontendPowerSupply,
+        alt: "The Manhattan-style board wired to a small buck/boost converter module, powered by two loose battery cells",
+        caption: "Bench power supply",
+      },
+      {
+        src: acousticFrontendBenchBringup,
+        alt: "The board connected to a microcontroller, with a Rigol oscilloscope beside it displaying a captured sine-wave signal",
+        caption: "Bench bring-up on the oscilloscope",
+        cover: true,
+      },
+      {
+        src: acousticFrontendWetTest,
+        alt: "A basin of water used as an ad hoc test tank, with a sealed probe partly submerged and wires running to the board and a laptop on the floor",
+        caption: "Wet test setup",
+      },
+    ],
   },
   {
     title: "Analog Compute-in-Memory",
