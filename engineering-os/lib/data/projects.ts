@@ -753,4 +753,21 @@ export const projectDetails: ProjectDetail[] = [
       },
     ],
   },
+
+  /* Deliberately thin. This was a 24-hour hackathon with no surviving repo,
+     and the only confirmed facts are the aim (reach and modify the ESP32's
+     non-volatile storage) and the working result (a serial flash dump). The
+     method — tooling, partition offsets, whether a modified image was ever
+     written back — is not recorded anywhere and is not reconstructed here.
+     Per AGENTS.md a thin honest page beats a padded one, and the guard in
+     projectPage.ts permits this because no technicalDecisions or
+     validationResults are claimed. Expand only from Swastik's own account. */
+  {
+    slug: "esp32-nvm",
+    domainTags: ["Embedded Systems", "Firmware"],
+    executiveSummary:
+      "A 24-hour hackathon build aimed at the ESP32's non-volatile storage — reaching the data the firmware persists there from outside the running program, and modifying it. The working result was a serial flash dump: the chip's flash contents read back out to a host for inspection.",
+    problemAndRequirements:
+      "Non-volatile storage is what an ESP32 keeps across a power cycle — configuration, credentials, whatever the firmware chose to persist. The aim was to reach that data from outside the running firmware and modify it, inside a 24-hour window.",
+  },
 ];
