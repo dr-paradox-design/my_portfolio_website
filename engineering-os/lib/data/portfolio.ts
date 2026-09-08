@@ -47,6 +47,9 @@ import quadcopterPrintedParts from "@/public/projects/quadcopter-printed-parts.w
 import quadcopterAssembled from "@/public/projects/quadcopter-assembled.webp";
 import sensorFusionHitlSetup from "@/public/projects/sensorfusion-hitl-setup.webp";
 import sensorFusionPositionTest from "@/public/projects/sensorfusion-position-test.webp";
+import flightControllerIso from "@/public/projects/flight-controller-iso.webp";
+import flightControllerTop from "@/public/projects/flight-controller-top.webp";
+import flightControllerBottom from "@/public/projects/flight-controller-bottom.webp";
 
 export type WorkStatus = "complete" | "ongoing" | "upcoming";
 
@@ -471,17 +474,43 @@ export const workItems: WorkItem[] = [
   {
     title: "Flight Controller PCB",
     domain: "Embedded Systems & Firmware",
-    status: "complete",
+    status: "ongoing",
     tier: "major",
     summary:
-      "Four-layer flight controller board designed in KiCad around an STM32H743, carrying an ESP32 module, dual IMUs, and integrated power management.",
+      "Four-layer flight controller board designed in KiCad around an STM32H743, carrying an ESP32-S3 co-processor, dual redundant IMUs, and a USB/battery power-path management chain. Schematic and component selection are done; layout, routing, and bring-up are still in progress.",
     technologies: [
       "KiCad",
       "STM32H743",
-      "ESP32",
+      "ESP32-S3",
       "4-layer PCB",
       "Dual IMU",
+      "SPI",
       "Power management",
+    ],
+    slug: "flight-controller-pcb",
+    /* KiCad-rendered 3D views generated directly from the design's own
+       .kicad_pcb data, not photographs — the board hasn't been fabricated
+       yet. The renderer fills in a rounded-rectangle board edge whenever
+       Edge.Cuts has no geometry, which is the case here (see the caption
+       and failuresAndLessons in projects.ts) — that outline is a rendering
+       fallback, not a designed board shape. */
+    images: [
+      {
+        src: flightControllerIso,
+        alt: "Isometric KiCad 3D render of the flight controller PCB, showing the STM32 LQFP package at the centre surrounded by decoupling capacitors and pin headers along the board edges, on a synthesized rounded-rectangle outline",
+        caption: "KiCad 3D render — no board outline has been drawn yet, so the renderer's default edge is shown",
+        cover: true,
+      },
+      {
+        src: flightControllerTop,
+        alt: "Top-down KiCad 3D render of the flight controller PCB, showing the STM32 LQFP-100 package, surrounding headers, and two crystal/oscillator cans",
+        caption: "Top side",
+      },
+      {
+        src: flightControllerBottom,
+        alt: "Bottom-side KiCad 3D render of the flight controller PCB, showing the ESP32-S3-WROOM module footprint, a coin-cell holder outline, and rows of unpopulated header pads",
+        caption: "Bottom side — ESP32-S3 module and coin-cell backup footprints",
+      },
     ],
   },
   {

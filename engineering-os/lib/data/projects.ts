@@ -453,4 +453,101 @@ export const projectDetails: ProjectDetail[] = [
       description: "Internal notes on the diagnostic toolkit.",
     },
   },
+  {
+    slug: "flight-controller-pcb",
+    domainTags: ["PCB Design", "Embedded Systems", "Avionics"],
+    executiveSummary:
+      "A four-layer flight-controller PCB built around an STM32H743, carrying dual redundant IMUs, a barometer, an ESP32-S3 telemetry co-processor, and a power-path chain that runs the board from either the flight battery or USB alone. The schematic and component selection are finished; layout is roughly three-quarters routed, with the board outline and a clean DRC still outstanding, so this is written up as work in progress rather than a finished board.",
+    problemAndRequirements:
+      "A flight controller has one job that can't fail quietly: knowing the vehicle's attitude. That called for inertial sensing with a fallback if one sensor drifts or drops out, enough I/O to take GPS, an external compass, an RC receiver, and motor/servo PWM without contention, a telemetry/OSD path that couldn't stall the control loop if it misbehaved, and a power input that didn't require the flight battery just to flash firmware on the bench.",
+    systemArchitecture:
+      "The STM32H743 (LQFP-100) sits at the centre of a 4-layer stack. Two IMUs — a BMI088 and an ICM-42688-P — share one SPI bus with independent chip-selects for redundant, independently-sampled inertial data; a BMP581 barometer is on I2C instead, since it's the slower device of the three. A GPS+external-compass header, two auxiliary I2C headers, an SPI breakout, two spare UARTs, an SBUS/PPM RC input, and ten PWM/timer channels are broken out on dedicated connectors. An ESP32-S3-WROOM module talks to the STM32 over a single UART for telemetry/OSD, and a microSD card sits on its own SPI bus for logging. Power comes from either the flight battery through a TPS54531 synchronous buck or USB-C VBUS; a TI LM66200 dual ideal diode ORs the two resulting 5V rails together before AMS1117 linear regulators derive 3.3V and 1.8V, and a CR2032 coin cell backs up the MCU's VBAT domain. Programming is over SWD through a TC2030 Tag-Connect pogo-pin footprint rather than a soldered header.",
+    architectureDiagrams: [
+      {
+        src: "/projects/flight-controller-io-map.webp",
+        alt: "KiCad schematic sheet titled 'peripheral', showing labelled connector groups for PWM (ten headers with TIM1/TIM3/TIM4 channel labels), SBUS/PPM, GPS1 (with MAG_SCL, MAG_SDA, GPS_TX, GPS_RX), I2C_1, I2C_2, SPI, UART1, and UART2",
+        caption: "The board's I/O map: PWM/timer outputs, RC input, GPS+compass, I2C, SPI, and UART headers, each on its own connector.",
+      },
+      {
+        src: "/projects/flight-controller-sensors.webp",
+        alt: "KiCad schematic sheet titled 'SENSORS', showing a BMP581 barometer on I2C, a BMI088 IMU with separate accelerometer and gyroscope chip-select lines on SPI, and an ICM-42688-P IMU also on SPI, each block annotated with a handwritten note reading 'INTERRUPT IS LEFT!!!'",
+        caption: "Dual-IMU sensor sheet — the schematic's own annotation flags all three interrupt lines as not yet wired.",
+      },
+      {
+        src: "/projects/flight-controller-power.webp",
+        alt: "KiCad schematic sheet titled 'POWER & USB', showing a TPS54531 buck converter feeding a 5V/5A rail, separate 3.3V and 1.8V regulator sections, a USB Type-C input, and a coin-cell backup block annotated with a handwritten note reading 'we can use supercapacitor also instead of coin'",
+        caption: "Power tree: battery and USB rails OR'd together ahead of the 3.3V/1.8V regulators, plus the coin-cell backup.",
+      },
+    ],
+    technicalDecisions: [
+      {
+        title: "Two IMUs on one SPI bus, independent chip-selects",
+        decision:
+          "Wire a BMI088 and an ICM-42688-P as two independent SPI devices sharing MOSI/MISO/SCK, each with its own chip-select, and move the barometer to I2C instead.",
+        alternativesConsidered:
+          "A single IMU, or splitting the two inertial sensors across SPI and I2C to simplify the pinout.",
+        reasoning:
+          "Attitude error compounds directly into flight stability, so redundant, independently-sampled inertial data was judged worth the extra chip-select pin. SPI is the faster, lower-latency bus of the two available, and the barometer is comparatively slow, so it's the one that moved to I2C rather than the IMUs.",
+      },
+      {
+        title: "ESP32-S3 as a UART co-processor, not wireless on the flight MCU",
+        decision:
+          "Give the STM32H743 an ESP32-S3-WROOM module on its own UART for telemetry/OSD, instead of running any wireless stack on the flight-critical MCU.",
+        alternativesConsidered:
+          "A Wi-Fi/Bluetooth-capable MCU series for the main controller, or adding a wireless module directly onto a bus shared with flight sensors.",
+        reasoning:
+          "Keeping wireless connectivity on a separate chip means a stalled radio stack can't stall the control loop — the two processors only ever exchange whatever fits down a UART.",
+      },
+      {
+        title: "Ideal-diode power ORing so the board runs on USB alone",
+        decision:
+          "OR the battery-derived 5V rail and the USB-C VBUS rail through a TI LM66200 dual ideal diode before the 3.3V/1.8V linear regulators.",
+        alternativesConsidered:
+          "A single power input with a manual switch or jumper to pick battery vs. USB.",
+        reasoning:
+          "Firmware flashing and bench bring-up need to work with no flight battery connected. The ideal-diode OR does that with no moving parts and without either source backfeeding the other.",
+      },
+      {
+        title: "Tag-Connect footprint instead of a soldered SWD header",
+        decision: "Bring SWD out on a TC2030 Tag-Connect pogo-pin footprint.",
+        alternativesConsidered: "A standard 10-pin ARM SWD header.",
+        reasoning:
+          "A pogo-pin connector needs no header permanently soldered onto an already dense board, where the header footprint would otherwise be competing with a sensor or a rail for space.",
+      },
+    ],
+    failuresAndLessons: [
+      {
+        title: "Sensor interrupt lines left unrouted",
+        whatHappened:
+          "The BMI088, ICM-42688-P, and BMP581 interrupt pins are placed on their symbols but never wired to the MCU — flagged directly on the schematic with a repeated \"INTERRUPT IS LEFT!!!\" note.",
+        rootCause:
+          "Interrupt routing was deferred while getting the SPI and I2C data paths for all three sensors working first, and the note was left as a reminder rather than resolved at the time.",
+        resolved: false,
+        resolutionOrNextStep:
+          "Wire the three interrupt lines to free MCU GPIOs before finalising the schematic — needed for data-ready-driven sampling instead of polling.",
+      },
+      {
+        title: "No board outline; 336 open DRC violations",
+        whatHappened:
+          "The PCB has no Edge.Cuts geometry anywhere — every footprint is placed, but the board's physical shape itself was never drawn. A kicad-cli DRC pass currently reports 336 violations (mostly solder-mask bridges, silkscreen overlapping copper or other silkscreen, and footprint/library mismatches from the MCU swap below) and 62 unconnected nets.",
+        rootCause:
+          "Layout has been worked component-by-component, at roughly three-quarters placed and routed by the project's own status notes, with the mechanical outline and a full DRC pass left for the end of the layout phase instead of done incrementally.",
+        resolved: false,
+        resolutionOrNextStep:
+          "Draw the real board outline, finish routing the remaining nets, then clear the DRC report category by category before ordering prototypes.",
+      },
+      {
+        title: "MCU changed mid-design; filenames and docs didn't follow",
+        whatHappened:
+          "Every schematic sheet file and the project's own README still refer to an STM32F7, but the part actually placed on the board is an STM32H743 in an LQFP-100 footprint.",
+        rootCause:
+          "The MCU was swapped to the H7 series after the project was scaffolded around the F7, and the rename never propagated past the schematic symbol itself.",
+        resolved: false,
+        resolutionOrNextStep:
+          "Rename the sheet files and update the README once the layout is finished, so the repository stops telling a different story than the board.",
+      },
+    ],
+    whatsNext:
+      "Finish routing the remaining nets, draw the board outline, wire the three sensor interrupt lines, clear the DRC report, then generate Gerbers and order a prototype run for bring-up and testing — none of which has happened yet.",
+  },
 ];
