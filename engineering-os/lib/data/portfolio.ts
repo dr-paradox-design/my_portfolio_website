@@ -43,6 +43,9 @@ import eyantraTestSetup from "@/public/projects/eyantra-test-setup.png";
 import eyantraTeammates from "@/public/projects/eyantra-teammates.png";
 import eyantraCompetitionDay from "@/public/projects/eyantra-competition-day.webp";
 import eyantraVideoPoster from "@/public/projects/eyantra-video-poster.webp";
+import aquaticEscBoardEtched from "@/public/projects/aquatic-esc-board-etched.webp";
+import aquaticEscBoardPopulated from "@/public/projects/aquatic-esc-board-populated.webp";
+import aquaticTeamCertificates from "@/public/projects/aquatic-team-certificates.webp";
 import quadrupedCad from "@/public/projects/quadruped-cad.webp";
 import quadrupedPrintedParts from "@/public/projects/quadruped-printed-parts.webp";
 import quadrupedAssembled from "@/public/projects/quadruped-assembled.webp";
@@ -428,10 +431,48 @@ export const workItems: WorkItem[] = [
     domain: "Autonomous Systems & Robotics",
     status: "complete",
     tier: "supporting",
+    /* The summary leads with the board because that is the part Swastik
+       actually designed and can answer questions about. What the team's
+       machine itself does is still not recorded — he has not said, and it is
+       not guessable from the photograph, so the entry does not characterise
+       it. Add that line when he says what it was built to do.
+
+       A fourth photograph from this batch — a cylindrical-hull underwater
+       robot — is deliberately NOT here: it was designed by a senior, not by
+       Swastik, and a visitor reasonably reads every photo on a project page
+       as the page owner's work. Do not add it back. */
     summary:
-      "Hackathon work on how robotics can contribute to global and environmental sustainability, in an aquatic robotics context.",
-    technologies: ["Aquatic robotics"],
+      "Hackathon work on robotics for environmental sustainability in an aquatic context. Swastik designed the motor-control interconnect board for it — a single-layer PCB tying the ESCs together — and etched and fabricated it in house rather than ordering it, then tested it.",
+    technologies: [
+      "PCB design",
+      "In-house PCB fabrication",
+      "ESC / motor control",
+      "Aquatic robotics",
+    ],
     context: "IIT Guwahati Aquatic Hackathon",
+    slug: "aquatic-robotics",
+    /* Bare board → populated board → the team, which is build order and also
+       puts his own work first. The populated board is the `cover`: the bare
+       etch reads as an ambiguous yellow rectangle at card size, and the team
+       photo is about the event rather than the engineering. */
+    images: [
+      {
+        src: aquaticEscBoardEtched,
+        alt: "A single-layer PCB etched in house, unpopulated, resting on a white bench — copper traces and pads on a yellow substrate, with a marker pen, a bag of resistors, and pliers around it.",
+        caption: "The board as etched, before assembly",
+      },
+      {
+        src: aquaticEscBoardPopulated,
+        alt: "The same board held in one hand, now populated: three ESCs wrapped in red heat-shrink across the top with bundles of blue motor leads running off them, a row of small modules on green terminal blocks lower down, and four yellow power connectors along the bottom edge.",
+        caption: "Populated and wired — ESCs, motor leads, and power connectors",
+        cover: true,
+      },
+      {
+        src: aquaticTeamCertificates,
+        alt: "Three team members crouching with their hackathon certificates behind the build: an aluminium extrusion frame with clear acrylic panels forming an angled roof, a black funnel at the front, and components mounted inside.",
+        caption: "The team at the hackathon",
+      },
+    ],
   },
   {
     title: "Line Following Robot",
