@@ -42,6 +42,7 @@ import eyantraDrone from "@/public/projects/eyantra-drone.png";
 import eyantraTestSetup from "@/public/projects/eyantra-test-setup.png";
 import eyantraTeammates from "@/public/projects/eyantra-teammates.png";
 import eyantraCompetitionDay from "@/public/projects/eyantra-competition-day.webp";
+import eyantraVideoPoster from "@/public/projects/eyantra-video-poster.webp";
 import quadcopterCad from "@/public/projects/quadcopter-cad.webp";
 import quadcopterPrintedParts from "@/public/projects/quadcopter-printed-parts.webp";
 import quadcopterAssembled from "@/public/projects/quadcopter-assembled.webp";
@@ -330,13 +331,16 @@ export const workItems: WorkItem[] = [
          entry immediately below is a standing reminder of why that matters.
          Sharpen it once the content is described. */
       title: "Autonomous Warehouse Drone",
-      /* TODO(swastik): swap for a real still from this footage.
-         `WorkVideo.poster` asks for a frame from the video. This is the test
-         arena photo from the gallery standing in — honest about the setting,
-         but not the frame. One line to replace. */
+      /* A real frame from this footage, which is what `WorkVideo.poster`
+         asks for — previously the test-arena gallery photo standing in.
+         Sourced from the video's own YouTube thumbnail (maxresdefault,
+         1280×720) and trimmed to 1280×542 to drop the letterbox bars the
+         frame was pillared with; the container is `aspect-video` with
+         `object-cover`, so leaving the bars in would have shown them as
+         dead black bands. No other alteration. */
       poster: {
-        src: eyantraTestSetup,
-        alt: "Indoor test arena of stacked blocks laid out on the floor, with a teammate at a laptop against the far wall",
+        src: eyantraVideoPoster,
+        alt: "Split-screen frame from the run: on the left the indoor arena of stacked blocks with a teammate walking past, on the right the overhead WhyCon tracking view of the e-YRC 2024-25 arena alongside scrolling ROS terminal output",
       },
     },
   },
