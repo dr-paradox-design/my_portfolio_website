@@ -1,8 +1,12 @@
 import { profile } from "@/lib/data/profile";
 
+/* LinkedIn drops out of this row entirely while `profile.social.linkedin`
+   is null, rather than rendering a dead link. See lib/data/profile.ts. */
 const links = [
   { label: "GitHub", href: profile.social.github, external: true },
-  { label: "LinkedIn", href: profile.social.linkedin, external: true },
+  ...(profile.social.linkedin
+    ? [{ label: "LinkedIn", href: profile.social.linkedin, external: true }]
+    : []),
   { label: "Email", href: `mailto:${profile.social.email}`, external: false },
 ];
 
