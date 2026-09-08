@@ -653,4 +653,104 @@ export const projectDetails: ProjectDetail[] = [
     whatsNext:
       "PCB layout to replace the Manhattan prototype, a Bessel-Butterworth hybrid redesign to fix the group delay, tighter-tolerance or Leapfrog-topology component selection to close the bandwidth gap, and — once the analog front end is trusted — the DSP and Time Difference of Arrival (TDOA) localization work on FPGA that this whole stack exists to feed.",
   },
+  {
+    slug: "pipelined-risc-v",
+    domainTags: ["Digital Design", "Computer Architecture", "RTL Verification"],
+    executiveSummary:
+      "A from-scratch RV32I processor core in Verilog, built deliberately in two stages: first a working Harris & Harris-style single-cycle datapath, then a 5-stage pipeline (IF-ID-EX-MEM-WB) cut from that same datapath by inserting pipeline registers between its stages. Both cores pass the same 12-check self-checking regression — they differ in schedule, not in what the program computes. The pipeline currently has no forwarding, hazard detection, or flush logic; every hazard is scheduled by hand in the test program, which is a deliberate sequencing choice, not an oversight.",
+    problemAndRequirements:
+      "The goal was to understand pipelining by building it, not by reading about it: take a functionally-correct single-cycle RV32I core and turn it into a 5-stage pipeline without changing a single line of the functional units it's built from, so that any bug introduced while pipelining is provably a pipelining bug and not a datapath bug. Both cores need to support the same instruction subset (R-type arithmetic, addi, lw, sw, beq) and pass the same assertions, so the pipeline is checked against the single-cycle core's own behavior rather than an external reference.",
+    systemArchitecture:
+      "The single-cycle datapath (`single_core/`) is Harris & Harris-style: PC, PC+4 and branch adders, instruction memory, a 32x32 register file, sign extension, an ALU, data memory, and a control unit split into a main decoder and an ALU decoder. The pipeline (`src/`) reuses every one of those modules unmodified and separates five stage modules (Fetch, Decode, Execute, Memory, Writeback) with four pipeline registers (IF/ID, ID/EX, EX/MEM, MEM/WB). Every signal carries a stage-suffix letter (F/D/E/M/W), so a value's name changes the moment it crosses a pipeline register — RD2E and RD2M are the same wire one cycle apart. Two paths run backwards against the pipeline's forward flow: the branch decision (resolved in EX, needed in IF) and the register writeback (committed in WB, needed in ID) — and because neither has hardware support yet, both costs are currently paid in software as NOPs in the test program.",
+    technicalDecisions: [
+      {
+        title: "Single-cycle modules frozen and reused unmodified for the pipeline",
+        decision:
+          "Build the pipeline's five stage modules entirely out of the existing single-cycle modules (ALU, register file, control unit, decoders, memories), without editing a single line of them.",
+        alternativesConsidered:
+          "Writing pipeline-specific versions of the datapath modules, or refactoring them as the pipeline was built.",
+        reasoning:
+          "Pipelining a processor doesn't change its functional units, it puts registers between them. Keeping the single-cycle modules frozen means any pipeline failure is provably a pipelining bug rather than a reintroduced functional bug, which matters a lot when the two cores are being cross-checked against each other.",
+      },
+      {
+        title: "Software-scheduled NOPs before any hazard hardware",
+        decision:
+          "Get the four pipeline registers and both backward paths working first, with every data and control hazard scheduled by hand as NOPs in the test program, before writing any forwarding, hazard-detection, or flush logic.",
+        alternativesConsidered:
+          "Building the hazard-detection unit, forwarding paths, and branch-flush logic as part of the same pass that added the pipeline registers.",
+        reasoning:
+          "A fully software-scheduled pipeline has a completely predictable, hand-derivable timing model, which makes it possible to verify the pipeline registers and backward paths are wired correctly in isolation. Forwarding and flushing are additive on top of that once it is proven right — building them at the same time would have made a register-boundary bug and a hazard-logic bug indistinguishable.",
+      },
+      {
+        title: "Branch target computed in EX, not IF or ID",
+        decision:
+          "Move the branch-target adder from fetch (where the single-cycle core has it) into the execute stage, alongside the branch decision itself.",
+        alternativesConsidered:
+          "Keeping the branch adder in IF or ID and forwarding just the resolved target back to fetch separately from the decision.",
+        reasoning:
+          "The branch target needs the sign-extended immediate, which doesn't exist until decode, and the branch decision needs the ALU comparison, which doesn't exist until execute. Computing both in EX means only one backward bundle (target and decision together) has to route up to fetch, instead of two separate backward paths.",
+      },
+      {
+        title: "Control unit reused via a tied-high zero input, not rewritten per stage",
+        decision:
+          "Instantiate the unmodified single-cycle `Control_Unit_Top` with its `zero` port tied to `1'b1`, so it emits the raw branch-opcode bit, then complete the actual branch test in EX as `PCSrcE = BranchE & ZeroE` once the real zero flag exists.",
+        alternativesConsidered:
+          "Writing a pipeline-specific decoder that splits branch-condition logic across stages explicitly.",
+        reasoning:
+          "This keeps the single-cycle control unit frozen (consistent with the first decision) while correctly relocating the zero-flag test to the stage where the flag is actually computed. It reads the same as the single-cycle core's old genuine bug — zero hardcoded to a constant — so it's called out explicitly in the RTL comments to distinguish deliberate reuse from a regression.",
+      },
+    ],
+    validationResults: [
+      {
+        test: "Single-cycle self-checking regression (12 assertions)",
+        outcome:
+          "All 12 checks pass, covering R-type (add/sub/and/or/slt), I-type (addi/lw), S-type (sw), and B-type (beq, both taken and not-taken) instructions against expected final register values.",
+      },
+      {
+        test: "5-stage pipeline self-checking regression (same 12 assertions)",
+        outcome:
+          "The pipelined core passes the identical 12 checks over its own, longer, NOP-padded schedule — confirming the pipeline registers and both backward paths preserve program behavior, not just throughput.",
+      },
+      {
+        test: "3-NOP data-hazard rule, verified experimentally rather than only derived",
+        outcome:
+          "Rebuilding the pipelined program with only 2 NOPs between a dependent instruction pair produced x3 = 5 instead of the expected 8 — one operand read correctly, the other stale — which is exactly the failure signature the clock-cycle derivation predicts, confirming the 3-NOP requirement is real and not just a paper calculation.",
+      },
+      {
+        test: "Branch resolution regression, before and after the single-cycle fix",
+        outcome:
+          "With the ALU's zero flag wired through and the branch adder and PC-source mux added, both the taken and not-taken beq paths produce the expected register state (x10/x11/x12) on both cores.",
+      },
+    ],
+    failuresAndLessons: [
+      {
+        title: "Branch resolution was silently broken in the first single-cycle build",
+        whatHappened:
+          "beq decoded correctly but never redirected fetch: the ALU's zero flag was left unconnected, the control unit hardcoded zero to 0, and there was no branch-target adder or PC-source mux at all — the PC only ever advanced by PC+4, so every branch behaved as not-taken regardless of the comparison.",
+        rootCause:
+          "The control unit's zero input was left at a stub constant from an earlier stage of building the datapath, and the branch-target hardware was never added at the same time the branch opcode was wired into the decoder — the instruction looked complete because it decoded without error.",
+        resolved: true,
+        resolutionOrNextStep:
+          "Wired the ALU's zero flag through to the control unit, and added the branch-target adder and PC-source mux so a taken branch actually redirects fetch. Each change is marked with a `//FIX:` comment in the RTL so the defect and its fix stay traceable in the source.",
+      },
+      {
+        title: "The pipeline has no hazard hardware yet — every hazard is paid for by hand",
+        whatHappened:
+          "The pipelined core requires exactly 3 NOPs after any instruction that produces a register value consumed soon after, and 2 delay-slot NOPs after every branch, both inserted by hand into the test program. There is no forwarding, no hazard-detection unit, and no flush logic.",
+        rootCause:
+          "This is the direct consequence of the decision to prove the pipeline registers and backward paths correct under a fully software-controlled schedule before adding hazard hardware on top — it is an open item by design, not an unnoticed gap.",
+        resolved: false,
+        resolutionOrNextStep:
+          "EX/MEM and MEM/WB forwarding paths come next — they remove the 3 data-hazard NOPs and are the highest-value next step. A hazard-detection unit for the one case forwarding can't fix (load-use) and branch-flush logic (removing the 2 delay slots) follow after.",
+      },
+    ],
+    whatsNext:
+      "EX/MEM and MEM/WB forwarding paths, a hazard-detection unit with load-use stall logic, branch-flush logic, and finally PYNQ-Z2 FPGA synthesis and on-board verification. Each remaining feature has a falsifiable definition of done: it deletes specific NOPs from the test program while the same 12 assertions keep passing.",
+    links: [
+      {
+        label: "GitHub",
+        url: "https://github.com/dr-paradox-design/5_Stage_Pipelined_RISC-V",
+      },
+    ],
+  },
 ];

@@ -417,8 +417,8 @@ export const workItems: WorkItem[] = [
        claim — the README wins, because it is the one he keeps current. */
     summary:
       "RV32I core written from scratch in Verilog, built in stages: a single-cycle datapath first, then the four pipeline registers that split it into five stages. Both cores pass the same 12-check self-checking regression. Hazards are currently scheduled by hand in software — forwarding, hazard detection, and flush logic are the next milestones, then FPGA verification on a PYNQ-Z2.",
-    technologies: ["Verilog", "RV32I", "5-stage pipeline", "Icarus Verilog"],
-    repoUrl: "https://github.com/dr-paradox-design/5_Stage_Pipelined_RISC-V",
+    technologies: ["Verilog", "RV32I", "5-stage pipeline", "Icarus Verilog", "GTKWave"],
+    slug: "pipelined-risc-v",
   },
   {
     title: "FPGA Sensor Fusion",
