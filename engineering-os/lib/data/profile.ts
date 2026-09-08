@@ -29,21 +29,7 @@ export const profile = {
   social: {
     github: "https://github.com/dr-paradox-design",
 
-    /**
-     * Leave as `null` while the real profile URL is unknown — the footer
-     * link and the contact-page row hide themselves. Set it to the real URL
-     * to turn both back on; nothing else needs changing.
-     *
-     * This was `https://linkedin.com/in/swastikaditya` with a
-     * `TODO: replace with real URL` comment — a guessed handle, live in the
-     * footer of every page and as a primary row on /contact. An invented URL
-     * is what the no-fabrication rule in AGENTS.md forbids, and this was the
-     * worst placement of one on the site: /contact is where a recruiter
-     * lands, and a link to a dead page or to the wrong person costs more
-     * than no link. It could not be verified either way — LinkedIn answers
-     * bots with HTTP 999 for real and fake handles alike.
-     */
-    linkedin: null as string | null,
+    linkedin: "https://www.linkedin.com/in/swastik-aditya-ranjan-294b15282" as string | null,
 
     email: "123ee0320raj@gmail.com"
   },

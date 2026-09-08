@@ -58,6 +58,7 @@ import acousticFrontendManhattanBuild from "@/public/projects/acoustic-frontend-
 import acousticFrontendPowerSupply from "@/public/projects/acoustic-frontend-power-supply.webp";
 import acousticFrontendBenchBringup from "@/public/projects/acoustic-frontend-bench-bringup.webp";
 import acousticFrontendWetTest from "@/public/projects/acoustic-frontend-wet-test.webp";
+import esp32DevkitBoard from "@/public/projects/esp32-devkit-board.webp";
 
 export type WorkStatus = "complete" | "ongoing" | "upcoming";
 
@@ -597,10 +598,18 @@ export const workItems: WorkItem[] = [
     status: "complete",
     tier: "supporting",
     summary:
-      "24-hour hackathon build focused on accessing and modifying the non-volatile memory of the ESP32, dumping the flash contents out over serial to inspect what the chip had persisted.",
+      "24-hour hackathon build focused on accessing and modifying the non-volatile memory of the ESP32: decrypted a message the challenge had stored in NVM, and wrote the team's own data into NVM over serial.",
     technologies: ["ESP32", "Non-volatile memory", "Serial flash dump"],
     context: "24-hour hackathon",
     slug: "esp32-nvm",
+    images: [
+      {
+        src: esp32DevkitBoard,
+        alt: "An ESP32-WROOM-32 development board on a plain white background, showing the module, micro-USB port, and pin headers",
+        caption: "An ESP32 dev board — stock photo, not the team's own hardware; no photos from the hackathon survive",
+        cover: true,
+      },
+    ],
   },
   {
     title: "Hostel Room Automation",
