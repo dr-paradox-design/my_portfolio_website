@@ -53,13 +53,27 @@ export default function ProjectsPage() {
                 </span>
               </div>
 
-              {/* `items-start`: cards with photos are much taller than cards
-                  without them, and stretching the shorter one to match opens a
-                  dead void in the middle of it. Letting each card end where its
-                  content ends reads as deliberate instead. */}
-              <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
+              {/* CSS multi-column masonry, not a 2-col grid. A photo card next
+                  to a text-only card in the same grid row used to leave a
+                  visible dead gap under the shorter one, because a grid row's
+                  track height is set by its tallest cell no matter how the
+                  items inside it align. Columns don't have that problem: each
+                  card just stacks under the next-shortest column, so a short
+                  card is simply followed immediately by the next card, photo
+                  or not.
+                  `break-inside-avoid` on the wrapper (not on the card itself)
+                  keeps a card from being split across two columns — needed
+                  because the split point is a property of how a card sits in
+                  the column flow, not of the card's own styling. Ordering
+                  becomes column-major (down column one, then column two)
+                  instead of row-major, which is the one trade-off: tier order
+                  within a domain is still respected per column, just not
+                  strictly left-to-right anymore. */}
+              <div className="columns-1 gap-4 sm:columns-2">
                 {items.map((item) => (
-                  <WorkItemCard key={item.title} item={item} />
+                  <div key={item.title} className="mb-4 break-inside-avoid">
+                    <WorkItemCard item={item} />
+                  </div>
                 ))}
               </div>
             </section>
