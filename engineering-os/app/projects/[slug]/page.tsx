@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ViewTransition } from "react";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Check, CircleDot, Download } from "lucide-react";
 import { getProjectPage, routedSlugs } from "@/lib/data/projectPage";
@@ -316,6 +317,7 @@ export default async function ProjectPage({
       {/* ── Header ───────────────────────────────────────────── */}
       <Link
         href="/projects"
+        transitionTypes={["nav-back"]}
         className="mb-8 inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-emerald-400"
       >
         <ArrowLeft size={14} /> All projects
@@ -329,9 +331,14 @@ export default async function ProjectPage({
         </div>
       )}
 
-      <h1 className="text-gradient mb-4 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
-        {title}
-      </h1>
+      {/* Paired with the card title on /projects and on the home page — same
+          `name`, so the browser morphs one into the other instead of
+          crossfading two unrelated headings. See WorkItemCard. */}
+      <ViewTransition name={`project-title-${slug}`} share="project-title">
+        <h1 className="text-gradient mb-4 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+          {title}
+        </h1>
+      </ViewTransition>
 
       <p className="mb-6 text-lg leading-relaxed text-zinc-400">{summary}</p>
 
@@ -380,6 +387,7 @@ export default async function ProjectPage({
       <div className="mt-16 border-t border-zinc-800/60 pt-8">
         <Link
           href="/projects"
+          transitionTypes={["nav-back"]}
           className="inline-flex items-center gap-1.5 text-sm text-zinc-400 transition-colors hover:text-emerald-400"
         >
           <ArrowLeft size={14} /> Back to all projects

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ViewTransition } from "react";
 import { ArrowUpRight, Code2, Star } from "lucide-react";
 import { coverImage, type WorkItem } from "@/lib/data/portfolio";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -27,6 +28,27 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
 
   const hero = coverImage(item.images);
 
+  /* Shares its `name` with the `<h1>` on the project page, so the title
+     morphs across the navigation. Identical mechanism to WorkItemCard —
+     the home grid and /projects are never on screen at the same time, so
+     both may claim the same name. */
+  const titleEl = (
+    <h3
+      className={`text-sm font-semibold leading-snug tracking-tight text-zinc-100 ${
+        item.slug ? "transition-colors group-hover:text-emerald-400" : ""
+      }`}
+    >
+      {item.title}
+    </h3>
+  );
+  const heading = item.slug ? (
+    <ViewTransition name={`project-title-${item.slug}`} share="project-title">
+      {titleEl}
+    </ViewTransition>
+  ) : (
+    titleEl
+  );
+
   const body = (
     <>
       {/* The home grid is deliberately dense, so a photo cannot take a band of
@@ -53,13 +75,7 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
       )}
 
       <div className="mb-1.5 flex items-start justify-between gap-2">
-        <h3
-          className={`text-sm font-semibold leading-snug tracking-tight text-zinc-100 ${
-            item.slug ? "transition-colors group-hover:text-emerald-400" : ""
-          }`}
-        >
-          {item.title}
-        </h3>
+        {heading}
         {/* Status sits up here rather than in the tag row, where it competed
             for horizontal space and forced the tags onto a second line. */}
         <div className="flex shrink-0 items-center gap-1.5">
@@ -140,6 +156,8 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
     return (
       <Link
         href={`/projects/${item.slug}`}
+        /* Same direction signal as the full card on /projects. */
+        transitionTypes={["nav-forward"]}
         className={`${shell} group hover:-translate-y-0.5 hover:border-zinc-700`}
       >
         {body}

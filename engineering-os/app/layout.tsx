@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ViewTransition } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
@@ -66,7 +67,41 @@ export default function RootLayout({
       {/* `grain` paints a fixed noise overlay via ::after — see globals.css */}
       <body className="grain flex min-h-full flex-col bg-zinc-950 text-zinc-200">
         <Navbar />
-        <main className="flex-1">{children}</main>
+        {/* Every route change animates through here.
+
+            `enter`/`exit` are keyed by transition type, which links opt into
+            via `<Link transitionTypes={…}>`. Three cases:
+
+              · `nav-forward` — going deeper (a work card into its project
+                page). Old content slides left, new content arrives from the
+                right.
+              · `nav-back` — returning. The same motion, mirrored.
+              · `default` — everything else, which is the top nav and any
+                browser back/forward. Browser-initiated history navigation
+                carries no type by design, so it lands here rather than
+                animating in a direction that might contradict the one the
+                user actually moved in.
+
+            The default is a fade with a small upward drift rather than a
+            slide, because a top-level nav between Projects and Skills is a
+            lateral move with no depth to communicate — sliding it would be
+            saying something untrue about the hierarchy. */}
+        <main className="flex-1">
+          <ViewTransition
+            enter={{
+              "nav-forward": "nav-forward",
+              "nav-back": "nav-back",
+              default: "page-enter",
+            }}
+            exit={{
+              "nav-forward": "nav-forward",
+              "nav-back": "nav-back",
+              default: "page-exit",
+            }}
+          >
+            {children}
+          </ViewTransition>
+        </main>
         <Footer />
       </body>
     </html>

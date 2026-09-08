@@ -15,6 +15,11 @@
   --accent: #34d399;      /* emerald-400 */
   --accent-deep: #10b981; /* emerald-500 */
   --accent-glow: rgba(52, 211, 153, 0.15);
+
+  /* Page-transition timing. The enter is longer than the exit and waits
+     out the exit before starting — see the transitions block below. */
+  --vt-exit: 160ms;
+  --vt-enter: 260ms;
 }
 
 html {
@@ -222,6 +227,134 @@ body {
 .delay-5 { animation-delay: 0.35s; }
 .delay-6 { animation-delay: 0.42s; }
 
+/* ── Page transitions ───────────────────────────────────────────────
+   Drives the `<ViewTransition>` in app/layout.tsx. The class names below
+   (`page-enter`, `nav-forward`, …) are the strings passed to its
+   `enter`/`exit` props; React puts them on the transition as classes,
+   which is why these selectors take a leading dot while the named
+   `site-header` group does not.
+
+   Timing is deliberately asymmetric — the old page leaves in 160ms and
+   the new one arrives over 260ms, starting only once the exit is done.
+   Old content that lingers competes for attention with the thing the
+   user actually asked for; new content that arrives too fast doesn't
+   read as having arrived at all.
+
+   The blur in `vt-fade` is doing real work: it hides the fact that the
+   browser is interpolating two flat rasterised snapshots, which on
+   dense text otherwise ghosts visibly.
+   ───────────────────────────────────────────────────────────────── */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  /* The page content has its own group, so `root` is just the background,
+     the grain overlay, and the footer — identical on every route. Letting
+     it run the browser's default crossfade would put a second, slower fade
+     underneath the real transition and muddy it. */
+  animation: none;
+}
+
+/* The header does not move. It is the fixed reference that makes the
+   motion read as "the content slid", not "the viewport lurched".
+   `display: none` on the old snapshot prevents the one-frame flash where
+   both the old and new header are painted at once. */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+@keyframes vt-fade {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes vt-rise {
+  from {
+    translate: 0 14px;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+@keyframes vt-slide {
+  from {
+    translate: var(--vt-offset) 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* Default: top-level nav, and any browser back/forward (which carries no
+   transition type). A lateral move between Projects and Skills has no
+   depth to communicate, so it fades and drifts up rather than sliding. */
+::view-transition-old(.page-exit) {
+  animation: var(--vt-exit) ease-in both vt-fade reverse;
+}
+::view-transition-new(.page-enter) {
+  animation:
+    var(--vt-enter) ease-out var(--vt-exit) both vt-fade,
+    460ms cubic-bezier(0.22, 1, 0.36, 1) both vt-rise;
+}
+
+/* Directional: going deeper vs. coming back. 60px is enough to read as a
+   direction without asking the eye to track something across the screen. */
+::view-transition-old(.nav-forward) {
+  --vt-offset: -60px;
+  animation:
+    var(--vt-exit) ease-in both vt-fade reverse,
+    460ms cubic-bezier(0.22, 1, 0.36, 1) both vt-slide reverse;
+}
+::view-transition-new(.nav-forward) {
+  --vt-offset: 60px;
+  animation:
+    var(--vt-enter) ease-out var(--vt-exit) both vt-fade,
+    460ms cubic-bezier(0.22, 1, 0.36, 1) both vt-slide;
+}
+
+::view-transition-old(.nav-back) {
+  --vt-offset: 60px;
+  animation:
+    var(--vt-exit) ease-in both vt-fade reverse,
+    460ms cubic-bezier(0.22, 1, 0.36, 1) both vt-slide reverse;
+}
+::view-transition-new(.nav-back) {
+  --vt-offset: -60px;
+  animation:
+    var(--vt-enter) ease-out var(--vt-exit) both vt-fade,
+    460ms cubic-bezier(0.22, 1, 0.36, 1) both vt-slide;
+}
+
+/* Shared element: a card's title is the same object as the heading on the
+   page it opens, so it morphs between them instead of one disappearing
+   and an unrelated one appearing. `share` is React's own default morph;
+   this only softens it. */
+::view-transition-group(.project-title) {
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+::view-transition-image-pair(.project-title) {
+  animation-name: vt-morph-blur;
+}
+@keyframes vt-morph-blur {
+  30% {
+    filter: blur(3px);
+  }
+}
+
 /* ── Reduced motion ─────────────────────────────────────────────────
    Nothing here is load-bearing, so drop all of it — but restore
    opacity, or fade-up elements would stay invisible.
@@ -243,5 +376,18 @@ body {
   .animate-fade-up {
     opacity: 1;
     animation: none;
+  }
+
+  /* The universal `*` rule above does not reach view-transition
+     pseudo-elements — they are not part of the document tree — so the
+     page transitions need their own kill switch. Directional slides
+     simulate movement across the viewport, which is the single most
+     common trigger for motion sensitivity. Zeroing the durations leaves
+     the browser's instant swap, which is the pre-transition behaviour. */
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0s !important;
   }
 }

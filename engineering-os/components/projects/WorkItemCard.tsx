@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ViewTransition } from "react";
 import { ArrowRight, ArrowUpRight, Code2, Star } from "lucide-react";
 import type { WorkItem } from "@/lib/data/portfolio";
 import { hasCaseStudy } from "@/lib/data/projectPage";
@@ -17,6 +18,31 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
      label is derived from what is actually behind the link. */
   const ctaLabel = hasCaseStudy(item.slug) ? "Read case study" : "Open project";
 
+  const title = (
+    <h3
+      className={`text-base font-semibold leading-snug tracking-tight text-zinc-100 ${
+        item.slug ? "transition-colors group-hover:text-emerald-400" : ""
+      }`}
+    >
+      {item.title}
+    </h3>
+  );
+
+  /* The card title and the `<h1>` on the page it opens are the same object,
+     so they morph into each other rather than one vanishing while an
+     unrelated one appears. The `name` is what pairs them across the two
+     routes — `app/projects/[slug]/page.tsx` uses the identical string.
+
+     Only linked cards get a name. A name has to be unique per page, and on
+     an unlinked card it would be naming a thing that goes nowhere. */
+  const heading = item.slug ? (
+    <ViewTransition name={`project-title-${item.slug}`} share="project-title">
+      {title}
+    </ViewTransition>
+  ) : (
+    title
+  );
+
   const body = (
     <>
       <SpotlightEffect />
@@ -27,13 +53,7 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
         )}
 
         <div className="mb-2.5 flex items-start justify-between gap-3">
-          <h3
-            className={`text-base font-semibold leading-snug tracking-tight text-zinc-100 ${
-              item.slug ? "transition-colors group-hover:text-emerald-400" : ""
-            }`}
-          >
-            {item.title}
-          </h3>
+          {heading}
           <div className="flex shrink-0 items-center gap-1.5">
             {item.tier === "flagship" && (
               <span
@@ -116,6 +136,10 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
     return (
       <Link
         href={`/projects/${item.slug}`}
+        /* Going deeper into the hierarchy, so the page transition slides
+           rather than fades. The page's own "back to all projects" links
+           carry `nav-back` and mirror it. */
+        transitionTypes={["nav-forward"]}
         className={`${shell} brackets hover:-translate-y-1 hover:border-zinc-700 hover:shadow-[0_16px_40px_-16px_rgba(0,0,0,0.9)]`}
       >
         {/* Crop marks */}

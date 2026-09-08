@@ -70,6 +70,13 @@ export function Navbar() {
 
   return (
     <header
+      /* Anchors the header during page transitions. A `viewTransitionName`
+         pulls the element out of the root snapshot into its own group, and
+         globals.css then tells that group not to animate — so the content
+         slides underneath a header that stays put. Without this the header
+         travels with the page and the user loses the one fixed reference
+         point that makes the motion legible as "the content moved". */
+      style={{ viewTransitionName: "site-header" }}
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
         opaque
           ? "border-b border-zinc-800/70 bg-zinc-950/80 backdrop-blur-xl"
