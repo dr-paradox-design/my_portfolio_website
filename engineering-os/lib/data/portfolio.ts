@@ -264,11 +264,12 @@ export const workItems: WorkItem[] = [
     status: "complete",
     tier: "major",
     summary:
-      "Problem statement built around two autonomous drones operating together for disaster management. Placed Rank 6.",
+      "Two cooperating autonomous drones for the NIDAR 2025 disaster-management track — a scout that surveys a flooded area and geotags survivors, and a delivery drone that flies survival kits out to them. Placed Rank 6.",
     technologies: ["Autonomous drones", "Disaster response"],
     context: "NIDAR 2025",
-    /* Photographs only for now — no write-up yet, so the page is a spec
-       strip and a build log. That is a complete thing, not a stub. */
+    /* The page states the published competition requirements in full but keeps
+       the summary of the team's own build to what is confirmed — see the long
+       comment on this slug in projects.ts before adding to either. */
     slug: "disaster-management-drones",
     images: [
       {

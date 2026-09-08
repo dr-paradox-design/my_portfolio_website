@@ -892,4 +892,62 @@ export const projectDetails: ProjectDetail[] = [
     whatsNext:
       "Measuring the vehicle's own hydrodynamic parameters — a bollard-pull test and a timed straight run — to settle the damping discrepancy and replace the literature derivatives, which the parameter provenance tags are already structured for. Resolving the pitch-instability question against the physical vehicle. The placeholder depth/yaw PID exists to exercise the workflow rather than to be a contribution, and is the natural slot for a real controller: the harness already models the 50 Hz zero-order hold, actuator saturation and lag that any hardware claim has to survive.",
   },
+
+  /* The asymmetry on this page is deliberate and worth understanding before
+     editing it.
+
+     `problemAndRequirements` is detailed because NIDAR 2025's disaster-
+     management track is a *published* problem statement — the flood scenario,
+     the 30-hectare survey area, the two drone roles, the 5x10x20 cm / 200 g
+     survival kit, the geotagging, speaker and live-video requirements, and the
+     autonomy-or-penalty rule are all quoted from the organisers' own brief
+     (MeitY + Drone Federation India, under SwaYaan). Stating what the
+     competition asked for is not a claim about Swastik's team.
+
+     `executiveSummary` is short because what the team actually built is not
+     recorded anywhere yet: no airframe spec, no detection method, no delivery
+     mechanism, no division of labour, no field-test numbers. Rank 6 and "two
+     drones, disaster-management track" is the whole of the confirmed record.
+
+     So the page tells a reader exactly what was demanded and exactly what was
+     achieved, and stops. Do NOT close the gap by inferring an implementation
+     from the problem statement — the requirements describe what every team was
+     handed, not what this one shipped. The moment Swastik supplies the real
+     architecture, this earns systemArchitecture and technicalDecisions, and
+     the honesty guard in projectPage.ts will then require a real failure
+     alongside them. */
+  {
+    slug: "disaster-management-drones",
+    domainTags: ["Robotics", "Autonomous Systems", "Aerial Vehicles"],
+    executiveSummary:
+      "A two-drone autonomous system entered in NIDAR 2025 — the National Innovation Challenge for Drone Application and Research, run by MeitY and Drone Federation India under the SwaYaan initiative — against the disaster-management problem statement, which pairs a scout drone with a delivery drone. The entry placed Rank 6 nationally.",
+    problemAndRequirements:
+      "The published scenario is a coastal town after a flood: water has entered homes, residents have evacuated or taken shelter on rooftops without food, water or medicine, and 48 hours later the rain has stopped and the wind has dropped but the water is still high and people are still stranded. Teams had to field two cooperating drones. The scout drone surveys roughly 30 hectares to locate survivors, streams live video back to a command station, geotags each survivor's position, and carries a mounted speaker so an operator can speak to the people it finds. The delivery drone then flies survival kits — 5 x 10 x 20 cm, 200 g — out to those geotagged positions. Both aircraft were to run autonomously and report to a single unified command centre; flying them manually from separate control stations was permitted but carried a scoring penalty.",
+    links: [
+      {
+        label: "NIDAR — official challenge site",
+        url: "https://www.nidar.org.in/",
+      },
+    ],
+  },
+
+  /* Kept to what the photographs and Swastik's own account support, which is a
+     CAD-to-hardware mechanical build: designed in SolidWorks, printed, wired,
+     and powered up. There is no record of the propulsion parts, the flight
+     controller, the power budget, or any tuning, so none appears here.
+
+     Note what this page does not say: it does not say the aircraft flew.
+     "Moved under its own power" is what was reported, and the distance between
+     that and controlled flight is exactly the distance an interviewer will
+     probe. The portfolio card carries the same restraint for the same reason
+     (see the comment on this entry in portfolio.ts). If it did fly, both
+     strings should be upgraded together. */
+  {
+    slug: "3d-printed-quadcopter",
+    domainTags: ["Mechanical Design", "CAD", "Additive Manufacturing"],
+    executiveSummary:
+      "A second-year quadcopter taken from a blank CAD document to powered hardware, solo. The entire airframe — four arms, motor mounts, the centre chassis and the spacers that stack it — was modelled in SolidWorks, 3D printed, then assembled with its electronics and brought up until it moved under its own power. The finished aircraft carries its electronics on a central plate with the wiring run out along the arms, and mounts its rotors inside square ducted housings rather than on open booms.",
+    problemAndRequirements:
+      "The point of the build was ownership of the whole path rather than the result: not assembling a kit airframe, but designing every structural part, producing it, and finding out what survives contact with real motors. That framing sets the hard constraint, which is the material — printed plastic has to take the thrust load at the motor mounts, resist the vibration a spinning rotor puts into an arm, and hold the electronics rigidly, all while staying light enough to be worth lifting. Every part also had to be printable on a hobby machine, which limits how thin a wall or how unsupported a span the design is allowed to ask for.",
+  },
 ];
