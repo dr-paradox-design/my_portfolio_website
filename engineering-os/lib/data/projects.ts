@@ -893,36 +893,50 @@ export const projectDetails: ProjectDetail[] = [
       "Measuring the vehicle's own hydrodynamic parameters — a bollard-pull test and a timed straight run — to settle the damping discrepancy and replace the literature derivatives, which the parameter provenance tags are already structured for. Resolving the pitch-instability question against the physical vehicle. The placeholder depth/yaw PID exists to exercise the workflow rather than to be a contribution, and is the natural slot for a real controller: the harness already models the 50 Hz zero-order hold, actuator saturation and lag that any hardware claim has to survive.",
   },
 
-  /* The asymmetry on this page is deliberate and worth understanding before
-     editing it.
+  /* Two things on this page are confirmed by Swastik directly and should not be
+     softened: the system ran fully autonomously (the rules allowed a manual
+     fallback at a scoring penalty, so this is a real result, not a detail), and
+     one aircraft was lost to a flyaway during testing.
 
      `problemAndRequirements` is detailed because NIDAR 2025's disaster-
      management track is a *published* problem statement — the flood scenario,
      the 30-hectare survey area, the two drone roles, the 5x10x20 cm / 200 g
      survival kit, the geotagging, speaker and live-video requirements, and the
-     autonomy-or-penalty rule are all quoted from the organisers' own brief
-     (MeitY + Drone Federation India, under SwaYaan). Stating what the
-     competition asked for is not a claim about Swastik's team.
+     autonomy-or-penalty rule all come from the organisers' own brief (MeitY +
+     Drone Federation India, under SwaYaan). Stating what the competition asked
+     for is not a claim about what this team delivered, and the two must not be
+     allowed to blur: `systemArchitecture` below lists only the subsystems
+     Swastik confirmed, which is deliberately a subset of the requirements. Do
+     not promote a requirement into an achievement because it would round the
+     section out — the speaker link and the geotag pipeline are required of
+     every entrant and unverified here.
 
-     `executiveSummary` is short because what the team actually built is not
-     recorded anywhere yet: no airframe spec, no detection method, no delivery
-     mechanism, no division of labour, no field-test numbers. Rank 6 and "two
-     drones, disaster-management track" is the whole of the confirmed record.
-
-     So the page tells a reader exactly what was demanded and exactly what was
-     achieved, and stops. Do NOT close the gap by inferring an implementation
-     from the problem statement — the requirements describe what every team was
-     handed, not what this one shipped. The moment Swastik supplies the real
-     architecture, this earns systemArchitecture and technicalDecisions, and
-     the honesty guard in projectPage.ts will then require a real failure
-     alongside them. */
+     There are still no `technicalDecisions`: a gimballed downward camera is a
+     design choice, but the alternatives weighed and the reasoning behind it are
+     not recorded, and that type requires both. Inventing the reasoning is the
+     exact failure mode this file exists to prevent. Same for
+     `validationResults` — no test figures survive. */
   {
     slug: "disaster-management-drones",
     domainTags: ["Robotics", "Autonomous Systems", "Aerial Vehicles"],
     executiveSummary:
-      "A two-drone autonomous system entered in NIDAR 2025 — the National Innovation Challenge for Drone Application and Research, run by MeitY and Drone Federation India under the SwaYaan initiative — against the disaster-management problem statement, which pairs a scout drone with a delivery drone. The entry placed Rank 6 nationally.",
+      "A two-drone system entered in NIDAR 2025 — the National Innovation Challenge for Drone Application and Research, run by MeitY and Drone Federation India under the SwaYaan initiative — against the disaster-management problem statement, which pairs a scout drone with a delivery drone. The system flew fully autonomously, which the rules treated as the unpenalised path: manual operation was allowed but cost score. It placed Rank 6 out of more than 70 teams. Swastik worked on the flight controller and mission planning, and on hardware manufacturing and testing, alongside Priyaranjan.",
     problemAndRequirements:
       "The published scenario is a coastal town after a flood: water has entered homes, residents have evacuated or taken shelter on rooftops without food, water or medicine, and 48 hours later the rain has stopped and the wind has dropped but the water is still high and people are still stranded. Teams had to field two cooperating drones. The scout drone surveys roughly 30 hectares to locate survivors, streams live video back to a command station, geotags each survivor's position, and carries a mounted speaker so an operator can speak to the people it finds. The delivery drone then flies survival kits — 5 x 10 x 20 cm, 200 g — out to those geotagged positions. Both aircraft were to run autonomously and report to a single unified command centre; flying them manually from separate control stations was permitted but carried a scoring penalty.",
+    systemArchitecture:
+      "Two aircraft with split roles, operating without a pilot in the loop. The scout carries a downward-facing camera on a gimbal and scans the ground beneath it to detect people — the gimbal being what keeps the camera pointed at the ground while the airframe pitches and rolls to move, which is the difference between a usable image stream and one that swings with every attitude change. The delivery aircraft carries the 200 g medicine kit that the challenge specified as the payload. Both fly their missions autonomously rather than under manual control.",
+    failuresAndLessons: [
+      {
+        title: "Flyaway during testing",
+        whatHappened:
+          "One of the aircraft failed in flight during testing and flew away, and was not brought back under control.",
+        rootCause:
+          "Not established in what is recorded of the build. It is left open here rather than attributed to a plausible-sounding cause, because a flyaway has several very different explanations — a lost control link, a GPS or compass fault feeding bad position into the controller, a mode or failsafe misconfiguration, a power problem — and guessing between them would be worth nothing to anyone reading this.",
+        resolved: false,
+        resolutionOrNextStep:
+          "The team went on to fly the mission autonomously at the competition and place sixth. The diagnosis itself is the gap: the value in a flyaway is entirely in the log review afterwards, and writing that up is the single largest improvement still available to this page.",
+      },
+    ],
     links: [
       {
         label: "NIDAR — official challenge site",

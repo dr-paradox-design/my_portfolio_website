@@ -264,8 +264,14 @@ export const workItems: WorkItem[] = [
     status: "complete",
     tier: "major",
     summary:
-      "Two cooperating autonomous drones for the NIDAR 2025 disaster-management track — a scout that surveys a flooded area and geotags survivors, and a delivery drone that flies survival kits out to them. Placed Rank 6.",
-    technologies: ["Autonomous drones", "Disaster response"],
+      "Two cooperating drones for the NIDAR 2025 disaster-management track, flown fully autonomously: a scout that scans the ground through a gimballed camera to detect people, and a delivery drone that carries a 200 g medicine kit out to them. Placed Rank 6 of 70+ teams.",
+    technologies: [
+      "Flight controller",
+      "Mission planning",
+      "Gimballed camera",
+      "Human detection",
+      "Autonomous flight",
+    ],
     context: "NIDAR 2025",
     /* The page states the published competition requirements in full but keeps
        the summary of the team's own build to what is confirmed — see the long
@@ -754,7 +760,7 @@ export const competitions: Achievement[] = [
   },
   {
     name: "NIDAR 2025",
-    result: "Rank 6",
+    result: "Rank 6 of 70+ teams",
     status: "complete",
     related: "Autonomous Disaster-Management Drones",
   },
