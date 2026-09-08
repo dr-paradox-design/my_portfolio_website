@@ -7,6 +7,7 @@ import { Tag } from "@/components/ui/Tag";
 import { STATUS_LABELS } from "@/components/ui/StatusBadge";
 import { ProjectImage } from "@/components/ui/PlaceholderImage";
 import { ProjectGallery } from "@/components/projects/ProjectGallery";
+import { ProjectVideo } from "@/components/projects/ProjectVideo";
 import { pageMetadata } from "@/lib/site";
 
 /**
@@ -22,9 +23,9 @@ import { pageMetadata } from "@/lib/site";
  * is a complete thing rather than a stub of a bigger thing.
  *
  * Ranks leave gaps so a section can be slipped in later without renumbering.
- * Media sits at 30: on a thin page it floats to the top and leads; on a
- * rich one it lands after the context prose and before the design detail.
- * One ordering, two correct layouts, no branching.
+ * Media sits at 25 (video) and 30 (photographs): on a thin page it floats to
+ * the top and leads; on a rich one it lands after the context prose and
+ * before the design detail. One ordering, two correct layouts, no branching.
  */
 
 /** Unlisted slugs 404 structurally rather than being rendered on demand. */
@@ -132,6 +133,20 @@ export default async function ProjectPage({
     "Context",
     "Problem & requirements",
     detail?.problemAndRequirements && <Prose>{detail.problemAndRequirements}</Prose>,
+  );
+
+  /* Ahead of the photographs at 30, and that ordering is the argument: the
+     stills tell the build story, the video is the result. A reader who
+     watches one thing should watch the thing working. */
+  add(
+    25,
+    "Demonstration",
+    "Video",
+    item.video && (
+      <div className="max-w-xl">
+        <ProjectVideo video={item.video} />
+      </div>
+    ),
   );
 
   add(

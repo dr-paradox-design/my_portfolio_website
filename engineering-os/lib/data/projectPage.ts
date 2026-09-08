@@ -80,6 +80,20 @@ for (const item of routedWorkItems) {
         `the page back to what can be stated honestly.`,
     );
   }
+
+  // 3. `youtubeId` is an ID, not a URL. The type cannot say that — both are
+  //    `string` — and the failure is a silently broken player rather than an
+  //    error, because a bad ID still produces a well-formed embed URL that
+  //    YouTube answers with "Video unavailable" inside the iframe. Pasting a
+  //    watch URL or a youtu.be link into this field is the obvious mistake,
+  //    so it is the one worth failing the build over.
+  if (item.video && !/^[\w-]{11}$/.test(item.video.youtubeId)) {
+    throw new Error(
+      `"${item.title}" has youtubeId "${item.video.youtubeId}", which is not ` +
+        `an 11-character YouTube video ID. Store the bare ID, not a URL — ` +
+        `for https://youtu.be/LUDBbLdliyw that is "LUDBbLdliyw".`,
+    );
+  }
 }
 
 /* Slugs listed in projects.ts that no work item routes to. This is a typo

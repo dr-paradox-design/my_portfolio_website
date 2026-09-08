@@ -10,15 +10,49 @@ import { SpotlightEffect } from "@/components/ui/SpotlightEffect";
  * that happen to have a written case study. Ongoing work sorts first — it
  * is the most current signal about what he is actually doing right now —
  * then flagship before major. Everything else lives on /projects.
+ *
+ * The grid is derived, never a hand-written list of six. The one override is
+ * `HOME_EXCLUDED_SLUGS` below, which is deliberately an exception with a
+ * stated expiry rather than a general-purpose ordering knob.
  */
 const TIER_RANK = { flagship: 0, major: 1, supporting: 2, foundational: 3 } as const;
 
 /** Two full rows at three columns. The rest is one click away. */
 const HOME_LIMIT = 6;
 
+/**
+ * Held back from the home grid despite ranking into it.
+ *
+ * This is a presentation decision and it lives here rather than in
+ * `portfolio.ts`, which describes the work. Demoting an item's `tier` would
+ * have produced the same six cards, but `tier` is a claim about how the work
+ * ranks in the profile — it also drives the /projects ordering and the
+ * "Flagship" badge — so editing it to fix a layout would have been a lie told
+ * to move a card.
+ *
+ * `embedded-sar-adc` is a flagship with no photographs yet, so its card is
+ * the one placeholder box in a grid of real ones. That is the whole reason,
+ * and it means the fix is not permanent: **delete this entry the moment the
+ * SAR ADC board is photographed.** It stays a flagship on /projects
+ * throughout.
+ */
+const HOME_EXCLUDED_SLUGS = new Set(["embedded-sar-adc"]);
+
+/* A renamed slug would silently stop excluding anything, which is the same
+   class of quiet drift the derived stats were introduced to kill. */
+for (const slug of HOME_EXCLUDED_SLUGS) {
+  if (!workItems.some((item) => item.slug === slug)) {
+    throw new Error(
+      `app/page.tsx excludes "${slug}" from the home grid, but no work item ` +
+        `in portfolio.ts carries that slug, so the exclusion does nothing.`,
+    );
+  }
+}
+
 export default function HomePage() {
   const featured = workItems
     .filter((item) => item.tier === "flagship" || item.tier === "major")
+    .filter((item) => !item.slug || !HOME_EXCLUDED_SLUGS.has(item.slug))
     .sort((a, b) => {
       const ongoing = Number(b.status === "ongoing") - Number(a.status === "ongoing");
       return ongoing !== 0 ? ongoing : TIER_RANK[a.tier] - TIER_RANK[b.tier];

@@ -258,6 +258,23 @@ export const workItems: WorkItem[] = [
         caption: "Competition day",
       },
     ],
+    video: {
+      youtubeId: "LUDBbLdliyw",
+      /* Deliberately just the project name. This string is the iframe title
+         and the play button's accessible name, so anything more descriptive
+         would be a claim about what the footage shows — and the quadcopter
+         entry immediately below is a standing reminder of why that matters.
+         Sharpen it once the content is described. */
+      title: "Autonomous Warehouse Drone",
+      /* TODO(swastik): swap for a real still from this footage.
+         `WorkVideo.poster` asks for a frame from the video. This is the test
+         arena photo from the gallery standing in — honest about the setting,
+         but not the frame. One line to replace. */
+      poster: {
+        src: eyantraTestSetup,
+        alt: "Indoor test arena of stacked blocks laid out on the floor, with a teammate at a laptop against the far wall",
+      },
+    },
   },
   {
     title: "3D-Printed Quadcopter",
