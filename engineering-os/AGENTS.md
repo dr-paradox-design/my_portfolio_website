@@ -39,3 +39,17 @@ key-presence, not a deep merge — an inherited object replaces a missing key wh
   because Windows blocks symlinks without Developer Mode. Deploys go through the Vercel
   GitHub integration instead, with **Root Directory set to `engineering-os`** (the Next app
   is nested, not at the repo root).
+
+## Why `vercel.json` exists
+
+It sets exactly one thing: `"framework": "nextjs"`. The Vercel project was created with the
+preset unset (`framework: null` in the API), which is the "Other" preset. That combination
+builds *correctly* — the log shows a full `next build`, every route prerendered, "Deployment
+completed" — and then serves the wrong thing, because "Other" ignores `.next` and publishes
+`public/` as a flat static site. The symptom is unmistakable once you've seen it: `/resume.pdf`
+returns 200 while **every** application route, including `/robots.txt` and `/sitemap.xml`,
+returns Vercel's `NOT_FOUND`. Nothing in the build output hints at it.
+
+Keeping the fix in the repo rather than in the dashboard means it survives a project being
+recreated, and it's reviewable. Don't delete this file assuming Vercel will auto-detect —
+detection only runs when the project is first created.
