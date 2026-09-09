@@ -36,9 +36,15 @@ export const profile = {
 
   /**
    * Path to the resume PDF, relative to /public.
-   * Leave as `null` while there is no PDF — the download buttons and the
-   * embedded preview are hidden automatically. Drop the file at
-   * `public/resume.pdf` and set this to "/resume.pdf" to turn them on.
+   * Setting this to `null` hides the download buttons, the embedded preview,
+   * and the `/resume` entry in the sitemap — all automatically, so the site
+   * never links to a resume that isn't there.
+   *
+   * The file itself is the robotics/controls version. Swastik keeps several
+   * tailored variants; this is the one that belongs on a public page, because
+   * it matches the work the site actually shows and, unlike the general
+   * variant, carries no date of birth. Replace the PDF in place to update it
+   * — the filename is deliberately generic so the URL never changes.
    */
-  resumePath: null as string | null,
+  resumePath: "/resume.pdf" as string | null,
 } as const;
