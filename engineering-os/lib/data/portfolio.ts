@@ -830,12 +830,22 @@ export const competitions: Achievement[] = [
 
 // ── Internships ───────────────────────────────────────────────────
 
+/**
+ * Only `organisation` is required. Everything else is optional because the
+ * alternative — making a thin entry satisfy a five-field interface — is an
+ * invitation to write filler, and the one rule this file has is that nothing
+ * on it may be invented. A card that names a real internship and says nothing
+ * more is honest; a card padded out to look complete is not.
+ *
+ * `/experience` renders each field only if present, so a bare entry collapses
+ * to its heading rather than leaving empty rules and a dangling bullet list.
+ */
 export interface Internship {
   organisation: string;
-  lab: string;
-  focus: string;
-  details: string[];
-  technologies: string[];
+  lab?: string;
+  focus?: string;
+  details?: string[];
+  technologies?: string[];
 }
 
 export const internships: Internship[] = [
@@ -854,6 +864,13 @@ export const internships: Internship[] = [
       "Flight-controller IMU",
       "1D LiDAR",
     ],
+  },
+  /* Swastik has confirmed this one, but not yet the lab, focus, dates or
+     stack — and it is on neither his resume nor anywhere else in this repo,
+     so there is nothing to derive it from. Named and counted now; fill the
+     rest in when he supplies it rather than guessing at it. */
+  {
+    organisation: "NALCO",
   },
 ];
 

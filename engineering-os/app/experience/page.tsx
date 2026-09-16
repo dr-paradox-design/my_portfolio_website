@@ -67,32 +67,46 @@ export default function ExperiencePage() {
                   <h3 className="text-base font-semibold tracking-tight text-board-50">
                     {role.organisation}
                   </h3>
-                  <p className="font-mono text-xs text-board-500">{role.lab}</p>
+                  {role.lab ? (
+                    <p className="font-mono text-xs text-board-500">{role.lab}</p>
+                  ) : null}
                 </div>
 
-                <p className="mb-4 text-sm font-medium text-copper-400">
-                  {role.focus}
-                </p>
+                {/* Every block below is optional. An internship that has only
+                    been named yet collapses to its heading — no empty rule, no
+                    bullet list with nothing in it, and crucially no invented
+                    line of prose standing in for the missing detail. The
+                    bottom margins live on the blocks themselves so the last
+                    one present doesn't leave the card padded out underneath. */}
+                {role.focus ? (
+                  <p className="mb-4 text-sm font-medium text-copper-400">
+                    {role.focus}
+                  </p>
+                ) : null}
 
-                <ul className="mb-5 space-y-1.5">
-                  {role.details.map((detail) => (
-                    <li
-                      key={detail}
-                      className="flex items-start gap-2 text-sm leading-relaxed text-board-400"
-                    >
-                      <span className="mt-0.5 shrink-0 text-copper-400" aria-hidden="true">
-                        →
-                      </span>
-                      {detail}
-                    </li>
-                  ))}
-                </ul>
+                {role.details?.length ? (
+                  <ul className="mb-5 space-y-1.5">
+                    {role.details.map((detail) => (
+                      <li
+                        key={detail}
+                        className="flex items-start gap-2 text-sm leading-relaxed text-board-400"
+                      >
+                        <span className="mt-0.5 shrink-0 text-copper-400" aria-hidden="true">
+                          →
+                        </span>
+                        {detail}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
 
-                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-                  {role.technologies.map((tech) => (
-                    <Tag key={tech} label={tech} variant="tech" />
-                  ))}
-                </div>
+                {role.technologies?.length ? (
+                  <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                    {role.technologies.map((tech) => (
+                      <Tag key={tech} label={tech} variant="tech" />
+                    ))}
+                  </div>
+                ) : null}
               </div>
             ))}
           </div>
