@@ -917,9 +917,8 @@ export const memberships: Membership[] = [
  * about the engineer than any one podium, and it stays true as the work
  * grows. The internship count below is a different thing — it counts a kind of
  * experience, not one outcome, and it is the entry a hiring reader looks for
- * first on an undergraduate profile. The label stays the plain "Internship":
- * the rail already heads that entry `[ Research ]` and names the lab, so
- * qualifying it here only spends a second line of a narrow cell repeating it.
+ * first on an undergraduate profile. Its label pluralises off the count, so
+ * the cell never reads "1 Internships".
  */
 export const portfolioStats = [
   {

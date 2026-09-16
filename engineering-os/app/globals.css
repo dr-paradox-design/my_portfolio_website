@@ -271,33 +271,6 @@ body {
   flex: none;
 }
 
-/* Leader line + label, revealed on hover. The line draws out from the
-   component, then the text fades in behind it — the order matters, a
-   label that arrives before its leader has nothing to attach to.
-
-   `transform-box: fill-box` is mandatory on the SVG leaders: without it a
-   percentage-free `transform-origin: left center` resolves against the
-   nearest SVG viewport, not the line's own box, so every leader would
-   scale from the far left of the drawing and fly across it. */
-.callout .leader {
-  transform: scaleX(0);
-  transform-box: fill-box;
-  transform-origin: left center;
-  transition: transform 0.22s ease-out;
-}
-.callout .callout-text {
-  opacity: 0;
-  transition: opacity 0.18s ease-out 0.16s;
-}
-.callout:hover .leader,
-.callout:focus-visible .leader {
-  transform: scaleX(1);
-}
-.callout:hover .callout-text,
-.callout:focus-visible .callout-text {
-  opacity: 1;
-}
-
 /* ── Animations ─────────────────────────────────────────────────────
    Everything here is instrumentation, not decoration. The rule the whole
    set follows: motion is allowed to indicate that a system is live, and
@@ -328,49 +301,6 @@ body {
   }
 }
 
-/* Telemetry pulse: a reading being taken. Slower and gentler than the
-   status blink so the two never read as the same signal. */
-@keyframes telemetry {
-  0%,
-  100% {
-    opacity: 0.35;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.5);
-  }
-}
-
-/* Signal flow along a trace. `stroke-dashoffset` only — the path itself
-   never moves, so this animates on the compositor and reads as current
-   travelling through a conductor that is standing still. */
-@keyframes flow {
-  to {
-    stroke-dashoffset: -24;
-  }
-}
-
-/* The scan sweep. One slow pass, a long dwell, repeat — a continuous
-   sweep would be a loading bar. `translate` on a clipped overlay. */
-@keyframes scan {
-  0% {
-    transform: translateY(-8%);
-    opacity: 0;
-  }
-  8% {
-    opacity: 1;
-  }
-  55% {
-    opacity: 1;
-  }
-  70%,
-  100% {
-    transform: translateY(108%);
-    opacity: 0;
-  }
-}
-
 .animate-fade-up {
   opacity: 0;
   animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
@@ -397,27 +327,6 @@ body {
   animation: drift 15s ease-in-out infinite;
 }
 
-.animate-telemetry {
-  animation: telemetry 2.8s ease-in-out infinite;
-}
-
-/* Same reason as `.leader` above — an SVG circle scaled without
-   `fill-box` grows from the drawing's origin instead of its own centre,
-   which throws the pulse across the board. */
-svg .animate-telemetry {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.animate-flow {
-  stroke-dasharray: 3 9;
-  animation: flow 2.2s linear infinite;
-}
-
-.animate-scan {
-  animation: scan 9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-}
-
 /* Stagger steps for `.animate-fade-up`. Only as many as are actually used —
    add the next one when something needs it. */
 .delay-1 { animation-delay: 0.07s; }
@@ -425,7 +334,6 @@ svg .animate-telemetry {
 .delay-3 { animation-delay: 0.21s; }
 .delay-4 { animation-delay: 0.28s; }
 .delay-5 { animation-delay: 0.35s; }
-.delay-6 { animation-delay: 0.42s; }
 
 /* ── Page transitions ───────────────────────────────────────────────
    Drives the `<ViewTransition>` in app/layout.tsx. The class names below
@@ -577,16 +485,6 @@ svg .animate-telemetry {
     opacity: 1;
     animation: none;
   }
-
-  /* The sweep is pure motion with no resting state worth keeping — a
-     collapsed duration would park it mid-drawing as a static copper rule
-     that looks like part of the figure. Remove it outright. */
-  .animate-scan {
-    display: none;
-  }
-
-  /* Hover callouts are a discrete state change, not motion, so they keep
-     working — the transitions above just make them instant. */
 
   /* The universal `*` rule above does not reach view-transition
      pseudo-elements — they are not part of the document tree — so the
