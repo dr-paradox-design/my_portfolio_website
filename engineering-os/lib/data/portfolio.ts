@@ -846,6 +846,8 @@ export const competitions: Achievement[] = [
  */
 export interface Internship {
   organisation: string;
+  /** Free text, as printed on the resume — e.g. "May 2025 – July 2025". */
+  period?: string;
   lab?: string;
   focus?: string;
   details?: string[];
@@ -855,11 +857,13 @@ export interface Internship {
 export const internships: Internship[] = [
   {
     organisation: "IIT Bombay",
-    lab: "Embedded and Robotics Lab, Department of CSE",
+    period: "May 2025 – July 2025",
+    lab: "e-Yantra Summer Internship — Drone R&D",
     focus: "Localization of a sub-250 g drone",
     details: [
       "Designed a localization algorithm for non-GPS / GPS-denied operation.",
       "Worked across the flight controller, companion computer, and sensor suite.",
+      "Benchmarked ArduPilot, Betaflight, INAV and PX4 across 150 test flights to compare latency and accuracy.",
     ],
     technologies: [
       "Flight controller",

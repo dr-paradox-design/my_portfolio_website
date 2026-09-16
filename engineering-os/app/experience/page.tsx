@@ -63,10 +63,18 @@ export default function ExperiencePage() {
           <div className="space-y-4">
             {internships.map((role) => (
               <div key={role.organisation} className="panel p-6">
-                <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
-                  <h3 className="text-base font-semibold tracking-tight text-board-50">
-                    {role.organisation}
-                  </h3>
+                <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                  {/* Org and dates travel together — the dates qualify the org,
+                      so they must not be separated by the flex gap when the lab
+                      name wraps to its own line. */}
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <h3 className="text-base font-semibold tracking-tight text-board-50">
+                      {role.organisation}
+                    </h3>
+                    {role.period ? (
+                      <p className="font-mono text-xs text-copper-400">{role.period}</p>
+                    ) : null}
+                  </div>
                   {role.lab ? (
                     <p className="font-mono text-xs text-board-500">{role.lab}</p>
                   ) : null}
