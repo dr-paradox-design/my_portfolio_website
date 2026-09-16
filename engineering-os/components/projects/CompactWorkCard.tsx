@@ -4,6 +4,7 @@ import { ViewTransition } from "react";
 import { ArrowUpRight, Code2, Star } from "lucide-react";
 import { coverImage, type WorkItem } from "@/lib/data/portfolio";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { BLUEPRINT_GRID, PANEL_SURFACE } from "@/components/projects/blueprint";
 
 /**
  * Dense variant of WorkItemCard, used on the home page where the goal is to
@@ -34,8 +35,8 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
      both may claim the same name. */
   const titleEl = (
     <h3
-      className={`text-sm font-semibold leading-snug tracking-tight text-zinc-100 ${
-        item.slug ? "transition-colors group-hover:text-emerald-400" : ""
+      className={`text-sm font-semibold leading-snug tracking-tight text-board-50 ${
+        item.slug ? "transition-colors group-hover:text-copper-400" : ""
       }`}
     >
       {item.title}
@@ -51,28 +52,59 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
 
   const body = (
     <>
-      {/* The home grid is deliberately dense, so a photo cannot take a band of
-          its own here without undoing that. Instead it sits behind the text as
-          a faint wash — enough to give the card a subject at a glance, not
-          enough to compete with it — and lifts on hover. Card height is
-          unchanged either way. */}
-      {hero && (
-        <>
-          <Image
-            src={hero.src}
-            alt="" /* decorative here; the real alt is on the /projects card */
-            fill
-            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-            style={{ objectPosition: hero.focus }}
-            className="-z-10 object-cover opacity-[0.13] saturate-[0.55] transition-opacity duration-500 group-hover:opacity-[0.24]"
-          />
-          {/* Keeps the text side dark enough to stay readable over any photo. */}
-          <div
-            className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-[#121215] via-[#121215]/85 to-[#121215]/35"
-            aria-hidden="true"
-          />
-        </>
-      )}
+      {/* The photo takes a band of its own rather than sitting behind the text
+          as a faint wash. The wash kept every card exactly as tall as a
+          text-only one, but it also meant you could not actually see any of
+          the work from the home page — six dark rectangles with a suggestion
+          of a shape in them. A real band costs one row of height and is the
+          difference between a grid of cards and a grid of projects.
+
+          Full-bleed via negative margins that cancel the shell's own `px-4
+          py-3.5`, so the photo meets the cell rules with no inset frame. */}
+      <div className="-mx-4 -mt-3.5 mb-3">
+        {hero ? (
+          <div className="relative aspect-[16/7] overflow-hidden bg-board-950">
+            <Image
+              src={hero.src}
+              alt="" /* decorative here; the real alt is on the /projects card */
+              fill
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              style={{ objectPosition: hero.focus }}
+              className="object-cover brightness-[0.78] saturate-[0.7] transition duration-700 ease-out group-hover:scale-[1.03] group-hover:brightness-100 group-hover:saturate-100"
+            />
+            {/* Ties a raw phone snapshot back into the drawing language, same
+                as the /projects cards and the OG images. */}
+            <div
+              className="pointer-events-none absolute inset-0 opacity-[0.05]"
+              style={BLUEPRINT_GRID}
+              aria-hidden="true"
+            />
+            {/* Dissolves the lower edge into the card surface so the band has
+                no hard boundary against the title below it. */}
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-10"
+              style={{
+                backgroundImage: `linear-gradient(to top, ${PANEL_SURFACE} 0%, transparent 100%)`,
+              }}
+              aria-hidden="true"
+            />
+          </div>
+        ) : (
+          /* Not every item has been photographed. An empty band would make
+             that card the odd one out; a ruled panel carrying the item's own
+             domain keeps the row's rhythm and still says something true. */
+          <div className="relative flex aspect-[16/7] items-center justify-center overflow-hidden border-b border-dashed border-board-800 bg-board-950">
+            <div
+              className="absolute inset-0 opacity-[0.07]"
+              style={BLUEPRINT_GRID}
+              aria-hidden="true"
+            />
+            <p className="field relative z-10 px-4 text-center text-board-600">
+              {item.domain}
+            </p>
+          </div>
+        )}
+      </div>
 
       <div className="mb-1.5 flex items-start justify-between gap-2">
         {heading}
@@ -82,7 +114,7 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
           <StatusBadge status={item.status} />
           {item.tier === "flagship" && (
             <span
-              className="text-emerald-400/70"
+              className="text-copper-400"
               title="Flagship project"
               aria-label="Flagship project"
             >
@@ -106,7 +138,7 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
           {item.slug ? (
             <ArrowUpRight
               size={14}
-              className="text-zinc-600 transition-colors group-hover:text-emerald-400"
+              className="text-board-600 transition-colors group-hover:text-copper-400"
               aria-hidden="true"
             />
           ) : (
@@ -117,7 +149,7 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
                 rel="noopener noreferrer"
                 title="Source on GitHub"
                 aria-label={`${item.title} — source on GitHub`}
-                className="-m-1.5 p-1.5 text-zinc-600 transition-colors hover:text-emerald-400"
+                className="-m-1.5 p-1.5 text-board-600 transition-colors hover:text-copper-400"
               >
                 <Code2 size={14} />
               </a>
@@ -126,31 +158,38 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
         </div>
       </div>
 
-      <p className="mb-2.5 line-clamp-2 text-xs leading-relaxed text-zinc-500">
+      <p className="mb-2.5 line-clamp-2 text-xs leading-relaxed text-board-400">
         {item.summary}
       </p>
 
-      {/* Via dots separate the tags — several technology names contain spaces
+      {/* Vias separate the tags — several technology names contain spaces
           ("6-layer PCB"), so plain gaps alone blur the word boundaries. */}
-      <div className="mt-auto flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px] text-emerald-400/90">
+      <div className="mt-auto flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px] text-copper-400">
         {shown.map((tech) => (
           <span key={tech} className="inline-flex items-center gap-1.5">
             <span
-              className="h-1 w-1 shrink-0 rounded-full bg-emerald-400/40"
+              className="h-[3px] w-[3px] shrink-0 bg-copper-600"
               aria-hidden="true"
             />
             {tech}
           </span>
         ))}
-        {overflow > 0 && <span className="text-zinc-600">+{overflow}</span>}
+        {overflow > 0 && <span className="text-board-600">+{overflow}</span>}
       </div>
     </>
   );
 
-  /* `isolate` matters: without a stacking context the -z-10 photo would paint
-     behind the panel's own background and disappear entirely. */
+  /* No border and no `.panel`: the home grid draws its own rules with
+     `gap-px` over a `board-800` background, so a border here would double
+     every internal line and thicken the outer frame.
+
+     `relative` is load-bearing and must not be dropped along with `.panel`,
+     which is where it used to come from. `<Image fill>` is absolutely
+     positioned, so with no positioned ancestor it resolves against the
+     viewport — which is exactly how one card's photo once ended up painted
+     across the whole page as a grey wash over the hero. */
   const shell =
-    "panel isolate flex h-full flex-col overflow-hidden px-4 py-3.5 transition-all duration-300";
+    "relative flex h-full flex-col overflow-hidden bg-board-900 px-4 py-3.5";
 
   if (item.slug) {
     return (
@@ -158,7 +197,10 @@ export function CompactWorkCard({ item }: { item: WorkItem }) {
         href={`/projects/${item.slug}`}
         /* Same direction signal as the full card on /projects. */
         transitionTypes={["nav-forward"]}
-        className={`${shell} group hover:-translate-y-0.5 hover:border-zinc-700`}
+        /* The cell lightens rather than lifting. A translate would break the
+           ruled grid — the card would pull away from its own dividing lines
+           and leave a gap where the rule used to be. */
+        className={`${shell} group transition-colors duration-200 hover:bg-board-800`}
       >
         {body}
       </Link>

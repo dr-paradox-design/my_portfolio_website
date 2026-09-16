@@ -11,8 +11,8 @@ import { BLUEPRINT_GRID, PANEL_SURFACE } from "@/components/projects/blueprint";
  *
  *   1. A scrim at the bottom edge dissolves the photo into the panel
  *      surface, so there is no hard rectangle boundary.
- *   2. The same emerald blueprint grid used in the hero is laid over the
- *      image at very low opacity, tying it to the rest of the site.
+ *   2. The same copper drawing grid used elsewhere is laid over the image
+ *      at very low opacity, tying it to the rest of the site.
  *   3. Photos are slightly desaturated and dimmed at rest and come up to
  *      full on hover — they read as texture until you look at them.
  *   4. Everything bleeds to the card edges (negative margins), so the
@@ -36,7 +36,7 @@ export function WorkPhotos({ images }: { images: WorkImage[] }) {
 
   return (
     <div className="relative -mx-5 -mt-5 mb-4 overflow-hidden">
-      <div className="relative aspect-[16/9] overflow-hidden bg-zinc-900">
+      <div className="relative aspect-[16/9] overflow-hidden bg-board-900">
         <Image
           src={hero.src}
           alt={hero.alt}
@@ -59,7 +59,7 @@ export function WorkPhotos({ images }: { images: WorkImage[] }) {
               className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/75 to-transparent"
               aria-hidden="true"
             />
-            <p className="absolute bottom-2.5 left-5 font-mono text-[11px] tracking-wide text-zinc-200">
+            <p className="absolute bottom-2.5 left-5 font-mono text-[11px] tracking-wide text-board-200">
               {hero.caption}
             </p>
           </>
@@ -74,7 +74,7 @@ export function WorkPhotos({ images }: { images: WorkImage[] }) {
                every thumb and React would silently collapse them. */
             <div
               key={img.alt}
-              className="relative aspect-[3/2] flex-1 overflow-hidden bg-zinc-900"
+              className="relative aspect-[3/2] flex-1 overflow-hidden bg-board-900"
             >
               <Image
                 src={img.src}

@@ -1,20 +1,62 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+/* ── Palette ────────────────────────────────────────────────────────
+   Copper on bare board. The structural ramp (`board-950`…`board-600`)
+   is cool blue-slate — substrate, soldermask-free fibreglass, hairlines.
+   The text ramp (`board-500`…`board-50`) is warm — silkscreen ink is
+   never neutral white. Mixing the two temperatures on purpose is what
+   stops this reading as "dark mode with an accent colour".
+
+   These are real Tailwind colours, so `text-copper-400` and
+   `border-board-700` work everywhere. Nothing should hardcode a hex
+   outside this block — that is exactly how the last palette ended up
+   spread across 87 files.
+   ───────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* Structure — cool */
+  --color-board-950: #0c0f14;
+  --color-board-900: #141821;
+  --color-board-800: #1d2531;
+  --color-board-700: #2b3542;
+  --color-board-600: #46505d;
+
+  /* Text — warm */
+  --color-board-500: #73787b;
+  --color-board-400: #a3a099;
+  --color-board-300: #cdc8c0;
+  --color-board-200: #e3ded6;
+  --color-board-100: #efeae2;
+  --color-board-50: #f2eee8;
+
+  /* Accent — copper trace */
+  --color-copper-200: #f0c9a0;
+  --color-copper-300: #e8ae76;
+  --color-copper-400: #c98a52;
+  --color-copper-500: #a96f3d;
+  --color-copper-600: #855530;
 }
 
 /* ── Design tokens ──────────────────────────────────────────────── */
 
 :root {
-  --bg: #09090b;          /* zinc-950 */
-  --surface: #101013;     /* raised panel, sits just above bg */
-  --border: #27272a;      /* zinc-800 */
-  --text: #e4e4e7;        /* zinc-200 */
-  --accent: #34d399;      /* emerald-400 */
-  --accent-deep: #10b981; /* emerald-500 */
-  --accent-glow: rgba(52, 211, 153, 0.15);
+  --bg: var(--color-board-950);
+  --surface: var(--color-board-900);
+  --border: var(--color-board-700);
+  --text: var(--color-board-100);
+  --accent: var(--color-copper-400);
+  --accent-bright: var(--color-copper-300);
+  --accent-wash: rgba(201, 138, 82, 0.1);
+
+  /* Square, everywhere. A drawing sheet has no rounded corners, and the
+     12px radius was doing more to make this look templated than the
+     colour was. Kept as a token so it is one edit to reverse. */
+  --radius: 0px;
 
   /* Page-transition timing. The enter is longer than the exit and waits
      out the exit before starting — see the transitions block below. */
@@ -29,7 +71,7 @@ html {
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -39,11 +81,11 @@ body {
   color: var(--bg);
 }
 
-/* Visible keyboard focus — the previous design had none at all. */
+/* Visible keyboard focus. Square, to match everything else. */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 1px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: 0;
 }
 
 /* ── Scrollbar ──────────────────────────────────────────────────── */
@@ -56,17 +98,17 @@ body {
   background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
-  border: 2px solid var(--bg);
-  border-radius: 999px;
+  background: var(--color-board-700);
+  border: 3px solid var(--bg);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: var(--color-copper-600);
 }
 
-/* ── Film grain ─────────────────────────────────────────────────────
-   A fixed noise layer over the whole page. Kills the flat "CSS dark
-   mode" look and keeps large empty areas from banding.
+/* ── Substrate texture ──────────────────────────────────────────────
+   A fixed noise layer over the whole page. Large flat areas of
+   #0c0f14 band visibly on 8-bit panels; this breaks it up and gives
+   the background the tooth of fibreglass rather than of a CSS colour.
    ───────────────────────────────────────────────────────────────── */
 
 .grain::after {
@@ -75,96 +117,152 @@ body {
   inset: 0;
   z-index: 100;
   pointer-events: none;
-  opacity: 0.028;
+  opacity: 0.022;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ── Surfaces ───────────────────────────────────────────────────────
-   Cards get a hairline top highlight so they read as lit from above
-   rather than as flat rectangles.
+   A panel is a cell on a drawing sheet: flat fill, one hairline rule,
+   square corners. No gradient, no inner top highlight, no shadow —
+   those were simulating a light source that a drawing does not have.
    ───────────────────────────────────────────────────────────────── */
 
 .panel {
   position: relative;
-  background: linear-gradient(180deg, #131316 0%, #0d0d10 100%);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--color-board-800);
+  border-radius: var(--radius);
 }
 
-.panel::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 1px;
-  border-radius: 12px 12px 0 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.07) 25%,
-    rgba(255, 255, 255, 0.07) 75%,
-    transparent
-  );
-  pointer-events: none;
+/* Interactive panels only. The copper edge is the hover state — it reads
+   as a trace lighting up rather than as a card lifting off the page. */
+.panel-link {
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease;
+}
+.panel-link:hover,
+.panel-link:focus-visible {
+  border-color: var(--color-copper-600);
+  background: #161b25;
 }
 
-/* ── Spotlight card ─────────────────────────────────────────────────
-   --mx/--my are written by components/ui/Spotlight.tsx on pointer move.
-   Falls back to a centred glow when JS hasn't run.
+/* ── Registration marks ─────────────────────────────────────────────
+   Corner ticks, like the crop marks on a plotted sheet. They sit at the
+   corners permanently at low opacity and come up to full on hover —
+   present, not decorative-on-demand.
    ───────────────────────────────────────────────────────────────── */
 
-.spotlight::after {
-  content: "";
+.marks > .mark {
   position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  pointer-events: none;
-  background: radial-gradient(
-    340px circle at var(--mx, 50%) var(--my, 50%),
-    var(--accent-glow),
-    transparent 70%
-  );
-}
-
-.spotlight:hover::after,
-.spotlight:focus-within::after {
-  opacity: 1;
-}
-
-/* ── Corner brackets ────────────────────────────────────────────────
-   Technical-drawing crop marks that draw themselves in on hover.
-   ───────────────────────────────────────────────────────────────── */
-
-.brackets > .bracket {
-  position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 7px;
+  height: 7px;
   border-color: var(--accent);
+  opacity: 0.22;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.marks:hover > .mark,
+.marks:focus-within > .mark {
+  opacity: 0.8;
+}
+
+/* ── Probe light ────────────────────────────────────────────────────
+   --mx/--my are written by components/ui/SpotlightEffect.tsx on pointer
+   move. Much tighter and dimmer than a glow: it reads as a lamp held
+   against the board, not as an ambient light source.
+   ───────────────────────────────────────────────────────────────── */
+
+.probe::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
+  background: radial-gradient(
+    180px circle at var(--mx, 50%) var(--my, 50%),
+    var(--accent-wash),
+    transparent 65%
+  );
 }
 
-.brackets:hover > .bracket {
-  opacity: 0.65;
+.probe:hover::after,
+.probe:focus-within::after {
+  opacity: 1;
 }
 
-/* ── Gradient text ──────────────────────────────────────────────── */
+/* ── Datasheet furniture ────────────────────────────────────────────
+   The small typographic parts that make a page read as documentation:
+   field labels, hairline rules, and the leader lines that tie a label
+   to the thing it names.
+   ───────────────────────────────────────────────────────────────── */
 
-.text-gradient {
-  background: linear-gradient(135deg, #fafafa 0%, #d4d4d8 45%, #71717a 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* Field label. Mono, uppercase, wide — the left column of a spec table. */
+.field {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-board-500);
 }
 
-/* ── Animations ─────────────────────────────────────────────────── */
+/* Section marker: a short copper rule, then the label. Replaces the old
+   gradient-to-transparent eyebrow. */
+.marker {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+.marker::before {
+  content: "";
+  width: 1.25rem;
+  height: 1px;
+  background: var(--accent);
+  flex: none;
+}
+
+/* Leader line + label, revealed on hover. The line draws out from the
+   component, then the text fades in behind it — the order matters, a
+   label that arrives before its leader has nothing to attach to.
+
+   `transform-box: fill-box` is mandatory on the SVG leaders: without it a
+   percentage-free `transform-origin: left center` resolves against the
+   nearest SVG viewport, not the line's own box, so every leader would
+   scale from the far left of the drawing and fly across it. */
+.callout .leader {
+  transform: scaleX(0);
+  transform-box: fill-box;
+  transform-origin: left center;
+  transition: transform 0.22s ease-out;
+}
+.callout .callout-text {
+  opacity: 0;
+  transition: opacity 0.18s ease-out 0.16s;
+}
+.callout:hover .leader,
+.callout:focus-visible .leader {
+  transform: scaleX(1);
+}
+.callout:hover .callout-text,
+.callout:focus-visible .callout-text {
+  opacity: 1;
+}
+
+/* ── Animations ─────────────────────────────────────────────────────
+   Everything here is instrumentation, not decoration. The rule the whole
+   set follows: motion is allowed to indicate that a system is live, and
+   is not allowed to move the reader's eye off what they came to read.
+   No rotation, no bounce, no particles, no parallax.
+   ───────────────────────────────────────────────────────────────── */
 
 @keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -172,38 +270,89 @@ body {
   }
 }
 
+/* Status indicator. Hard steps, not a sine fade — an LED is on or off. */
 @keyframes blink {
   0%,
-  49% {
+  55% {
     opacity: 1;
   }
-  50%,
+  56%,
   100% {
-    opacity: 0;
+    opacity: 0.15;
   }
 }
 
-@keyframes drift {
+/* Telemetry pulse: a reading being taken. Slower and gentler than the
+   status blink so the two never read as the same signal. */
+@keyframes telemetry {
   0%,
   100% {
-    transform: translate(0, 0) scale(1);
+    opacity: 0.35;
+    transform: scale(1);
   }
   50% {
-    transform: translate(3%, -4%) scale(1.08);
+    opacity: 1;
+    transform: scale(1.5);
+  }
+}
+
+/* Signal flow along a trace. `stroke-dashoffset` only — the path itself
+   never moves, so this animates on the compositor and reads as current
+   travelling through a conductor that is standing still. */
+@keyframes flow {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+/* The scan sweep. One slow pass, a long dwell, repeat — a continuous
+   sweep would be a loading bar. `translate` on a clipped overlay. */
+@keyframes scan {
+  0% {
+    transform: translateY(-8%);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 1;
+  }
+  70%,
+  100% {
+    transform: translateY(108%);
+    opacity: 0;
   }
 }
 
 .animate-fade-up {
   opacity: 0;
-  animation: fade-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .animate-blink {
-  animation: blink 1.15s steps(1) infinite;
+  animation: blink 1.6s steps(1) infinite;
 }
 
-.animate-drift {
-  animation: drift 15s ease-in-out infinite;
+.animate-telemetry {
+  animation: telemetry 2.8s ease-in-out infinite;
+}
+
+/* Same reason as `.leader` above — an SVG circle scaled without
+   `fill-box` grows from the drawing's origin instead of its own centre,
+   which throws the pulse across the board. */
+svg .animate-telemetry {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.animate-flow {
+  stroke-dasharray: 3 9;
+  animation: flow 2.2s linear infinite;
+}
+
+.animate-scan {
+  animation: scan 9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 /* Stagger steps for `.animate-fade-up`. Only as many as are actually used —
@@ -213,6 +362,7 @@ body {
 .delay-3 { animation-delay: 0.21s; }
 .delay-4 { animation-delay: 0.28s; }
 .delay-5 { animation-delay: 0.35s; }
+.delay-6 { animation-delay: 0.42s; }
 
 /* ── Page transitions ───────────────────────────────────────────────
    Drives the `<ViewTransition>` in app/layout.tsx. The class names below
@@ -364,6 +514,16 @@ body {
     opacity: 1;
     animation: none;
   }
+
+  /* The sweep is pure motion with no resting state worth keeping — a
+     collapsed duration would park it mid-drawing as a static copper rule
+     that looks like part of the figure. Remove it outright. */
+  .animate-scan {
+    display: none;
+  }
+
+  /* Hover callouts are a discrete state change, not motion, so they keep
+     working — the transitions above just make them instant. */
 
   /* The universal `*` rule above does not reach view-transition
      pseudo-elements — they are not part of the document tree — so the

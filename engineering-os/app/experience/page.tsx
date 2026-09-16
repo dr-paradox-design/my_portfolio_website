@@ -33,11 +33,11 @@ function Block({
   return (
     <section>
       <div className="mb-6">
-        <p className="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-emerald-400">
+        <p className="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-copper-400">
           <Icon size={13} aria-hidden="true" />
           {eyebrow}
         </p>
-        <h2 className="text-gradient text-xl font-semibold tracking-tight sm:text-2xl">
+        <h2 className="text-xl font-semibold tracking-tight text-board-50 sm:text-2xl">
           {title}
         </h2>
       </div>
@@ -64,13 +64,13 @@ export default function ExperiencePage() {
             {internships.map((role) => (
               <div key={role.organisation} className="panel p-6">
                 <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
-                  <h3 className="text-base font-semibold tracking-tight text-zinc-100">
+                  <h3 className="text-base font-semibold tracking-tight text-board-50">
                     {role.organisation}
                   </h3>
-                  <p className="font-mono text-xs text-zinc-500">{role.lab}</p>
+                  <p className="font-mono text-xs text-board-500">{role.lab}</p>
                 </div>
 
-                <p className="mb-4 text-sm font-medium text-emerald-400">
+                <p className="mb-4 text-sm font-medium text-copper-400">
                   {role.focus}
                 </p>
 
@@ -78,9 +78,9 @@ export default function ExperiencePage() {
                   {role.details.map((detail) => (
                     <li
                       key={detail}
-                      className="flex items-start gap-2 text-sm leading-relaxed text-zinc-400"
+                      className="flex items-start gap-2 text-sm leading-relaxed text-board-400"
                     >
-                      <span className="mt-0.5 shrink-0 text-emerald-400" aria-hidden="true">
+                      <span className="mt-0.5 shrink-0 text-copper-400" aria-hidden="true">
                         →
                       </span>
                       {detail}
@@ -100,7 +100,7 @@ export default function ExperiencePage() {
 
         {/* ── Competitions ─────────────────────────────────────── */}
         <Block icon={Award} eyebrow="Results" title="Competitions">
-          <div className="panel divide-y divide-zinc-800">
+          <div className="panel divide-y divide-board-800">
             {competitions.map((competition) => (
               <div
                 key={competition.name}
@@ -108,18 +108,18 @@ export default function ExperiencePage() {
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm font-medium text-zinc-100">
+                    <p className="text-sm font-medium text-board-50">
                       {competition.name}
                     </p>
                     <StatusBadge status={competition.status} />
                   </div>
                   {competition.related && (
-                    <p className="mt-0.5 font-mono text-xs text-zinc-600">
+                    <p className="mt-0.5 font-mono text-xs text-board-600">
                       {competition.related}
                     </p>
                   )}
                 </div>
-                <p className="shrink-0 font-mono text-xs text-emerald-400">
+                <p className="shrink-0 font-mono text-xs text-copper-400">
                   {competition.result}
                 </p>
               </div>
@@ -132,8 +132,8 @@ export default function ExperiencePage() {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {workshops.map((workshop) => (
               <div key={workshop.title} className="panel px-5 py-4">
-                <p className="text-sm font-medium text-zinc-100">{workshop.title}</p>
-                <p className="mt-0.5 font-mono text-xs text-zinc-500">
+                <p className="text-sm font-medium text-board-50">{workshop.title}</p>
+                <p className="mt-0.5 font-mono text-xs text-board-500">
                   {workshop.host}
                 </p>
               </div>
@@ -149,10 +149,10 @@ export default function ExperiencePage() {
                 key={membership.organisation}
                 className="panel flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-5 py-4"
               >
-                <p className="text-sm font-medium text-zinc-100">
+                <p className="text-sm font-medium text-board-50">
                   {membership.organisation}
                 </p>
-                <p className="font-mono text-xs text-emerald-400">
+                <p className="font-mono text-xs text-copper-400">
                   {membership.role}
                 </p>
               </div>

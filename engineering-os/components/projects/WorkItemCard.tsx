@@ -20,8 +20,8 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
 
   const title = (
     <h3
-      className={`text-base font-semibold leading-snug tracking-tight text-zinc-100 ${
-        item.slug ? "transition-colors group-hover:text-emerald-400" : ""
+      className={`text-base font-semibold leading-snug tracking-tight text-board-50 ${
+        item.slug ? "transition-colors group-hover:text-copper-400" : ""
       }`}
     >
       {item.title}
@@ -57,7 +57,7 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
           <div className="flex shrink-0 items-center gap-1.5">
             {item.tier === "flagship" && (
               <span
-                className="text-emerald-400/70"
+                className="text-copper-400"
                 title="Flagship project"
                 aria-label="Flagship project"
               >
@@ -69,10 +69,10 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
         </div>
 
         {item.context && (
-          <p className="mb-2.5 font-mono text-xs text-zinc-500">{item.context}</p>
+          <p className="mb-2.5 font-mono text-xs text-board-500">{item.context}</p>
         )}
 
-        <p className="mb-4 text-sm leading-relaxed text-zinc-400">{item.summary}</p>
+        <p className="mb-4 text-sm leading-relaxed text-board-400">{item.summary}</p>
 
         {/* One row, not two: the call to action anchors left and the
             technology tags sit flush right.
@@ -87,7 +87,7 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
             three-line tag block and read as accidental. */}
         <div className="mt-auto flex flex-wrap items-end justify-end gap-x-4 gap-y-3 pt-1">
           {item.slug ? (
-            <span className="mr-auto flex shrink-0 items-center gap-1.5 text-sm font-medium text-emerald-400">
+            <span className="mr-auto flex shrink-0 items-center gap-1.5 text-sm font-medium text-copper-400">
               {ctaLabel}
               <ArrowRight
                 size={14}
@@ -107,7 +107,7 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
                 href={item.repoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group/repo mr-auto flex shrink-0 items-center gap-1.5 text-sm font-medium text-zinc-400 transition-colors hover:text-emerald-400"
+                className="group/repo mr-auto flex shrink-0 items-center gap-1.5 text-sm font-medium text-board-400 transition-colors hover:text-copper-400"
               >
                 <Code2 size={14} aria-hidden="true" />
                 Source on GitHub
@@ -129,7 +129,7 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
   );
 
   const shell =
-    "panel spotlight group relative isolate flex flex-col overflow-hidden p-5 transition-all duration-300";
+    "panel probe group relative isolate flex flex-col overflow-hidden p-5";
 
   // Only the items backed by a real case study are clickable.
   if (item.slug) {
@@ -140,13 +140,17 @@ export function WorkItemCard({ item }: { item: WorkItem }) {
            rather than fades. The page's own "back to all projects" links
            carry `nav-back` and mirror it. */
         transitionTypes={["nav-forward"]}
-        className={`${shell} brackets hover:-translate-y-1 hover:border-zinc-700 hover:shadow-[0_16px_40px_-16px_rgba(0,0,0,0.9)]`}
+        /* No lift and no drop shadow. These cards sit in a masonry column,
+           and a card that rises on hover drags a shadow across the two it
+           sits between — which looked like a rendering bug. The copper edge
+           from `.panel-link` carries the affordance instead. */
+        className={`${shell} panel-link marks`}
       >
-        {/* Crop marks */}
-        <span className="bracket left-2.5 top-2.5 border-l border-t" aria-hidden="true" />
-        <span className="bracket right-2.5 top-2.5 border-r border-t" aria-hidden="true" />
-        <span className="bracket bottom-2.5 left-2.5 border-b border-l" aria-hidden="true" />
-        <span className="bracket bottom-2.5 right-2.5 border-b border-r" aria-hidden="true" />
+        {/* Registration marks */}
+        <span className="mark left-2 top-2 border-l border-t" aria-hidden="true" />
+        <span className="mark right-2 top-2 border-r border-t" aria-hidden="true" />
+        <span className="mark bottom-2 left-2 border-b border-l" aria-hidden="true" />
+        <span className="mark bottom-2 right-2 border-b border-r" aria-hidden="true" />
         {body}
       </Link>
     );

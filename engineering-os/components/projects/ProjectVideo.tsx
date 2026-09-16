@@ -37,7 +37,7 @@ export function ProjectVideo({ video }: { video: WorkVideo }) {
 
   return (
     <figure>
-      <div className="relative aspect-video overflow-hidden rounded-lg border border-zinc-800/80 bg-zinc-900">
+      <div className="relative aspect-video overflow-hidden border border-board-800/80 bg-board-900">
         {playing ? (
           <iframe
             /* `autoplay=1` is correct rather than intrusive: this iframe only
@@ -73,12 +73,12 @@ export function ProjectVideo({ video }: { video: WorkVideo }) {
             />
 
             <span className="absolute inset-0 flex items-center justify-center">
-              <span className="flex h-16 w-16 items-center justify-center rounded-full border border-emerald-400/30 bg-zinc-950/70 backdrop-blur-sm transition-all duration-300 group-hover:scale-105 group-hover:border-emerald-400/60 group-hover:bg-zinc-950/85 group-hover:shadow-[0_0_32px_-6px_rgba(52,211,153,0.55)]">
+              <span className="flex h-16 w-16 items-center justify-center rounded-full border border-copper-400/30 bg-board-950/70 backdrop-blur-sm transition-all duration-300 group-hover:scale-105 group-hover:border-copper-400/60 group-hover:bg-board-950/85 group-hover:shadow-[0_0_32px_-6px_rgba(52,211,153,0.55)]">
                 {/* Nudged right so the triangle's optical centre, not its
                     bounding box, sits in the middle of the circle. */}
                 <Play
                   size={22}
-                  className="translate-x-[2px] fill-emerald-400 text-emerald-400"
+                  className="translate-x-[2px] fill-copper-400 text-copper-400"
                   aria-hidden="true"
                 />
               </span>
@@ -89,7 +89,7 @@ export function ProjectVideo({ video }: { video: WorkVideo }) {
         )}
       </div>
 
-      <figcaption className="mt-2.5 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 font-mono text-xs text-zinc-500">
+      <figcaption className="mt-2.5 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 font-mono text-xs text-board-500">
         {caption && <span>{caption}</span>}
         {/* Always offered: an embed can be blocked by an extension, a network,
             or a country, and this is the fallback that still works. */}
@@ -97,7 +97,7 @@ export function ProjectVideo({ video }: { video: WorkVideo }) {
           href={`https://www.youtube.com/watch?v=${youtubeId}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="group ml-auto inline-flex items-center gap-1 transition-colors hover:text-emerald-400"
+          className="group ml-auto inline-flex items-center gap-1 transition-colors hover:text-copper-400"
         >
           {linkLabel ?? "Watch on YouTube"}
           <ArrowUpRight

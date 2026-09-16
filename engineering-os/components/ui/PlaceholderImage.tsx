@@ -24,24 +24,24 @@ export function ProjectImage({
   if (asset.isPlaceholder) {
     return (
       <div
-        className={`brackets group relative flex items-center justify-center overflow-hidden rounded-xl border border-dashed border-zinc-800 bg-zinc-900/30 ${className}`}
+        className={`marks group relative flex items-center justify-center overflow-hidden border border-dashed border-board-700 bg-board-900 ${className}`}
       >
-        {/* Blueprint grid so an empty slot still reads as deliberate */}
+        {/* Drawing grid so an empty slot still reads as deliberate */}
         <div
           className="absolute inset-0 opacity-[0.06]"
           style={BLUEPRINT_GRID}
           aria-hidden="true"
         />
 
-        <span className="bracket left-3 top-3 border-l border-t" aria-hidden="true" />
-        <span className="bracket right-3 top-3 border-r border-t" aria-hidden="true" />
-        <span className="bracket bottom-3 left-3 border-b border-l" aria-hidden="true" />
-        <span className="bracket bottom-3 right-3 border-b border-r" aria-hidden="true" />
+        <span className="mark left-3 top-3 border-l border-t" aria-hidden="true" />
+        <span className="mark right-3 top-3 border-r border-t" aria-hidden="true" />
+        <span className="mark bottom-3 left-3 border-b border-l" aria-hidden="true" />
+        <span className="mark bottom-3 right-3 border-b border-r" aria-hidden="true" />
 
         <div className="relative z-10 flex flex-col items-center gap-2 p-8 text-center">
-          <ImageIcon size={20} className="text-zinc-700" aria-hidden="true" />
-          <p className="font-mono text-xs text-zinc-500">{asset.alt}</p>
-          <p className="font-mono text-[11px] text-zinc-700">
+          <ImageIcon size={20} className="text-board-600" aria-hidden="true" />
+          <p className="font-mono text-xs text-board-400">{asset.alt}</p>
+          <p className="font-mono text-[11px] text-board-600">
             public{asset.src}
           </p>
         </div>
@@ -68,12 +68,12 @@ export function ProjectImage({
           src={asset.src}
           alt={asset.alt}
           fill
-          className="rounded-xl object-contain"
+          className="object-contain"
           preload={preload}
         />
       </div>
       {asset.caption && (
-        <figcaption className="mt-2 text-center text-xs text-zinc-500">
+        <figcaption className="mt-2 text-center text-xs text-board-500">
           {asset.caption}
         </figcaption>
       )}

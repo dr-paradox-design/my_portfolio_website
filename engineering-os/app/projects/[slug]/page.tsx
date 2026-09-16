@@ -69,15 +69,15 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border-t border-zinc-800/60 pt-10">
-      <p className="mb-2 flex items-center gap-2.5 font-mono text-xs uppercase tracking-widest text-emerald-400">
+    <section className="border-t border-board-800/60 pt-10">
+      <p className="mb-2 flex items-center gap-2.5 font-mono text-xs uppercase tracking-widest text-copper-400">
         <span
-          className="h-px w-6 bg-gradient-to-r from-emerald-400 to-emerald-400/0"
+          className="h-px w-6 bg-copper-400"
           aria-hidden="true"
         />
         {eyebrow}
       </p>
-      <h2 className="text-gradient mb-5 text-xl font-semibold tracking-tight sm:text-2xl">
+      <h2 className="mb-5 text-xl font-semibold tracking-tight text-board-50 sm:text-2xl">
         {title}
       </h2>
       {children}
@@ -86,7 +86,7 @@ function Section({
 }
 
 function Prose({ children }: { children: string }) {
-  return <p className="leading-relaxed text-zinc-300">{children}</p>;
+  return <p className="leading-relaxed text-board-300">{children}</p>;
 }
 
 const has = (arr: unknown[] | undefined) => Array.isArray(arr) && arr.length > 0;
@@ -195,7 +195,7 @@ export default async function ProjectPage({
       <div className="space-y-4">
         {detail!.technicalDecisions!.map((decision) => (
           <div key={decision.title} className="panel p-5">
-            <h3 className="mb-4 text-sm font-semibold text-zinc-100">{decision.title}</h3>
+            <h3 className="mb-4 text-sm font-semibold text-board-50">{decision.title}</h3>
             <dl className="space-y-3">
               {[
                 { label: "Decision", value: decision.decision },
@@ -203,10 +203,10 @@ export default async function ProjectPage({
                 { label: "Reasoning", value: decision.reasoning },
               ].map(({ label, value }) => (
                 <div key={label} className="sm:flex sm:gap-4">
-                  <dt className="mb-1 w-28 shrink-0 font-mono text-xs text-emerald-400 sm:mb-0 sm:pt-0.5">
+                  <dt className="mb-1 w-28 shrink-0 font-mono text-xs text-copper-400 sm:mb-0 sm:pt-0.5">
                     {label}
                   </dt>
-                  <dd className="text-sm leading-relaxed text-zinc-400">{value}</dd>
+                  <dd className="text-sm leading-relaxed text-board-400">{value}</dd>
                 </div>
               ))}
             </dl>
@@ -221,13 +221,13 @@ export default async function ProjectPage({
     "Evidence",
     "Validation & results",
     has(detail?.validationResults) && (
-      <div className="panel divide-y divide-zinc-800">
+      <div className="panel divide-y divide-board-800">
         {detail!.validationResults!.map((result) => (
           <div key={result.test} className="px-5 py-4 sm:flex sm:gap-5">
-            <p className="mb-1 w-56 shrink-0 font-mono text-xs text-emerald-400 sm:mb-0 sm:pt-0.5">
+            <p className="mb-1 w-56 shrink-0 font-mono text-xs text-copper-400 sm:mb-0 sm:pt-0.5">
               {result.test}
             </p>
-            <p className="text-sm leading-relaxed text-zinc-300">{result.outcome}</p>
+            <p className="text-sm leading-relaxed text-board-300">{result.outcome}</p>
           </div>
         ))}
       </div>
@@ -243,11 +243,11 @@ export default async function ProjectPage({
         {detail!.failuresAndLessons!.map((lesson) => (
           <div key={lesson.title} className="panel p-5">
             <div className="mb-4 flex items-start justify-between gap-4">
-              <h3 className="text-sm font-semibold text-zinc-100">{lesson.title}</h3>
+              <h3 className="text-sm font-semibold text-board-50">{lesson.title}</h3>
               <span
-                className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-0.5 font-mono text-xs ${
+                className={`inline-flex shrink-0 items-center gap-1 border px-2.5 py-0.5 font-mono text-xs ${
                   lesson.resolved
-                    ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-400"
+                    ? "border-copper-400/30 bg-copper-400/10 text-copper-400"
                     : "border-amber-400/30 bg-amber-400/10 text-amber-400"
                 }`}
               >
@@ -265,10 +265,10 @@ export default async function ProjectPage({
                 },
               ].map(({ label, value }) => (
                 <div key={label} className="sm:flex sm:gap-4">
-                  <dt className="mb-1 w-28 shrink-0 font-mono text-xs text-zinc-500 sm:mb-0 sm:pt-0.5">
+                  <dt className="mb-1 w-28 shrink-0 font-mono text-xs text-board-500 sm:mb-0 sm:pt-0.5">
                     {label}
                   </dt>
-                  <dd className="text-sm leading-relaxed text-zinc-400">{value}</dd>
+                  <dd className="text-sm leading-relaxed text-board-400">{value}</dd>
                 </div>
               ))}
             </dl>
@@ -292,7 +292,7 @@ export default async function ProjectPage({
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-emerald-400 hover:text-emerald-400"
+            className="inline-flex items-center gap-2 border border-board-700 px-4 py-2 text-sm font-medium text-board-300 transition-colors hover:border-copper-400 hover:text-copper-400"
           >
             {link.label} <ArrowUpRight size={14} />
           </a>
@@ -301,7 +301,7 @@ export default async function ProjectPage({
           <a
             href={detail.technicalReport.pdfPath}
             download
-            className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-zinc-950 transition-colors hover:bg-emerald-400"
+            className="inline-flex items-center gap-2 bg-copper-400 px-4 py-2 text-sm font-semibold text-board-950 transition-colors hover:bg-copper-300"
           >
             Technical report <Download size={14} />
           </a>
@@ -318,7 +318,7 @@ export default async function ProjectPage({
       <Link
         href="/projects"
         transitionTypes={["nav-back"]}
-        className="mb-8 inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-emerald-400"
+        className="mb-8 inline-flex items-center gap-1.5 text-sm text-board-500 transition-colors hover:text-copper-400"
       >
         <ArrowLeft size={14} /> All projects
       </Link>
@@ -335,12 +335,12 @@ export default async function ProjectPage({
           `name`, so the browser morphs one into the other instead of
           crossfading two unrelated headings. See WorkItemCard. */}
       <ViewTransition name={`project-title-${slug}`} share="project-title">
-        <h1 className="text-gradient mb-4 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+        <h1 className="mb-4 text-3xl font-semibold leading-tight tracking-tight text-board-50 sm:text-4xl">
           {title}
         </h1>
       </ViewTransition>
 
-      <p className="mb-6 text-lg leading-relaxed text-zinc-400">{summary}</p>
+      <p className="mb-6 text-lg leading-relaxed text-board-400">{summary}</p>
 
       {/* Spec strip. Built from fields every work item already has, so it is
           never invented. On a page with no prose yet this is what makes the
@@ -352,7 +352,7 @@ export default async function ProjectPage({
           status is the *word* here rather than the card's badge — the badge
           deliberately renders nothing for completed work, which is right on
           a card and would be a labelled blank here. */}
-      <dl className="mb-6 flex flex-wrap items-baseline gap-x-8 gap-y-3 border-y border-zinc-800/60 py-4">
+      <dl className="mb-6 flex flex-wrap items-baseline gap-x-8 gap-y-3 border-y border-board-800/60 py-4">
         {[
           { label: "Status", value: STATUS_LABELS[item.status] },
           { label: "Domain", value: item.domain },
@@ -361,10 +361,10 @@ export default async function ProjectPage({
           .filter((cell) => cell.value)
           .map((cell) => (
             <div key={cell.label}>
-              <dt className="mb-1 font-mono text-[11px] uppercase tracking-widest text-zinc-600">
+              <dt className="mb-1 font-mono text-[11px] uppercase tracking-widest text-board-600">
                 {cell.label}
               </dt>
-              <dd className="text-sm text-zinc-300">{cell.value}</dd>
+              <dd className="text-sm text-board-300">{cell.value}</dd>
             </div>
           ))}
       </dl>
@@ -384,11 +384,11 @@ export default async function ProjectPage({
       </div>
 
       {/* ── Footer nav ───────────────────────────────────────── */}
-      <div className="mt-16 border-t border-zinc-800/60 pt-8">
+      <div className="mt-16 border-t border-board-800/60 pt-8">
         <Link
           href="/projects"
           transitionTypes={["nav-back"]}
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-400 transition-colors hover:text-emerald-400"
+          className="inline-flex items-center gap-1.5 text-sm text-board-400 transition-colors hover:text-copper-400"
         >
           <ArrowLeft size={14} /> Back to all projects
         </Link>

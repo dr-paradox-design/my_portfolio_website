@@ -44,11 +44,11 @@ export default function ProjectsPage() {
                     whole page a horizontal scrollbar on a phone. Letting it
                     wrap costs a second line on the two longest domain names
                     and nothing anywhere else. */}
-                <h2 className="min-w-0 font-mono text-xs uppercase tracking-widest text-emerald-400">
+                <h2 className="min-w-0 font-mono text-xs uppercase tracking-widest text-copper-400">
                   {domain}
                 </h2>
-                <span className="h-px flex-1 bg-gradient-to-r from-zinc-800 to-transparent" />
-                <span className="shrink-0 font-mono text-xs tabular-nums text-zinc-700">
+                <span className="h-px flex-1 bg-board-800" />
+                <span className="shrink-0 font-mono text-xs tabular-nums text-board-700">
                   {String(items.length).padStart(2, "0")}
                 </span>
               </div>
@@ -82,7 +82,7 @@ export default function ProjectsPage() {
       </div>
 
       {/* ── How the work connects ───────────────────────────────── */}
-      <section className="mt-24 border-t border-zinc-800/60 pt-14">
+      <section className="mt-24 border-t border-board-800/60 pt-14">
         <div className="mb-8">
           <SectionHeading
             eyebrow="Continuity"
@@ -94,22 +94,22 @@ export default function ProjectsPage() {
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {technicalThreads.map((thread) => (
             <div key={thread.title} className="panel p-5">
-              <h3 className="mb-1.5 text-sm font-semibold tracking-tight text-zinc-100">
+              <h3 className="mb-1.5 text-sm font-semibold tracking-tight text-board-50">
                 {thread.title}
               </h3>
-              <p className="mb-4 text-sm leading-relaxed text-zinc-500">
+              <p className="mb-4 text-sm leading-relaxed text-board-500">
                 {thread.insight}
               </p>
               <ol className="flex flex-wrap items-center gap-y-2">
                 {thread.chain.map((step, i) => (
                   <li key={step} className="flex items-center">
-                    <span className="font-mono text-xs text-emerald-400/90">
+                    <span className="font-mono text-xs text-copper-400/90">
                       {step}
                     </span>
                     {i < thread.chain.length - 1 && (
                       <ChevronRight
                         size={13}
-                        className="mx-1.5 shrink-0 text-zinc-700"
+                        className="mx-1.5 shrink-0 text-board-700"
                         aria-hidden="true"
                       />
                     )}

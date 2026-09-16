@@ -4,12 +4,12 @@ import { useEffect, useRef } from "react";
 
 /**
  * Tracks the pointer and writes its position into `--mx` / `--my` on the
- * nearest positioned ancestor, which `.spotlight` in globals.css reads to
- * place a radial glow.
+ * nearest positioned ancestor, which `.probe` in globals.css reads to place
+ * its highlight.
  *
  * It attaches to its own parent rather than wrapping children, so the
  * surrounding card can stay a server component — only this leaf ships JS.
- * Drop it anywhere inside an element that has the `spotlight` class.
+ * Drop it anywhere inside an element that has the `probe` class.
  */
 export function SpotlightEffect() {
   const marker = useRef<HTMLSpanElement>(null);

@@ -20,11 +20,11 @@ const styles: Record<WorkStatus, { badge: boolean; className: string }> = {
   complete: { badge: false, className: "" },
   ongoing: {
     badge: true,
-    className: "border-emerald-400/30 bg-emerald-400/10 text-emerald-400",
+    className: "border-copper-600 text-copper-300",
   },
   upcoming: {
     badge: true,
-    className: "border-zinc-700 bg-zinc-800/50 text-zinc-400",
+    className: "border-board-700 text-board-400",
   },
 };
 
@@ -39,10 +39,16 @@ export function StatusBadge({ status }: { status: WorkStatus }) {
 
   return (
     <span
-      className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide ${style.className}`}
+      className={`inline-flex shrink-0 items-center gap-1.5 border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest ${style.className}`}
     >
+      {/* The one status LED on the page. Round, because this is the single
+          element that is genuinely an indicator rather than drawing
+          furniture, and the shape difference is what makes it read as one. */}
       {status === "ongoing" && (
-        <span className="animate-blink h-1 w-1 rounded-full bg-emerald-400" aria-hidden="true" />
+        <span
+          className="animate-blink h-1 w-1 rounded-full bg-copper-300"
+          aria-hidden="true"
+        />
       )}
       {STATUS_LABELS[status]}
     </span>

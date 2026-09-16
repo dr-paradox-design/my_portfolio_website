@@ -42,7 +42,7 @@ export function ProjectGallery({ images }: { images: WorkImage[] }) {
         <li key={img.alt}>
           <figure>
             <div
-              className="relative overflow-hidden rounded-lg border border-zinc-800/80 bg-zinc-900"
+              className="relative overflow-hidden border border-board-800/80 bg-board-900"
               /* See note 1: the cap is the file's own width, so the browser
                  never renders a pixel that isn't in the source. */
               style={{ maxWidth: img.src.width }}
@@ -72,14 +72,14 @@ export function ProjectGallery({ images }: { images: WorkImage[] }) {
             </div>
 
             {img.caption && (
-              <figcaption className="mt-2.5 flex items-baseline gap-2.5 font-mono text-xs text-zinc-500">
+              <figcaption className="mt-2.5 flex items-baseline gap-2.5 font-mono text-xs text-board-500">
                 {/* The numbering is what makes this read as a sequence
                     rather than a pile of photos. */}
-                <span className="tabular-nums text-emerald-400/70">
+                <span className="tabular-nums text-copper-400/70">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span
-                  className="h-px w-4 shrink-0 translate-y-[-0.2em] bg-zinc-800"
+                  className="h-px w-4 shrink-0 translate-y-[-0.2em] bg-board-800"
                   aria-hidden="true"
                 />
                 {img.caption}

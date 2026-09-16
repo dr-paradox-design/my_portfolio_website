@@ -37,15 +37,15 @@ export default function ContactPage() {
           <a key={label} href={href}
             target={href.startsWith("mailto") ? undefined : "_blank"}
             rel="noopener noreferrer"
-            className="panel spotlight group relative isolate flex items-center gap-4 px-5 py-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-zinc-700">
+            className="panel panel-link probe group relative isolate flex items-center gap-4 px-5 py-4">
             <SpotlightEffect />
-            <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-800 transition-colors group-hover:bg-emerald-400/10">
-              <Icon size={18} className="text-zinc-400 group-hover:text-emerald-400 transition-colors" />
+            <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center border border-board-700 transition-colors group-hover:border-copper-600">
+              <Icon size={18} className="text-board-400 group-hover:text-copper-400 transition-colors" />
             </div>
             <div className="relative z-10 min-w-0">
-              <p className="text-sm font-medium text-zinc-100">{label}</p>
-              <p className="font-mono text-xs text-emerald-400 truncate">{value}</p>
-              <p className="text-xs text-zinc-500 mt-0.5">{description}</p>
+              <p className="text-sm font-medium text-board-50">{label}</p>
+              <p className="font-mono text-xs text-copper-400 truncate">{value}</p>
+              <p className="text-xs text-board-500 mt-0.5">{description}</p>
             </div>
           </a>
         ))}

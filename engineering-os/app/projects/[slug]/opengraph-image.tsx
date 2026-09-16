@@ -75,7 +75,9 @@ export default async function Image({ params }: { params: Promise<{ slug: string
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px 88px",
-          background: "#09090b",
+          /* Palette literals track globals.css by hand — satori cannot read a
+             CSS custom property. See `app/opengraph-image.tsx` for the map. */
+          background: "#0c0f14",
           position: "relative",
         }}
       >
@@ -105,18 +107,18 @@ export default async function Image({ params }: { params: Promise<{ slug: string
             fontSize: 20,
             letterSpacing: 6,
             textTransform: "uppercase",
-            color: "#34d399",
+            color: "#c98a52",
           }}
         >
           <div style={{ display: "flex" }}>{item.domain}</div>
           <div
-            style={{ display: "flex", width: 4, height: 4, margin: "0 18px", background: "#3f3f46" }}
+            style={{ display: "flex", width: 4, height: 4, margin: "0 18px", background: "#2b3542" }}
           />
-          <div style={{ display: "flex", color: "#71717a" }}>{STATUS_LABELS[item.status]}</div>
+          <div style={{ display: "flex", color: "#73787b" }}>{STATUS_LABELS[item.status]}</div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", fontSize: 66, lineHeight: 1.12, color: "#fafafa" }}>
+          <div style={{ display: "flex", fontSize: 66, lineHeight: 1.12, color: "#f2eee8" }}>
             {title}
           </div>
           <div
@@ -125,11 +127,11 @@ export default async function Image({ params }: { params: Promise<{ slug: string
               width: 96,
               height: 3,
               margin: "30px 0",
-              background: "#34d399",
+              background: "#c98a52",
             }}
           />
           <div
-            style={{ display: "flex", fontSize: 27, lineHeight: 1.45, color: "#a1a1aa" }}
+            style={{ display: "flex", fontSize: 27, lineHeight: 1.45, color: "#a3a099" }}
           >
             {clamp(summary, 260)}
           </div>
@@ -145,10 +147,12 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                 display: "flex",
                 marginRight: 12,
                 padding: "8px 18px",
-                borderRadius: 999,
-                border: "1px solid #27272a",
+                /* Square, like every other tag on the site. These were pills
+                   — the last piece of the old rounded language still
+                   shipping after the rest of it was squared off. */
+                border: "1px solid #1d2531",
                 fontSize: 21,
-                color: "#a1a1aa",
+                color: "#a3a099",
               }}
             >
               {tech}

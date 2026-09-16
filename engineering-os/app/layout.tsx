@@ -1,20 +1,25 @@
 import type { Metadata } from "next";
 import { ViewTransition } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { profile } from "@/lib/data/profile";
 import { SITE_URL } from "@/lib/site";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+/* Space Grotesk carries the headings; JetBrains Mono carries every field
+   label, part number and measurement. The previous pair was Geist + Geist
+   Mono, which is the framework's own default and reads as such. */
+const sans = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const mono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -62,10 +67,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${sans.variable} ${mono.variable} h-full antialiased`}
     >
-      {/* `grain` paints a fixed noise overlay via ::after — see globals.css */}
-      <body className="grain flex min-h-full flex-col bg-zinc-950 text-zinc-200">
+      {/* `grain` paints a fixed substrate texture via ::after — see globals.css */}
+      <body className="grain flex min-h-full flex-col bg-board-950 text-board-100">
         <Navbar />
         {/* Every route change animates through here.
 
