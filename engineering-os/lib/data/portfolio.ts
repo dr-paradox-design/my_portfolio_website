@@ -890,9 +890,11 @@ export const memberships: Membership[] = [
  * A single competition *result* is not a stat. SAUVC used to sit here, which
  * made one event carry the whole headline. Breadth across domains says more
  * about the engineer than any one podium, and it stays true as the work
- * grows. The research count below is a different thing — it counts a kind of
+ * grows. The internship count below is a different thing — it counts a kind of
  * experience, not one outcome, and it is the entry a hiring reader looks for
- * first on an undergraduate profile.
+ * first on an undergraduate profile. The label stays the plain "Internship":
+ * the rail already heads that entry `[ Research ]` and names the lab, so
+ * qualifying it here only spends a second line of a narrow cell repeating it.
  */
 export const portfolioStats = [
   {
@@ -905,7 +907,7 @@ export const portfolioStats = [
   },
   { label: "Competitions", value: String(competitions.length) },
   {
-    label: internships.length === 1 ? "Research internship" : "Research internships",
+    label: internships.length === 1 ? "Internship" : "Internships",
     value: String(internships.length),
   },
 ];
