@@ -53,13 +53,16 @@ export default function ExperiencePage() {
         <SectionHeading
           eyebrow="Background"
           title="Experience"
-          description="Research internships, competition results, and technical training — kept separate from project work so each reads for what it actually is."
+          description="Internships, competition results, and technical training — kept separate from project work so each reads for what it actually is."
         />
       </div>
 
       <div className="space-y-16">
         {/* ── Internships ──────────────────────────────────────── */}
-        <Block icon={Building2} eyebrow="Research" title="Internships">
+        {/* "Research" was accurate while IIT Bombay was the only entry here.
+            NALCO is an industrial PSU, so the eyebrow has to widen with the
+            list rather than describe only its first row. */}
+        <Block icon={Building2} eyebrow="Industry & research" title="Internships">
           <div className="space-y-4">
             {internships.map((role) => (
               <div key={role.organisation} className="panel p-6">
