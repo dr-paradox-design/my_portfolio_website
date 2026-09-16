@@ -1,15 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Download, FileText } from "lucide-react";
+import { ArrowRight, Download, FileText } from "lucide-react";
 import { profile } from "@/lib/data/profile";
-import {
-  competitions,
-  internships,
-  portfolioStats,
-  workDomains,
-  workItems,
-  type WorkDomain,
-} from "@/lib/data/portfolio";
+import { portfolioStats, workItems } from "@/lib/data/portfolio";
 import { CompactWorkCard } from "@/components/projects/CompactWorkCard";
 import { SpotlightEffect } from "@/components/ui/SpotlightEffect";
 
@@ -22,22 +14,11 @@ import { SpotlightEffect } from "@/components/ui/SpotlightEffect";
  * The grid is derived, never a hand-written list of six. The one override is
  * `HOME_EXCLUDED_SLUGS` below, which is deliberately an exception with a
  * stated expiry rather than a general-purpose ordering knob.
- *
- * ── Why the hero is three columns of instrument panels ────────────────
- * Identity, then two drawings, then a rail of small facts. The point of the
- * shape is that a visitor gets the whole profile without scrolling: who he
- * is, what he builds, and the three externally-verifiable things (research,
- * results, source) that a recruiter checks first. Nothing in it moves —
- * there is no sweep, no flow and no pulse anywhere on this page. Motion was
- * tried and cut: at this density it competes with the work.
  */
 const TIER_RANK = { flagship: 0, major: 1, supporting: 2, foundational: 3 } as const;
 
 /** Two full rows at three columns. The rest is one click away. */
 const HOME_LIMIT = 6;
-
-/** The rail shows the head of `competitions`, which is kept strongest-first. */
-const RAIL_RESULTS = 3;
 
 /**
  * Held back from the home grid despite ranking into it.
@@ -68,146 +49,6 @@ for (const slug of HOME_EXCLUDED_SLUGS) {
   }
 }
 
-/* First word / everything after it, for the two-ink hero title. */
-const [givenName, ...restOfName] = profile.name.split(" ");
-const familyName = restOfName.join(" ");
-
-/** Initials, for the designator block. Derived, so it cannot go stale. */
-const initials = profile.name
-  .split(" ")
-  .map((word) => word[0])
-  .join("");
-
-/* Short forms of the four domains, for the chip row under the name. The full
-   names are set on /projects, which has the column width for them; on one
-   line under a 60px headline they have to be abbreviated. The guard below is
-   what stops a fifth domain being added to portfolio.ts and silently not
-   appearing here. */
-const DOMAIN_CHIP: Record<WorkDomain, string> = {
-  "Digital Design & Computer Architecture": "Semiconductors",
-  "Analog, Mixed-Signal & Instrumentation": "Mixed-signal",
-  "Embedded Systems & Firmware": "Embedded systems",
-  "Autonomous Systems & Robotics": "Autonomous systems",
-};
-
-/**
- * The technologies printed under a drawing.
- *
- * Taken from each domain's *lead* item rather than by frequency across the
- * domain. Frequency surfaces whatever tool happens to recur across small
- * projects — "Python", "ESP32" — where this surfaces the flagship's own
- * stack, which is what the panel is actually about. `perDomain` keeps both
- * domains in a panel represented instead of letting the first one fill it.
- */
-function panelTechs(domains: WorkDomain[], perDomain: number) {
-  const out: string[] = [];
-
-  for (const domain of domains) {
-    const [lead] = workItems
-      .filter((item) => item.domain === domain)
-      .sort((a, b) => TIER_RANK[a.tier] - TIER_RANK[b.tier]);
-
-    if (!lead) {
-      throw new Error(
-        `app/page.tsx labels a hero panel with "${domain}", but no work item ` +
-          `in portfolio.ts carries that domain.`,
-      );
-    }
-
-    let taken = 0;
-    for (const tech of lead.technologies) {
-      if (taken >= perDomain) break;
-      if (out.includes(tech)) continue;
-      out.push(tech);
-      taken += 1;
-    }
-  }
-
-  return out;
-}
-
-/**
- * The two drawings, and the domains each one stands for. Between them they
- * have to cover `workDomains` exactly — a fifth domain with no panel is a
- * build error rather than a silently missing label.
- *
- * These are **illustrations, not documentation**, and the `Illustrative` tag
- * in every caption is load-bearing: the drawings were generated, not exported
- * from Swastik's CAD or KiCad projects. Nothing on them should ever be read
- * as a specification — which is why no dimension, part number or callout from
- * the artwork is repeated as text anywhere on this page. Replacing either one
- * with a real `kicad-cli` layer export or a CAD drawing sheet is a strict
- * upgrade; the slot is shaped to take one without further changes.
- *
- * `src` is a plain string rather than a static import on purpose. A static
- * import fails the *build* when the file is absent, which would make the whole
- * site unbuildable while artwork is still being swapped around; a string path
- * degrades to a single broken image instead.
- */
-const PANELS = [
-  {
-    label: "Semiconductor / IC design",
-    fig: "FIG. 01",
-    domains: [
-      "Digital Design & Computer Architecture",
-      "Analog, Mixed-Signal & Instrumentation",
-    ] as WorkDomain[],
-    src: "/hero-package.webp",
-    alt:
-      "Exploded view of a ball-grid-array package — lid, silicon die, " +
-      "interposer, substrate and circuit board drawn separated in a vertical " +
-      "stack with construction lines.",
-    /* No treatment: the source ships a real alpha channel — 77% of it is
-       transparent and the ink is already dark-with-copper, so it composites
-       straight onto the sheet. It *previews* as line art on white, which is
-       only a viewer painting its own backdrop behind the alpha; "correcting"
-       for that white with `invert` would flip the genuinely dark package
-       bodies to near-white slabs. Check the alpha channel, not a preview,
-       before adding a filter here. */
-    treatment: "",
-  },
-  {
-    label: "Embedded & robotics",
-    fig: "FIG. 02",
-    domains: [
-      "Embedded Systems & Firmware",
-      "Autonomous Systems & Robotics",
-    ] as WorkDomain[],
-    src: "/hero-auv.webp",
-    alt:
-      "Blueprint of an autonomous underwater vehicle — front, side and rear " +
-      "elevations above an isometric view, with leader lines to the pressure " +
-      "vessel, electronics housing, thruster and camera.",
-    /* Already dark-on-dark, so it needs no correction. */
-    treatment: "",
-  },
-].map((panel) => ({ ...panel, techs: panelTechs(panel.domains, 2) }));
-
-const covered = PANELS.flatMap((panel) => panel.domains);
-if (
-  covered.length !== workDomains.length ||
-  workDomains.some((domain) => !covered.includes(domain))
-) {
-  throw new Error(
-    "app/page.tsx splits `workDomains` across two hero panels, and the lists " +
-      "no longer match. Add the new domain to a panel's `domains`.",
-  );
-}
-
-/** `[ LABEL ]` over a hairline, with a drawing number on the right. */
-function PanelHead({ label, meta }: { label: string; meta: string }) {
-  return (
-    <div className="flex items-baseline justify-between gap-3 border-b border-board-800 px-3.5 py-2.5">
-      <p className="field text-copper-400">
-        <span className="text-board-700">[ </span>
-        {label}
-        <span className="text-board-700"> ]</span>
-      </p>
-      <p className="field shrink-0 text-board-700">{meta}</p>
-    </div>
-  );
-}
-
 export default function HomePage() {
   const featured = workItems
     .filter((item) => item.tier === "flagship" || item.tier === "major")
@@ -218,376 +59,141 @@ export default function HomePage() {
     })
     .slice(0, HOME_LIMIT);
 
-  const [research] = internships;
-
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
-        {/* Ruled field, at the same pitch as the rest of the site's technical
-            furniture. No mask — the grid stops where the section stops, the
-            way a sheet's ruling does, instead of dissolving into a vignette.
-            The two blurred colour orbs that used to float behind this are
-            gone: a drawing sheet is lit flat, and a simulated light source
-            behind it was the single strongest signal that this page was
-            generated rather than designed. */}
+      {/* Not min-h-screen: with the availability pill gone the hero content no
+          longer fills a full viewport, so centering it left a ~265px void
+          before the next section. 88vh keeps the hero dominant while letting
+          the first row of project cards peek above the fold. */}
+      <section className="relative flex min-h-[88vh] items-center overflow-hidden pt-14">
+        {/* Blueprint grid, faded out toward the edges so it never boxes the text in */}
         <div
-          className="absolute inset-0 opacity-[0.16]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
             backgroundImage:
-              "linear-gradient(var(--color-board-800) 1px, transparent 1px), linear-gradient(90deg, var(--color-board-800) 1px, transparent 1px)",
-            backgroundSize: "44px 44px",
+              "linear-gradient(#c98a52 1px, transparent 1px), linear-gradient(90deg, #c98a52 1px, transparent 1px)",
+            backgroundSize: "56px 56px",
+            maskImage:
+              "radial-gradient(ellipse 80% 60% at 30% 40%, #000 20%, transparent 75%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 80% 60% at 30% 40%, #000 20%, transparent 75%)",
           }}
           aria-hidden="true"
         />
 
-        {/* Spine label, the way a bound drawing set is labelled down its edge.
-            It carries `profile.title` — "Electrical Engineer" — which is the
-            one real piece of identity the hero does not already print, so the
-            spine adds information rather than repeating the headline.
-
-            Only from `xl`. Below that the container's side gutters collapse
-            toward zero and the label would sit on top of the headline. Hidden
-            from assistive tech because a screen reader already gets the same
-            fact from the page title. */}
-        <p
-          className="field pointer-events-none absolute left-3 top-1/2 hidden -translate-y-1/2 whitespace-nowrap text-board-700 xl:block"
-          style={{ writingMode: "vertical-rl" }}
+        {/* Ambient glow — gives the flat background some atmosphere */}
+        <div
+          className="animate-drift pointer-events-none absolute -left-40 top-1/4 h-[34rem] w-[34rem] rounded-full bg-copper-500/10 blur-[130px]"
           aria-hidden="true"
-        >
-          {profile.title}
-        </p>
+        />
+        <div
+          className="animate-drift pointer-events-none absolute -right-32 bottom-0 h-[26rem] w-[26rem] rounded-full bg-copper-300/[0.07] blur-[120px]"
+          style={{ animationDelay: "-7s" }} /* desync from the first orb */
+          aria-hidden="true"
+        />
 
-        <div className="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
-          {/* One sheet, not three cards.
+        <div className="relative mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
+          {/* Eyebrow */}
+          <p className="animate-fade-up mb-6 font-mono text-xs uppercase tracking-widest text-board-500">
+            <span className="text-copper-400">{profile.institution}</span>
+            <span className="mx-2 text-board-700">/</span>
+            {profile.program}
+            <span className="mx-2 text-board-700">/</span>
+            {profile.graduationYear}
+          </p>
 
-              The three regions used to be separately bordered panels floating
-              in an 8-unit gap, which made the hero read as a dashboard of
-              widgets. They are now cells of a single ruled field: the grid
-              carries the rule colour as its own background and a 1px gap, so
-              every division is exactly one hairline wide and shared between
-              neighbours — no doubled borders, no gutters.
+          {/* Name */}
+          <h1 className="animate-fade-up delay-1 text-gradient mb-4 text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl md:text-7xl">
+            {profile.name}
+          </h1>
 
-              Cells are `board-950`, which is also the page background, so
-              nothing reads as a filled box sitting on top of the page. The
-              hairlines do all the structural work, the way they do on a real
-              drawing sheet. This is why the cells cannot be translucent: the
-              rule colour is behind them, and any alpha would bleed it through
-              the whole surface instead of only the gaps. */}
-          <div className="grid grid-cols-1 gap-px border border-board-800 bg-board-800 lg:grid-cols-[1.06fr_1fr] xl:grid-cols-[1.16fr_1fr_0.54fr]">
-            {/* ── Identity ─────────────────────────────────── */}
-            <div className="bg-board-950 px-5 py-6 sm:px-7 sm:py-8">
-              {/* Designator, then the spec line. The block is his initials —
-                  the reference this borrows its shape from carries an invented
-                  part number there, and AGENTS.md rules that out. */}
-              <div className="animate-fade-up mb-6 flex flex-wrap items-center gap-x-3 gap-y-2">
-                <span className="field border border-copper-600/60 px-2 py-1 text-copper-400">
-                  {initials}
-                </span>
-                <p className="field">
-                  <span className="text-copper-400">{profile.institution}</span>
-                  <span className="mx-2 text-board-700">·</span>
-                  {profile.program}
-                  <span className="mx-2 text-board-700">·</span>
-                  {profile.graduationYear}
-                </p>
-              </div>
+          {/* Title — `profile.title` ("Electrical Engineer") is deliberately not
+              shown here; the eyebrow one line above already says "B.Tech
+              Electrical Engineering". It still drives the page metadata. */}
+          <p className="animate-fade-up delay-2 mb-8 text-lg font-medium text-copper-400 sm:text-xl">
+            {profile.secondaryTitle}
+          </p>
 
-              {/* Name. Set as a drawing title: uppercase, bold, tight leading,
-                  and split across two inks — given name in silkscreen white,
-                  family name in copper. The white-to-grey gradient that used to
-                  sit here read as a template default, and a single-weight
-                  sentence-case line read as body copy that happened to be
-                  large.
+          {/* Tagline */}
+          <p className="animate-fade-up delay-3 mb-10 max-w-xl text-base leading-relaxed text-board-400 sm:text-lg">
+            {profile.tagline}
+          </p>
 
-                  The split is derived from the name itself rather than
-                  hard-coded into two strings, so `profile.name` stays the one
-                  place the name is written. A single-word name degrades to
-                  just the white half. */}
-              {/* Sized to the cell, not to the viewport: the family name has
-                  to stay on one line for the two-ink split to read as given
-                  name over family name. Now that the sheet gives this column
-                  its own padding, `3.75rem` overflows and breaks "ADITYA
-                  RANJAN" across two lines. */}
-              <h1 className="animate-fade-up delay-1 mb-4 text-4xl font-bold uppercase leading-[0.95] tracking-[-0.02em] text-board-50 sm:text-5xl lg:text-[3.4rem] xl:text-[3.25rem]">
-                {givenName}
-                {familyName && (
-                  <>
-                    <br />
-                    <span className="text-copper-400">{familyName}</span>
-                  </>
-                )}
-              </h1>
-
-              {/* `profile.title` ("Electrical Engineer") is deliberately not
-                  shown here; the spec line above already says "B.Tech
-                  Electrical Engineering". It still drives the page metadata. */}
-              <p className="animate-fade-up delay-2 mb-5 flex items-center gap-3 text-lg font-medium text-copper-400 sm:text-xl">
-                <span className="h-px w-8 shrink-0 bg-copper-600" aria-hidden="true" />
-                {profile.secondaryTitle}
-              </p>
-
-              {/* The four domains on one rule. It restates what the panel
-                  headers say, and that is the point: below `lg` the panels
-                  land underneath this block, so this row is the first thing
-                  on the page that says what he works on. Derived from
-                  `workDomains`, so the order matches. */}
-              <p className="animate-fade-up delay-2 field mb-5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 border-y border-board-800 py-3 text-board-400">
-                {workDomains.map((domain, i) => (
-                  <span key={domain} className="flex items-center gap-2.5">
-                    {i > 0 && (
-                      <span className="h-[3px] w-[3px] bg-copper-600" aria-hidden="true" />
-                    )}
-                    {DOMAIN_CHIP[domain]}
-                  </span>
-                ))}
-              </p>
-
-              <p className="animate-fade-up delay-3 mb-7 max-w-xl text-base leading-relaxed text-board-400">
-                {profile.tagline}
-              </p>
-
-              {/* CTAs — square, and the primary is a copper fill rather than a
-                  glowing pill. The glow was the same simulated light source as
-                  the orbs. */}
-              <div className="animate-fade-up delay-4 flex flex-wrap gap-3">
-                <Link
-                  href="/projects"
-                  className="group inline-flex items-center gap-2 bg-copper-400 px-5 py-2.5 text-sm font-semibold text-board-950 transition-colors duration-200 hover:bg-copper-300"
-                >
-                  View Projects
-                  <ArrowRight
-                    size={15}
-                    className="transition-transform duration-300 group-hover:translate-x-1"
-                  />
-                </Link>
-                {profile.resumePath ? (
-                  <a
-                    href={profile.resumePath}
-                    download
-                    className="inline-flex items-center gap-2 border border-board-700 px-5 py-2.5 text-sm font-semibold text-board-300 transition-colors duration-200 hover:border-copper-600 hover:text-board-50"
-                  >
-                    Download Resume <Download size={15} />
-                  </a>
-                ) : (
-                  <Link
-                    href="/resume"
-                    className="inline-flex items-center gap-2 border border-board-700 px-5 py-2.5 text-sm font-semibold text-board-300 transition-colors duration-200 hover:border-copper-600 hover:text-board-50"
-                  >
-                    View Resume <FileText size={15} />
-                  </Link>
-                )}
-              </div>
-
-            </div>
-
-            {/* ── Drawings ─────────────────────────────────── */}
-            {/* Below `lg` these land under the identity block, where they
-                still earn their place — they are the only thing on the page
-                that says "hardware" without words. Kept on mobile rather than
-                hidden, but they are real image requests now, so `sizes` below
-                has to stay honest or a phone pulls the 1280px original. */}
-            <div className="animate-fade-up delay-5 grid gap-px bg-board-800">
-              {PANELS.map(({ label, fig, techs, src, alt, treatment }) => (
-                <figure
-                  key={fig}
-                  className="m-0 flex flex-col bg-board-950"
-                >
-                  <PanelHead label={label} meta={fig} />
-                  {/* `fill` is `position: absolute`, so this wrapper has to be
-                      the positioned ancestor or the image escapes to the
-                      viewport. The fixed 5:3 box also reserves layout space
-                      before the image decodes, so the rail below it doesn't
-                      jump. `object-contain` over `cover` because these are
-                      drawings — cropping one cuts off a callout. */}
-                  <div className="relative aspect-[5/3] w-full overflow-hidden">
-                    <Image
-                      src={src}
-                      alt={alt}
-                      fill
-                      sizes="(min-width: 1280px) 420px, (min-width: 1024px) 50vw, 100vw"
-                      className={`object-contain ${treatment}`}
-                    />
-                  </div>
-                  {/* Vias separate the tags — several technology names contain
-                      spaces ("6-layer PCB"), so plain gaps blur the word
-                      boundaries. */}
-                  <figcaption className="flex flex-wrap items-center gap-x-2.5 gap-y-1 border-t border-board-800 px-3.5 py-2.5 font-mono text-[11px] text-copper-400">
-                    {techs.map((tech, i) => (
-                      <span key={tech} className="inline-flex items-center gap-2.5">
-                        {i > 0 && (
-                          <span className="h-[3px] w-[3px] bg-copper-600" aria-hidden="true" />
-                        )}
-                        {tech}
-                      </span>
-                    ))}
-                    <span className="field ml-auto text-board-700">Illustrative</span>
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-
-            {/* ── Rail ─────────────────────────────────────── */}
-            {/* The three things a reader checks that are not projects:
-                where he has done research, what the work has actually placed
-                at, and where the source lives. One panel with ruled sections
-                rather than three panels, so the column reads as a single
-                instrument strip.
-
-                At `lg` there is no room for a third column, so it spans the
-                full width under the other two and lays its sections out in a
-                row instead of a stack. */}
-            <div className="animate-fade-up delay-6 divide-y divide-board-800 bg-board-950 lg:col-span-2 lg:grid lg:grid-cols-3 lg:divide-x lg:divide-y-0 xl:col-span-1 xl:block xl:divide-x-0 xl:divide-y">
-              {research && (
-                <section className="px-4 py-4">
-                  <p className="field mb-3 text-copper-400">
-                    <span className="text-board-700">[ </span>Research
-                    <span className="text-board-700"> ]</span>
-                  </p>
-                  <p className="text-sm font-semibold leading-snug text-board-50">
-                    {research.organisation}
-                  </p>
-                  <p className="mt-1 text-xs leading-relaxed text-board-500">
-                    {research.lab}
-                  </p>
-                  <p className="mt-2.5 border-t border-board-800 pt-2.5 font-mono text-[11px] leading-relaxed text-board-400">
-                    {research.focus}
-                  </p>
-                </section>
-              )}
-
-              <section className="px-4 py-4">
-                <p className="field mb-3 text-copper-400">
-                  <span className="text-board-700">[ </span>Results
-                  <span className="text-board-700"> ]</span>
-                </p>
-                <dl className="space-y-2.5">
-                  {competitions.slice(0, RAIL_RESULTS).map((event) => (
-                    <div key={event.name}>
-                      <dt className="text-xs font-semibold leading-snug text-board-300">
-                        {event.name}
-                      </dt>
-                      <dd className="mt-0.5 font-mono text-[11px] leading-snug text-copper-400">
-                        {event.result}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-                <Link
-                  href="/experience"
-                  className="field group mt-3 inline-flex items-center gap-1.5 border-t border-board-800 pt-2.5 transition-colors hover:text-copper-400"
-                >
-                  All {competitions.length}
-                  <ArrowRight
-                    size={12}
-                    className="transition-transform duration-300 group-hover:translate-x-0.5"
-                  />
-                </Link>
-              </section>
-
-              <section className="px-4 py-4">
-                <p className="field mb-3 text-copper-400">
-                  <span className="text-board-700">[ </span>Elsewhere
-                  <span className="text-board-700"> ]</span>
-                </p>
-                <ul className="space-y-1">
-                  {[
-                    { label: "GitHub", href: profile.social.github },
-                    { label: "LinkedIn", href: profile.social.linkedin },
-                    { label: "Email", href: `mailto:${profile.social.email}` },
-                  ]
-                    .filter(
-                      (link): link is { label: string; href: string } =>
-                        typeof link.href === "string",
-                    )
-                    .map((link) => (
-                      <li key={link.label}>
-                        <a
-                          href={link.href}
-                          /* `mailto:` is a navigation, not a cross-origin
-                             document load — `target="_blank"` on it opens an
-                             empty tab beside the mail client on most desktop
-                             setups. */
-                          {...(link.href.startsWith("http")
-                            ? { target: "_blank", rel: "noopener noreferrer" }
-                            : {})}
-                          className="group flex items-center justify-between gap-2 py-1 font-mono text-[11px] text-board-400 transition-colors hover:text-copper-400"
-                        >
-                          {link.label}
-                          <ArrowUpRight
-                            size={12}
-                            className="shrink-0 text-board-700 transition-colors group-hover:text-copper-400"
-                            aria-hidden="true"
-                          />
-                        </a>
-                      </li>
-                    ))}
-                </ul>
-              </section>
-            </div>
-
-            {/* Quick stats — a spec table rather than boxes, so the hero stays
-                a hero instead of turning into a dashboard.
-
-                Spanning every column is what stops the three regions above
-                reading as separate cards: one band tying the full width
-                together, the way a title block runs the width of a drawing
-                sheet. Each value sits over its own field label, the way a
-                parameter table reads. Two columns before `sm` so a phone
-                never leaves a ragged cell on the end of a row. */}
-            <dl className="animate-fade-up delay-5 col-span-full grid grid-cols-2 gap-px bg-board-800 sm:grid-cols-4">
-              {portfolioStats.map((stat) => (
-                /* Reversed so the value reads first while the DOM keeps
-                   dt→dd order */
-                <div
-                  key={stat.label}
-                  className="flex flex-col-reverse bg-board-950 px-4 py-3.5"
-                >
-                  <dt className="field mt-1.5">{stat.label}</dt>
-                  <dd className="font-mono text-xl font-semibold tabular-nums text-copper-400">
-                    {stat.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+          {/* CTAs */}
+          <div className="animate-fade-up delay-4 flex flex-wrap gap-3">
+            <Link
+              href="/projects"
+              className="group inline-flex items-center gap-2 rounded-lg bg-copper-500 px-5 py-2.5 text-sm font-semibold text-board-950 shadow-[0_0_24px_-6px_rgba(201,138,82,0.5)] transition-all duration-300 hover:bg-copper-400 hover:shadow-[0_0_32px_-4px_rgba(201,138,82,0.65)]"
+            >
+              View Projects
+              <ArrowRight
+                size={15}
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              />
+            </Link>
+            {profile.resumePath ? (
+              <a
+                href={profile.resumePath}
+                download
+                className="inline-flex items-center gap-2 rounded-lg border border-board-700 bg-board-900/40 px-5 py-2.5 text-sm font-semibold text-board-300 backdrop-blur-sm transition-all duration-300 hover:border-copper-400/40 hover:bg-board-800/60 hover:text-board-100"
+              >
+                Download Resume <Download size={15} />
+              </a>
+            ) : (
+              <Link
+                href="/resume"
+                className="inline-flex items-center gap-2 rounded-lg border border-board-700 bg-board-900/40 px-5 py-2.5 text-sm font-semibold text-board-300 backdrop-blur-sm transition-all duration-300 hover:border-copper-400/40 hover:bg-board-800/60 hover:text-board-100"
+              >
+                View Resume <FileText size={15} />
+              </Link>
+            )}
           </div>
+
+          {/* Quick stats — a hairline fact strip rather than boxes, so the hero
+              stays a hero instead of turning into a dashboard. */}
+          <dl className="animate-fade-up delay-5 mt-14 flex max-w-xl flex-wrap gap-x-10 gap-y-5 border-t border-board-800/70 pt-7 sm:gap-x-14">
+            {portfolioStats.map((stat) => (
+              /* Reversed so the value reads first while the DOM keeps dt→dd order */
+              <div key={stat.label} className="flex flex-col-reverse">
+                <dt className="mt-1 text-xs text-board-500">{stat.label}</dt>
+                <dd className="font-mono text-xl font-semibold tabular-nums text-copper-400">
+                  {stat.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
       {/* ── Featured Projects ─────────────────────────────────── */}
-      <section className="mx-auto max-w-6xl px-4 pt-10 pb-16 sm:px-6">
-        {/* Header row, ruled like a table head: what this is on the left,
-            where the rest of it lives on the right. The "and more…" link that
-            used to sit under the grid is this link — two anchors to /projects
-            a screen apart was one more than the section needs. */}
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-board-800 pb-4">
-          <div>
-            <p className="marker field mb-2 text-copper-400">Selected work</p>
-            {/* Not "Projects" — that just repeats the nav item one line above. */}
-            <h2 className="text-2xl font-semibold tracking-tight text-board-50 sm:text-3xl">
-              Key projects
-            </h2>
-          </div>
-          <Link
-            href="/projects"
-            className="field group inline-flex items-center gap-2 pb-1 transition-colors hover:text-copper-400"
-          >
-            All {workItems.length} projects
-            <ArrowRight
-              size={13}
-              className="transition-transform duration-300 group-hover:translate-x-1"
-            />
-          </Link>
+      <section className="mx-auto max-w-6xl px-4 pt-12 pb-16 sm:px-6">
+        <div className="mb-8">
+          <p className="mb-2 font-mono text-xs uppercase tracking-widest text-copper-400">
+            Selected work
+          </p>
+          {/* Not "Projects" — that just repeats the nav item one line above. */}
+          <h2 className="text-2xl font-semibold tracking-tight text-board-100 sm:text-3xl">
+            Key projects
+          </h2>
         </div>
 
-        {/* `gap-px` over a board-800 background draws the dividing rules for
-            free, so the grid reads as a ruled table of cells rather than as
-            six free-floating cards. */}
-        <div className="grid grid-cols-1 gap-px border border-board-800 bg-board-800 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {featured.map((item) => (
             <CompactWorkCard key={item.title} item={item} />
           ))}
         </div>
+
+        <Link
+          href="/projects"
+          className="group mt-6 inline-flex items-center gap-1.5 font-mono text-sm text-board-500 transition-colors hover:text-copper-400"
+        >
+          and more&hellip;
+          <ArrowRight
+            size={14}
+            className="transition-transform duration-300 group-hover:translate-x-1"
+          />
+        </Link>
       </section>
 
       {/* ── Closing CTA ───────────────────────────────────────────
@@ -598,15 +204,11 @@ export default function HomePage() {
       <section className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
         <Link
           href="/contact"
-          className="panel panel-link probe marks group relative isolate flex items-center justify-between gap-5 overflow-hidden px-6 py-5"
+          className="panel spotlight group relative isolate flex items-center justify-between gap-5 overflow-hidden px-6 py-5 transition-all duration-300 hover:border-board-700"
         >
           <SpotlightEffect />
-          <span className="mark left-2 top-2 border-l border-t" aria-hidden="true" />
-          <span className="mark right-2 top-2 border-r border-t" aria-hidden="true" />
-          <span className="mark bottom-2 left-2 border-b border-l" aria-hidden="true" />
-          <span className="mark bottom-2 right-2 border-b border-r" aria-hidden="true" />
           <div className="relative z-10 min-w-0">
-            <h2 className="text-base font-semibold tracking-tight text-board-50 transition-colors group-hover:text-copper-400">
+            <h2 className="text-base font-semibold tracking-tight text-board-100 transition-colors group-hover:text-copper-400">
               Get in touch
             </h2>
             <p className="mt-1 text-sm leading-relaxed text-board-500">

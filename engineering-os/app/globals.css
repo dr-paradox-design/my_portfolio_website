@@ -147,6 +147,52 @@ body {
   background: #161b25;
 }
 
+/* ── Display type ───────────────────────────────────────────────────
+   The hero name. A ramp rather than a flat fill so the headline has some
+   depth without a second ink — deliberately *not* copper: the accent is
+   spent on the line under it and on the stat values, and a copper headline
+   as well leaves the page with no hierarchy between them.
+   ───────────────────────────────────────────────────────────────── */
+
+.text-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--color-board-50) 0%,
+    var(--color-board-300) 45%,
+    var(--color-board-500) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ── Cursor spotlight ───────────────────────────────────────────────
+   A copper wash that follows the pointer across a panel. `SpotlightEffect`
+   writes `--mx`/`--my` on the parent; without this rule that component is
+   inert, which is exactly what happened when the selector was dropped —
+   four call sites kept mounting it and nothing lit up.
+   ───────────────────────────────────────────────────────────────── */
+
+.spotlight::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  background: radial-gradient(
+    340px circle at var(--mx, 50%) var(--my, 50%),
+    var(--accent-wash),
+    transparent 70%
+  );
+}
+
+.spotlight:hover::after,
+.spotlight:focus-within::after {
+  opacity: 1;
+}
+
 /* ── Registration marks ─────────────────────────────────────────────
    Corner ticks, like the crop marks on a plotted sheet. They sit at the
    corners permanently at low opacity and come up to full on hover —
@@ -332,6 +378,23 @@ body {
 
 .animate-blink {
   animation: blink 1.6s steps(1) infinite;
+}
+
+/* Slow wander for the hero's two ambient orbs. They are blurred to ~130px,
+   so the motion is only ever felt as the background breathing — at that
+   radius a 3%/4% translate never resolves into an edge you can track. */
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(3%, -4%) scale(1.08);
+  }
+}
+
+.animate-drift {
+  animation: drift 15s ease-in-out infinite;
 }
 
 .animate-telemetry {
