@@ -152,17 +152,19 @@ const PANELS = [
       "Digital Design & Computer Architecture",
       "Analog, Mixed-Signal & Instrumentation",
     ] as WorkDomain[],
-    src: "/hero-package.png",
+    src: "/hero-package.webp",
     alt:
       "Exploded view of a ball-grid-array package — lid, silicon die, " +
       "interposer, substrate and circuit board drawn separated in a vertical " +
       "stack with construction lines.",
-    /* Drawn as copper line art on white. Plain `invert` would land it on
-       black but swing every copper stroke to blue (#c98a52 inverts to a
-       210° blue); the 180° hue rotation walks the hue back round to orange.
-       The pair together is the only way to dark-mode a light raster without
-       destroying its palette. */
-    treatment: "invert-[1] hue-rotate-180",
+    /* No treatment: the source ships a real alpha channel — 77% of it is
+       transparent and the ink is already dark-with-copper, so it composites
+       straight onto the sheet. It *previews* as line art on white, which is
+       only a viewer painting its own backdrop behind the alpha; "correcting"
+       for that white with `invert` would flip the genuinely dark package
+       bodies to near-white slabs. Check the alpha channel, not a preview,
+       before adding a filter here. */
+    treatment: "",
   },
   {
     label: "Embedded & robotics",
@@ -382,8 +384,9 @@ export default function HomePage() {
             {/* ── Drawings ─────────────────────────────────── */}
             {/* Below `lg` these land under the identity block, where they
                 still earn their place — they are the only thing on the page
-                that says "hardware" without words. Not hidden on mobile:
-                inline SVG with no image request, so the cost is near zero. */}
+                that says "hardware" without words. Kept on mobile rather than
+                hidden, but they are real image requests now, so `sizes` below
+                has to stay honest or a phone pulls the 1280px original. */}
             <div className="animate-fade-up delay-5 grid gap-px bg-board-800">
               {PANELS.map(({ label, fig, techs, src, alt, treatment }) => (
                 <figure
