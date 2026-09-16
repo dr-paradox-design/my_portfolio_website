@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Download, FileText } from "lucide-react";
 import { profile } from "@/lib/data/profile";
@@ -11,7 +12,6 @@ import {
 } from "@/lib/data/portfolio";
 import { CompactWorkCard } from "@/components/projects/CompactWorkCard";
 import { SpotlightEffect } from "@/components/ui/SpotlightEffect";
-import { AirframeFigure, PackageFigure } from "@/components/ui/HeroFigures";
 
 /**
  * The home page leads with the strongest work rather than only the items
@@ -126,9 +126,24 @@ function panelTechs(domains: WorkDomain[], perDomain: number) {
   return out;
 }
 
-/* The two drawings, and the domains each one stands for. Between them they
-   have to cover `workDomains` exactly — a fifth domain with no panel is a
-   build error rather than a silently missing label. */
+/**
+ * The two drawings, and the domains each one stands for. Between them they
+ * have to cover `workDomains` exactly — a fifth domain with no panel is a
+ * build error rather than a silently missing label.
+ *
+ * These are **illustrations, not documentation**, and the `Illustrative` tag
+ * in every caption is load-bearing: the drawings were generated, not exported
+ * from Swastik's CAD or KiCad projects. Nothing on them should ever be read
+ * as a specification — which is why no dimension, part number or callout from
+ * the artwork is repeated as text anywhere on this page. Replacing either one
+ * with a real `kicad-cli` layer export or a CAD drawing sheet is a strict
+ * upgrade; the slot is shaped to take one without further changes.
+ *
+ * `src` is a plain string rather than a static import on purpose. A static
+ * import fails the *build* when the file is absent, which would make the whole
+ * site unbuildable while artwork is still being swapped around; a string path
+ * degrades to a single broken image instead.
+ */
 const PANELS = [
   {
     label: "Semiconductor / IC design",
@@ -137,7 +152,17 @@ const PANELS = [
       "Digital Design & Computer Architecture",
       "Analog, Mixed-Signal & Instrumentation",
     ] as WorkDomain[],
-    Figure: PackageFigure,
+    src: "/hero-package.png",
+    alt:
+      "Exploded view of a ball-grid-array package — lid, silicon die, " +
+      "interposer, substrate and circuit board drawn separated in a vertical " +
+      "stack with construction lines.",
+    /* Drawn as copper line art on white. Plain `invert` would land it on
+       black but swing every copper stroke to blue (#c98a52 inverts to a
+       210° blue); the 180° hue rotation walks the hue back round to orange.
+       The pair together is the only way to dark-mode a light raster without
+       destroying its palette. */
+    treatment: "invert-[1] hue-rotate-180",
   },
   {
     label: "Embedded & robotics",
@@ -146,7 +171,13 @@ const PANELS = [
       "Embedded Systems & Firmware",
       "Autonomous Systems & Robotics",
     ] as WorkDomain[],
-    Figure: AirframeFigure,
+    src: "/hero-auv.webp",
+    alt:
+      "Blueprint of an autonomous underwater vehicle — front, side and rear " +
+      "elevations above an isometric view, with leader lines to the pressure " +
+      "vessel, electronics housing, thruster and camera.",
+    /* Already dark-on-dark, so it needs no correction. */
+    treatment: "",
   },
 ].map((panel) => ({ ...panel, techs: panelTechs(panel.domains, 2) }));
 
@@ -354,14 +385,26 @@ export default function HomePage() {
                 that says "hardware" without words. Not hidden on mobile:
                 inline SVG with no image request, so the cost is near zero. */}
             <div className="animate-fade-up delay-5 flex flex-col gap-5 xl:gap-6">
-              {PANELS.map(({ label, fig, techs, Figure }) => (
+              {PANELS.map(({ label, fig, techs, src, alt, treatment }) => (
                 <figure
                   key={fig}
                   className="m-0 flex flex-1 flex-col border border-board-800 bg-board-950/70"
                 >
                   <PanelHead label={label} meta={fig} />
-                  <div className="flex flex-1 items-center px-3 py-4">
-                    <Figure />
+                  {/* `fill` is `position: absolute`, so this wrapper has to be
+                      the positioned ancestor or the image escapes to the
+                      viewport. The fixed 5:3 box also reserves layout space
+                      before the image decodes, so the rail below it doesn't
+                      jump. `object-contain` over `cover` because these are
+                      drawings — cropping one cuts off a callout. */}
+                  <div className="relative aspect-[5/3] w-full overflow-hidden">
+                    <Image
+                      src={src}
+                      alt={alt}
+                      fill
+                      sizes="(min-width: 1280px) 420px, (min-width: 1024px) 50vw, 100vw"
+                      className={`object-contain ${treatment}`}
+                    />
                   </div>
                   {/* Vias separate the tags — several technology names contain
                       spaces ("6-layer PCB"), so plain gaps blur the word
