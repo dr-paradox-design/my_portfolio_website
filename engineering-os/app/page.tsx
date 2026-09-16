@@ -257,9 +257,24 @@ export default function HomePage() {
         </p>
 
         <div className="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:py-16">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.06fr_1fr] xl:grid-cols-[1.02fr_1fr_0.56fr] xl:gap-6">
+          {/* One sheet, not three cards.
+
+              The three regions used to be separately bordered panels floating
+              in an 8-unit gap, which made the hero read as a dashboard of
+              widgets. They are now cells of a single ruled field: the grid
+              carries the rule colour as its own background and a 1px gap, so
+              every division is exactly one hairline wide and shared between
+              neighbours — no doubled borders, no gutters.
+
+              Cells are `board-950`, which is also the page background, so
+              nothing reads as a filled box sitting on top of the page. The
+              hairlines do all the structural work, the way they do on a real
+              drawing sheet. This is why the cells cannot be translucent: the
+              rule colour is behind them, and any alpha would bleed it through
+              the whole surface instead of only the gaps. */}
+          <div className="grid grid-cols-1 gap-px border border-board-800 bg-board-800 lg:grid-cols-[1.06fr_1fr] xl:grid-cols-[1.16fr_1fr_0.54fr]">
             {/* ── Identity ─────────────────────────────────── */}
-            <div>
+            <div className="bg-board-950 px-5 py-6 sm:px-7 sm:py-8">
               {/* Designator, then the spec line. The block is his initials —
                   the reference this borrows its shape from carries an invented
                   part number there, and AGENTS.md rules that out. */}
@@ -287,7 +302,12 @@ export default function HomePage() {
                   hard-coded into two strings, so `profile.name` stays the one
                   place the name is written. A single-word name degrades to
                   just the white half. */}
-              <h1 className="animate-fade-up delay-1 mb-4 text-4xl font-bold uppercase leading-[0.95] tracking-[-0.02em] text-board-50 sm:text-5xl lg:text-[3.4rem] xl:text-[3.75rem]">
+              {/* Sized to the cell, not to the viewport: the family name has
+                  to stay on one line for the two-ink split to read as given
+                  name over family name. Now that the sheet gives this column
+                  its own padding, `3.75rem` overflows and breaks "ADITYA
+                  RANJAN" across two lines. */}
+              <h1 className="animate-fade-up delay-1 mb-4 text-4xl font-bold uppercase leading-[0.95] tracking-[-0.02em] text-board-50 sm:text-5xl lg:text-[3.4rem] xl:text-[3.25rem]">
                 {givenName}
                 {familyName && (
                   <>
@@ -357,26 +377,6 @@ export default function HomePage() {
                 )}
               </div>
 
-              {/* Quick stats — a spec table rather than boxes, so the hero
-                  stays a hero instead of turning into a dashboard. Each value
-                  sits under its own field label, the way a parameter table
-                  reads. Two columns before `sm` so a phone never leaves a
-                  ragged cell on the end of a row. */}
-              <dl className="animate-fade-up delay-5 mt-10 grid grid-cols-2 gap-px border border-board-800 bg-board-800 sm:grid-cols-4">
-                {portfolioStats.map((stat) => (
-                  /* Reversed so the value reads first while the DOM keeps
-                     dt→dd order */
-                  <div
-                    key={stat.label}
-                    className="flex flex-col-reverse bg-board-950 px-3 py-3"
-                  >
-                    <dt className="field mt-1.5">{stat.label}</dt>
-                    <dd className="font-mono text-xl font-semibold tabular-nums text-copper-400">
-                      {stat.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
             </div>
 
             {/* ── Drawings ─────────────────────────────────── */}
@@ -384,11 +384,11 @@ export default function HomePage() {
                 still earn their place — they are the only thing on the page
                 that says "hardware" without words. Not hidden on mobile:
                 inline SVG with no image request, so the cost is near zero. */}
-            <div className="animate-fade-up delay-5 flex flex-col gap-5 xl:gap-6">
+            <div className="animate-fade-up delay-5 grid gap-px bg-board-800">
               {PANELS.map(({ label, fig, techs, src, alt, treatment }) => (
                 <figure
                   key={fig}
-                  className="m-0 flex flex-1 flex-col border border-board-800 bg-board-950/70"
+                  className="m-0 flex flex-col bg-board-950"
                 >
                   <PanelHead label={label} meta={fig} />
                   {/* `fill` is `position: absolute`, so this wrapper has to be
@@ -434,7 +434,7 @@ export default function HomePage() {
                 At `lg` there is no room for a third column, so it spans the
                 full width under the other two and lays its sections out in a
                 row instead of a stack. */}
-            <div className="animate-fade-up delay-6 divide-y divide-board-800 border border-board-800 bg-board-950/70 lg:col-span-2 lg:grid lg:grid-cols-3 lg:divide-x lg:divide-y-0 xl:col-span-1 xl:block xl:divide-x-0 xl:divide-y">
+            <div className="animate-fade-up delay-6 divide-y divide-board-800 bg-board-950 lg:col-span-2 lg:grid lg:grid-cols-3 lg:divide-x lg:divide-y-0 xl:col-span-1 xl:block xl:divide-x-0 xl:divide-y">
               {research && (
                 <section className="px-4 py-4">
                   <p className="field mb-3 text-copper-400">
@@ -522,6 +522,31 @@ export default function HomePage() {
                 </ul>
               </section>
             </div>
+
+            {/* Quick stats — a spec table rather than boxes, so the hero stays
+                a hero instead of turning into a dashboard.
+
+                Spanning every column is what stops the three regions above
+                reading as separate cards: one band tying the full width
+                together, the way a title block runs the width of a drawing
+                sheet. Each value sits over its own field label, the way a
+                parameter table reads. Two columns before `sm` so a phone
+                never leaves a ragged cell on the end of a row. */}
+            <dl className="animate-fade-up delay-5 col-span-full grid grid-cols-2 gap-px bg-board-800 sm:grid-cols-4">
+              {portfolioStats.map((stat) => (
+                /* Reversed so the value reads first while the DOM keeps
+                   dt→dd order */
+                <div
+                  key={stat.label}
+                  className="flex flex-col-reverse bg-board-950 px-4 py-3.5"
+                >
+                  <dt className="field mt-1.5">{stat.label}</dt>
+                  <dd className="font-mono text-xl font-semibold tabular-nums text-copper-400">
+                    {stat.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
       </section>
