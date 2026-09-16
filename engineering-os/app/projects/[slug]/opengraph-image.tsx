@@ -41,8 +41,8 @@ export function generateStaticParams() {
  *  The budget is 260, which is four lines of body text at 27px/1.45 — about
  *  80 characters to a line at this width. It was 180, which is three, and
  *  three was cutting the last sentence off several summaries; on the NIDAR
- *  drones that sentence was "Placed Rank 6 of 70+ teams", i.e. the single
- *  fact most likely to make someone open the link. Four lines still leaves
+ *  drones that sentence carried the placement, i.e. the single fact most
+ *  likely to make someone open the link. Four lines still leaves
  *  roughly 40px of slack against the tallest possible card (two-line title
  *  plus four-line body plus tags), so nothing clips. */
 function clamp(text: string, max: number) {

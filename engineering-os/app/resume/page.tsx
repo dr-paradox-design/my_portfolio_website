@@ -14,7 +14,10 @@ export const metadata: Metadata = pageMetadata({
 const highlights = [
   { label: "Education", value: "B.Tech Electrical Engineering - NIT Rourkela (2027)" },
   { label: "Leadership", value: "Team Captain and Firmware Lead, Team Tiburon (AUV Robotics)" },
-  { label: "Competition", value: "Global podium, SAUVC China 2026" },
+  /* Keep this in step with the PDF below it. This strip and the download button
+     sit on the same screen, so a claim here that the PDF doesn't make is visible
+     side by side — which is exactly what happened with "Global podium". */
+  { label: "Competition", value: "Finalist, SAUVC China 2026" },
   { label: "Core skills", value: "Embedded firmware (C/C++), control systems, EKF sensor fusion, ROS2" },
   { label: "Target roles", value: "Chip design, semiconductor fabrication, embedded systems engineering" },
 ];

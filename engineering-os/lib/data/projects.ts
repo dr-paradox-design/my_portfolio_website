@@ -19,16 +19,16 @@ export const projectDetails: ProjectDetail[] = [
   {
     slug: "tiburon-auv",
     /* The `summary` override that used to sit here — "Firmware, sensor
-       fusion, and 6-DOF control stack … global podium at SAUVC 2026" — was
-       removed because it collided with the paragraph directly beneath it.
-       It named the same three subsystems and closed on the same podium as
+       fusion, and 6-DOF control stack … at SAUVC 2026" — was removed because
+       it collided with the paragraph directly beneath it. It named the same
+       three subsystems and closed on the same competition result as
        `executiveSummary`, so the page opened by saying one thing twice.
        The work item's own summary covers what neither does: the 1.5-year
        span and the full mechanical-through-integration scope. Same class of
        fix as the aquatic page. */
     domainTags: ["Robotics", "Control Theory", "Embedded Systems"],
     executiveSummary:
-      "Tiburon is NIT Rourkela's autonomous underwater vehicle. As team captain and firmware lead I owned the low-level stack: RP2350 firmware, the sensor interfaces, the state estimator, and the 6-DOF control and thrust-allocation chain that turns a desired motion into eight thruster commands. The vehicle took a global podium place at SAUVC 2026.",
+      "Tiburon is NIT Rourkela's autonomous underwater vehicle. As team captain and firmware lead I owned the low-level stack: RP2350 firmware, the sensor interfaces, the state estimator, and the 6-DOF control and thrust-allocation chain that turns a desired motion into eight thruster commands. The vehicle reached the final at SAUVC 2026 in Sanya, China.",
     problemAndRequirements:
       "An AUV has no GPS and no reliable external reference once it submerges. The vehicle had to estimate its own pose from onboard sensing alone, hold depth and heading against drag and buoyancy trim, and accept high-level motion commands — all while running on a microcontroller, underwater, with no opportunity to debug mid-run.",
     systemArchitecture:
@@ -87,7 +87,8 @@ export const projectDetails: ProjectDetail[] = [
       },
       {
         test: "SAUVC 2026 competition runs",
-        outcome: "The vehicle completed competition runs and finished on the global podium.",
+        outcome:
+          "The vehicle completed its competition runs at the final in Sanya, China. It did not place.",
       },
     ],
     failuresAndLessons: [
@@ -926,7 +927,7 @@ export const projectDetails: ProjectDetail[] = [
     slug: "disaster-management-drones",
     domainTags: ["Robotics", "Autonomous Systems", "Aerial Vehicles"],
     executiveSummary:
-      "A two-drone system entered in NIDAR 2025 — the National Innovation Challenge for Drone Application and Research, run by MeitY and Drone Federation India under the SwaYaan initiative — against the disaster-management problem statement, which pairs a scout drone with a delivery drone. The system flew fully autonomously, which the rules treated as the unpenalised path: manual operation was allowed but cost score. It placed Rank 6 out of more than 70 teams. Swastik worked on the flight controller and mission planning, and on hardware manufacturing and testing, alongside Priyaranjan.",
+      "A two-drone system entered in NIDAR 2025 — the National Innovation Challenge for Drone Application and Research, run by MeitY and Drone Federation India under the SwaYaan initiative — against the disaster-management problem statement, which pairs a scout drone with a delivery drone. The system flew fully autonomously, which the rules treated as the unpenalised path: manual operation was allowed but cost score. It placed Rank 9 out of more than 70 teams. Swastik worked on the flight controller and mission planning, and on hardware manufacturing and testing, alongside Priyaranjan.",
     problemAndRequirements:
       "The published scenario is a coastal town after a flood: water has entered homes, residents have evacuated or taken shelter on rooftops without food, water or medicine, and 48 hours later the rain has stopped and the wind has dropped but the water is still high and people are still stranded. Teams had to field two cooperating drones. The scout drone surveys roughly 30 hectares to locate survivors, streams live video back to a command station, geotags each survivor's position, and carries a mounted speaker so an operator can speak to the people it finds. The delivery drone then flies survival kits — 5 x 10 x 20 cm, 200 g — out to those geotagged positions. Both aircraft were to run autonomously and report to a single unified command centre; flying them manually from separate control stations was permitted but carried a scoring penalty.",
     systemArchitecture:

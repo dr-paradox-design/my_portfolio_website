@@ -280,7 +280,7 @@ export const workItems: WorkItem[] = [
     status: "complete",
     tier: "major",
     summary:
-      "Two cooperating drones for the NIDAR 2025 disaster-management track, flown fully autonomously: a scout that scans the ground through a gimballed camera for people, and a delivery drone that carries a 200 g medicine kit to them. Placed Rank 6 of 70+ teams.",
+      "Two cooperating drones for the NIDAR 2025 disaster-management track, flown fully autonomously: a scout that scans the ground through a gimballed camera for people, and a delivery drone that carries a 200 g medicine kit to them. Placed Rank 9 of 70+ teams.",
     technologies: [
       "Flight controller",
       "Mission planning",
@@ -793,13 +793,17 @@ export interface Achievement {
 export const competitions: Achievement[] = [
   {
     name: "SAUVC 2026",
-    result: "Global podium",
+    /* Reaching the final at Sanya is the achievement; the team did not place
+       there. This said "Global podium" for a while, which claimed a top-three
+       finish that never happened and contradicted the resume PDF served from
+       /resume. Don't reintroduce a placement here without one. */
+    result: "Finalist — Sanya, China",
     status: "complete",
     related: "Tiburon AUV Platform",
   },
   {
     name: "NIDAR 2025",
-    result: "Rank 6 of 70+ teams",
+    result: "Rank 9",
     status: "complete",
     related: "Autonomous Disaster-Management Drones",
   },
@@ -810,13 +814,13 @@ export const competitions: Achievement[] = [
   },
   {
     name: "e-Yantra Robotics Competition",
-    result: "Participant",
+    result: "Finalist — Rank 5",
     status: "complete",
     related: "Autonomous Warehouse Drone",
   },
   {
     name: "IIT Guwahati Aquatic Hackathon",
-    result: "Participant",
+    result: "2nd runner-up",
     status: "complete",
     related: "Aquatic Robotics for Sustainability",
   },
