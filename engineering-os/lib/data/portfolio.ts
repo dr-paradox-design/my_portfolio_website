@@ -557,6 +557,21 @@ export const workItems: WorkItem[] = [
       },
     ],
   },
+  {
+    title: "Buck PMIC Supervisor — FPGA Bring-up",
+    domain: "Digital Design & Computer Architecture",
+    status: "ongoing",
+    tier: "supporting",
+    /* Team project; the repo is Hrishikesh Acharyya's and he wrote the
+       converter, the compensator, and the supervisor RTL. Swastik's commits are
+       the PYNQ-Z2 bring-up only, so that is all this entry claims. Don't widen
+       it to the analog design without his say-so. */
+    summary:
+      "Hardware bring-up for the digital supervisor of a team-built 5 V / 5 A synchronous buck PMIC. A PYNQ-Z2 harness wraps the supervisor RTL unchanged and stands in for the analog side: an MMCM derives the 50 MHz logic clock, a counter generates the 450 kHz master PWM, and switches and buttons play the fault comparators. A self-checking testbench runs the same sequence as the board — soft start, power-good, OTP/UVLO shutdown, hiccup, strike latch-off, recovery — and the design was verified on hardware.",
+    technologies: ["SystemVerilog", "PYNQ-Z2", "Vivado", "MMCM", "XDC constraints"],
+    context: "Team project",
+    repoUrl: "https://github.com/Hrishikesh-Acharyya/Synchronous_buck_PMIC",
+  },
 
   // ── Analog, Mixed-Signal & Instrumentation ──────────────────────
   {
